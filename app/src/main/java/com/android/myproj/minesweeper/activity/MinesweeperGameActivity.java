@@ -98,6 +98,10 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // Pause timer
         this.stopwatch.pauseTimer();
+        // Release any active MusicPlayer
+        for (MusicPlayer musicPlayer : this.playersToDestroy) {
+            musicPlayer.destroyPlayer();
+        }
 
         // Save game if applicable
         if (this.hasStarted && !this.isGameOver) {
