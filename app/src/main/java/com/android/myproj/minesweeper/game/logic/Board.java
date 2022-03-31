@@ -1,4 +1,4 @@
-package com.android.myproj.minesweeper.logic;
+package com.android.myproj.minesweeper.game.logic;
 
 import androidx.core.util.Consumer;
 import androidx.core.util.Predicate;

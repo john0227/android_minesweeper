@@ -28,7 +28,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.logic.Level;
+import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.JSONKey;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.Key;

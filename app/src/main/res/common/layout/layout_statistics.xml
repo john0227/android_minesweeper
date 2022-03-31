@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearL_statistics"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -46,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/best_time" />
+                    android:src="@drawable/best_time" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -84,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/time" />
+                    android:src="@drawable/time" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -148,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/best_win_streak" />
+                    android:src="@drawable/best_win_streak" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -157,7 +158,7 @@
                     android:gravity="center_vertical"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:text="Games Started"
+                    android:text="Best Win Streak"
                     android:textSize="15dp" />
 
                 <TextView
@@ -186,7 +187,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/win_streak" />
+                    android:src="@drawable/win_streak" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -195,7 +196,7 @@
                     android:gravity="center_vertical"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:text="Games Won"
+                    android:text="Current Win Streak"
                     android:textSize="15dp" />
 
                 <TextView
@@ -224,7 +225,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/wins_no_hint" />
+                    android:src="@drawable/wins_no_hint" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -233,7 +234,7 @@
                     android:gravity="center_vertical"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:text="Win Rate"
+                    android:text="Wins with No Hint"
                     android:textSize="15dp" />
 
                 <TextView

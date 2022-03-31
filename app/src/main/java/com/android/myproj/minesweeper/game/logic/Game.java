@@ -1,4 +1,4 @@
-package com.android.myproj.minesweeper.logic;
+package com.android.myproj.minesweeper.game.logic;
 
 import com.android.myproj.minesweeper.util.JSONKey;
 

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearL_overall_statistics"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -42,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/games_started" />
+                    android:src="@drawable/games_started" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -80,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/games_won" />
+                    android:src="@drawable/games_won" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -118,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/games_won" />
+                    android:src="@drawable/win_rate" />
 
                 <TextView
                     android:layout_width="0dp"

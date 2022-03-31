@@ -20,10 +20,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.logic.Game;
-import com.android.myproj.minesweeper.logic.Level;
-import com.android.myproj.minesweeper.logic.Tile;
-import com.android.myproj.minesweeper.logic.TileValue;
+import com.android.myproj.minesweeper.game.logic.Game;
+import com.android.myproj.minesweeper.game.logic.Level;
+import com.android.myproj.minesweeper.game.logic.Tile;
+import com.android.myproj.minesweeper.game.logic.TileValue;
 import com.android.myproj.minesweeper.util.JSONKey;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.Key;
