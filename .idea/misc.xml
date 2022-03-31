@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/App/Dkit/SDK/platforms/android-32/data/res/drawable/btn_default.xml" value="0.209" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/imagebutton_setting.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/drawable/flag_radiobutton_toggle.xml" value="0.3255" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3255" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/drawable/radiobutton_toggle_click.xml" value="0.3255" />
@@ -14,6 +15,10 @@
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layout/activity_main.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layout/activity_medium_level.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layout/switch_item.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_easy_level.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_expert_level.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_intermediate_level.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/menu/main_menu_setting.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/menu/menu_setting.xml" value="0.38697916666666665" />
       </map>
