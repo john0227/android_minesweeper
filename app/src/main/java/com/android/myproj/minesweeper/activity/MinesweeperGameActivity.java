@@ -501,7 +501,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Check if all non-mine cells are uncovered
         if (game.hasWon()) {
             this.isGameOver = true;
-            cleanup();
+            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
             tv_mine_count.setText("YOU WON :)");
             buildGameoverAlert("YOU WON :)").show();
         }
