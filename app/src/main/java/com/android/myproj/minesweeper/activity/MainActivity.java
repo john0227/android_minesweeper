@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Inflating popup menu from popup_menu.xml file
         popupMenu.getMenuInflater().inflate(R.menu.main_menu_setting, popupMenu.getMenu());
-        popupMenu.getMenu().getItem(0).setChecked(playSound);
+        popupMenu.getMenu().getItem(1).setChecked(playSound);
 
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -244,20 +244,31 @@ public class MainActivity extends AppCompatActivity {
                 menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
                 menuItem.setActionView(new View(getApplicationContext()));
 
-                menuItem.setChecked(!playSound);
-                playSound = !playSound;
-                updateSoundSetting();
-                menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-                    @Override
-                    public boolean onMenuItemActionExpand(MenuItem item) {
-                        return false;
-                    }
-                    @Override
-                    public boolean onMenuItemActionCollapse(MenuItem item) {
-                        return false;
-                    }
-                });
-                return false;
+                String selMenu = menuItem.getTitle().toString();
+                if (selMenu.equals("Statistics")) {
+                    startActivity(new Intent(MainActivity.this, StatisticsActivity.class));
+                } else if (selMenu.equals("Sound")) {
+                    menuItem.setChecked(!playSound);
+                    playSound = !playSound;
+                    updateSoundSetting();
+                    menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                        @Override
+                        public boolean onMenuItemActionExpand(MenuItem item) {
+                            return false;
+                        }
+                        @Override
+                        public boolean onMenuItemActionCollapse(MenuItem item) {
+                            return false;
+                        }
+                    });
+                    return false;
+                } else {
+                    LogService.error(
+                            MainActivity.this,
+                            "Selected menu from SETTING popup menu is invalid: " + selMenu
+                    );
+                }
+                return true;
             }
         });
         // Showing the popup menu

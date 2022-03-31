@@ -358,7 +358,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         if (playSound) {
             new Handler(Looper.getMainLooper()).postDelayed(run, 2000 + delay * level.getMines());
         } else {
-            new Handler(Looper.getMainLooper()).postDelayed(run, 750 + delay * level.getMines());
+            new Handler(Looper.getMainLooper()).postDelayed(run, 1000 + delay * level.getMines());
         }
     }
 
@@ -427,7 +427,10 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                     });
                     return false;
                 } else {
-                    LogService.error(MinesweeperGameActivity.this, "Selected menu from SELECT popup menu is invalid: " + selMenu);
+                    LogService.error(
+                            MinesweeperGameActivity.this,
+                            "Selected menu from SETTING popup menu is invalid: " + selMenu
+                    );
                 }
 
                 return true;
