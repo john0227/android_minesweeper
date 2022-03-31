@@ -1,13 +1,10 @@
 package com.android.myproj.minesweeper.logic;
 
-import android.os.Bundle;
-
 import com.android.myproj.minesweeper.util.JSONKey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Game {

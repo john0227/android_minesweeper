@@ -5,10 +5,8 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
@@ -20,7 +18,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -113,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         Level level = Level.getLevelFromCode(savedState.getInt(JSONKey.KEY_LEVEL));
 
         // If there is data to restore, make RESUME button visible
-        resumeButton.setBackground(AppCompatResources.getDrawable(this, android.R.drawable.btn_default));
+        resumeButton.setBackgroundResource(android.R.drawable.btn_default);
         switch (level) {
             case EASY -> resumeButton.setText(R.string.btn_resume_easy);
             case INTERMEDIATE -> resumeButton.setText(R.string.btn_resume_intermediate);
