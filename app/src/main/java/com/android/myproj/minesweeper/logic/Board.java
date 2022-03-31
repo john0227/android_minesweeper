@@ -1,5 +1,6 @@
 package com.android.myproj.minesweeper.logic;
 
+import androidx.core.util.Consumer;
 import androidx.core.util.Predicate;
 
 import com.android.myproj.minesweeper.util.JSONKey;
@@ -109,7 +110,7 @@ public class Board {
 
         return selectedTiles;
     }
-    
+
     // Uncovers all adjacent zero tiles
     private void _selectTile(int index, List<Tile> selectedTiles) {
         if (this.board[index].isFlagged() || !this.board[index].isCovered()) {
@@ -122,36 +123,7 @@ public class Board {
         if (this.board[index].getTileValue().isNonZeroNumberTile()) {
             return;
         }
-
-        boolean validLeft = Tile.getColFromIndex(index, this.col) != 0;
-        boolean validRight = Tile.getColFromIndex(index, this.col) != this.col - 1;
-        boolean validTop = Tile.getRowFromIndex(index, this.col) != 0;
-        boolean validBottom = Tile.getRowFromIndex(index, this.col) != this.row - 1;
-
-        if (validLeft) {
-            this._selectTile(index - 1, selectedTiles);
-            if (validTop) {
-                this._selectTile(index - this.col - 1, selectedTiles);
-            }
-            if (validBottom) {
-                this._selectTile(index + this.col - 1, selectedTiles);
-            }
-        }
-        if (validRight) {
-            this._selectTile(index + 1, selectedTiles);
-            if (validTop) {
-                this._selectTile(index - this.col + 1, selectedTiles);
-            }
-            if (validBottom) {
-                this._selectTile(index + this.col + 1, selectedTiles);
-            }
-        }
-        if (validTop) {
-            this._selectTile(index - this.col, selectedTiles);
-        }
-        if (validBottom) {
-            this._selectTile(index + this.col, selectedTiles);
-        }
+        this.doForEachAdjTile(index, i -> this._selectTile(i, selectedTiles));
     }
 
     private void uncoverAdj(int index, List<Tile> selectedTiles) {
@@ -165,44 +137,40 @@ public class Board {
             return;
         }
 
-        boolean validLeft = Tile.getColFromIndex(index, this.col) != 0;
-        boolean validRight = Tile.getColFromIndex(index, this.col) != this.col - 1;
-        boolean validTop = Tile.getRowFromIndex(index, this.col) != 0;
-        boolean validBottom = Tile.getRowFromIndex(index, this.col) != this.row - 1;
-
-        if (validLeft) {
-            if (this.board[index - 1].isUncoverable()) {
-                this._selectTile(index - 1, selectedTiles);
+        Consumer<Integer> selectIf = i -> {
+            if (board[i].isUncoverable()) {
+                this._selectTile(i, selectedTiles);
             }
-            if (validTop && this.board[index - this.col - 1].isUncoverable()) {
-                this._selectTile(index - this.col - 1, selectedTiles);
-            }
-            if (validBottom && this.board[index + this.col - 1].isUncoverable()) {
-                this._selectTile(index + this.col - 1, selectedTiles);
-            }
-        }
-        if (validRight) {
-            if (this.board[index + 1].isUncoverable()) {
-                this._selectTile(index + 1, selectedTiles);
-            }
-            if (validTop && this.board[index - this.col + 1].isUncoverable()) {
-                this._selectTile(index - this.col + 1, selectedTiles);
-            }
-            if (validBottom && this.board[index + this.col + 1].isUncoverable()) {
-                this._selectTile(index + this.col + 1, selectedTiles);
-            }
-        }
-        if (validTop && this.board[index - this.col].isUncoverable()) {
-            this._selectTile(index - this.col, selectedTiles);
-        }
-        if (validBottom && this.board[index + this.col].isUncoverable()) {
-            this._selectTile(index + this.col, selectedTiles);
-        }
+        };
+        this.doForEachAdjTile(index, selectIf);
     }
-    
+
     private void selectAndAdd(int index, List<Tile> selectedTiles) {
         this.board[index].select();
         selectedTiles.add(this.board[index]);
+    }
+
+    private void doForEachAdjTile(int index, Consumer<Integer> action) {
+        this.doForEachAdjTile(
+                Tile.getRowFromIndex(index, this.col),
+                Tile.getColFromIndex(index, this.col),
+                action
+        );
+    }
+
+    private void doForEachAdjTile(int row, int col, Consumer<Integer> action) {
+        for (int rAdd = -1; rAdd <= 1; rAdd++) {
+            for (int cAdd = -1; cAdd <=1; cAdd++) {
+                if (rAdd == 0 && cAdd == 0) {
+                    continue;
+                }
+                int newRow = row + rAdd;
+                int newCol = col + cAdd;
+                if (newRow >= 0 && newRow < this.row && newCol >= 0 && newCol < this.col) {
+                    action.accept(Tile.getIndexFromCoord(newRow, newCol, this.col));
+                }
+            }
+        }
     }
 
     private int countAdjIf(int index, Predicate<Integer> equals) {
@@ -215,23 +183,16 @@ public class Board {
 
     // Predicate<Integer> receives index as its parameter
     private int countAdjIf(int row, int col, Predicate<Integer> equals) {
-        int count = 0;
-        for (int rAdd = -1; rAdd <= 1; rAdd++) {
-            for (int cAdd = -1; cAdd <=1; cAdd++) {
-                if (rAdd == 0 && cAdd == 0) {
-                    continue;
-                }
-                int newRow = row + rAdd;
-                int newCol = col + cAdd;
-                if (newRow >= 0 && newRow < this.row && newCol >= 0 && newCol < this.col
-                        && equals.test(Tile.getIndexFromCoord(newRow, newCol, this.col))) {
-                    count++;
-                }
+        int[] result = new int[]{0};
+        Consumer<Integer> addIf = i -> {
+            if (equals.test(i)) {
+                result[0]++;
             }
-        }
-        return count;
+        };
+        this.doForEachAdjTile(row, col, addIf);
+        return result[0];
     }
-    
+
     protected List<Tile> flagTile(int index) {
         List<Tile> flaggedTiles = new ArrayList<>();
         try {
@@ -247,57 +208,29 @@ public class Board {
         return flaggedTiles;
     }
 
-    protected void flagAdjacent(int index, List<Tile> flaggedTiles) {
+    private void flagAdjacent(int index, List<Tile> flaggedTiles) {
         // If #_of_nonFlagged_adjacent_covered_cells + #_of_adjacent_flags == tile.number_value
         // Then flag all adjacent covered cells
         // isCovered() returns true if tile is covered (regardless of whether it is flagged or not)
         int numCoveredTiles = this.countAdjIf(index, i -> this.board[i].isCovered());
-        
+
         if (this.board[index].getTileValue().getCode() != numCoveredTiles) {
             return;
         }
 
-        Predicate<Integer> coveredAndNotFlagged = i -> this.board[i].isCovered() && !this.board[i].isFlagged();
-        boolean validLeft = Tile.getColFromIndex(index, this.col) != 0;
-        boolean validRight = Tile.getColFromIndex(index, this.col) != this.col - 1;
-        boolean validTop = Tile.getRowFromIndex(index, this.col) != 0;
-        boolean validBottom = Tile.getRowFromIndex(index, this.col) != this.row - 1;
-        
-        if (validLeft) {
-            if (coveredAndNotFlagged.test(index - 1)) {
-                this.flagAndAdd(index - 1, flaggedTiles);
+        Consumer<Integer> selectIf = i -> {
+            if (this.board[i].isCovered() && !this.board[i].isFlagged()) {
+                this.flagAndAdd(i, flaggedTiles);
             }
-            if (validTop && coveredAndNotFlagged.test(index - this.col - 1)) {
-                this.flagAndAdd(index - this.col - 1, flaggedTiles);
-            }
-            if (validBottom && coveredAndNotFlagged.test(index + this.col - 1)) {
-                this.flagAndAdd(index + this.col - 1, flaggedTiles);
-            }
-        }
-        if (validRight) {
-            if (coveredAndNotFlagged.test(index + 1)) {
-                this.flagAndAdd(index + 1, flaggedTiles);
-            }
-            if (validTop && coveredAndNotFlagged.test(index - this.col + 1)) {
-                this.flagAndAdd(index - this.col + 1, flaggedTiles);
-            }
-            if (validBottom && coveredAndNotFlagged.test(index + this.col + 1)) {
-                this.flagAndAdd(index + this.col + 1, flaggedTiles);
-            }
-        }
-        if (validTop && coveredAndNotFlagged.test(index - this.col)) {
-            this.flagAndAdd(index - this.col, flaggedTiles);
-        }
-        if (validBottom && coveredAndNotFlagged.test(index + this.col)) {
-            this.flagAndAdd(index + this.col, flaggedTiles);
-        }
+        };
+        this.doForEachAdjTile(index, selectIf);
     }
-    
+
     private void flagAndAdd(int index, List<Tile> flaggedTiles) {
         this.board[index].flag();
         flaggedTiles.add(this.board[index]);
     }
-    
+
     protected List<Integer> getMineIndices() {
         List<Integer> indices = new ArrayList<>();
         for (int i = 0; i < this.board.length; i++) {
