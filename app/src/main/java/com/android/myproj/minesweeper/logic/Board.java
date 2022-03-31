@@ -59,12 +59,18 @@ public class Board {
         int mineCount = 0;
         while (mineCount < this.mines) {
             int indexToPlace = random.nextInt(this.row * this.col);
-            if (indexToPlace != tileIndex && !this.board[indexToPlace].isMine()) {
+            if (indexToPlace != tileIndex
+                    && !this.isAdjacent(tileIndex, indexToPlace) && !this.board[indexToPlace].isMine()) {
                 this.board[indexToPlace].setTileValue(TileValue.MINE);
                 mineCount++;
             }
         }
         this.calcAdjacent();
+    }
+
+    // Checks if tiles at index1 and index2 are adjacent
+    private boolean isAdjacent(int index1, int index2) {
+        return this.countAdjEquals(index1, i -> i == index2) == 1;
     }
 
     private void calcAdjacent() {
