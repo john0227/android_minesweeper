@@ -10,12 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity
-            android:name=".activity.StatisticsActivity"
-            android:exported="false" />
-        <activity
             android:name=".activity.MinesweeperGameActivity"
             android:exported="false"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
