@@ -6,118 +6,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_overall_statistics" />
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        android:text="Time"
-        android:textColor="@color/white"
-        android:textSize="20dp"
-        android:textStyle="bold" />
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp">
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="5dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="3dp"
-                    app:srcCompat="@drawable/best_time" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="6"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:text="Best Time"
-                    android:textSize="15dp" />
-
-                <TextView
-                    android:id="@+id/textView30"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="3"
-                    android:gravity="right|center_vertical"
-                    android:textColor="#E0E0E0"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    tools:text="10000000" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="5dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="3dp"
-                    app:srcCompat="@drawable/time" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="6"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:text="Average Time"
-                    android:textSize="15dp" />
-
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="3"
-                    android:gravity="right|center_vertical"
-                    android:textColor="#E0E0E0"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    tools:text="10000000" />
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:text="Streak"
+        android:text="Games"
         android:textColor="@color/white"
         android:textSize="20dp"
         android:textStyle="bold" />
@@ -148,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/best_win_streak" />
+                    app:srcCompat="@drawable/games_started" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -161,7 +55,7 @@
                     android:textSize="15dp" />
 
                 <TextView
-                    android:id="@+id/textView20"
+                    android:id="@+id/textView7"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
@@ -186,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/win_streak" />
+                    app:srcCompat="@drawable/games_won" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -199,7 +93,7 @@
                     android:textSize="15dp" />
 
                 <TextView
-                    android:id="@+id/textView11"
+                    android:id="@+id/textView8"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
@@ -224,7 +118,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="3dp"
-                    app:srcCompat="@drawable/wins_no_hint" />
+                    app:srcCompat="@drawable/games_won" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -237,7 +131,7 @@
                     android:textSize="15dp" />
 
                 <TextView
-                    android:id="@+id/textView12"
+                    android:id="@+id/textView9"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
