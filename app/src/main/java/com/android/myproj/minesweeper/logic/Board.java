@@ -70,21 +70,17 @@ public class Board {
 
     // Checks if tiles at index1 and index2 are adjacent
     private boolean isAdjacent(int index1, int index2) {
-        return this.countAdjEquals(index1, i -> i == index2) == 1;
+        return this.countAdjIf(index1, i -> i == index2) == 1;
     }
 
     private void calcAdjacent() {
-        int index;
-        for (int r = 0; r < this.row; r++) {
-            for (int c = 0; c < this.col; c++) {
-                index = Tile.getIndexFromCoord(r, c, this.col);
-                if (this.board[index].isMine()) {
-                    continue;
-                }
-                this.board[index].setTileValue(TileValue.getTile(
-                        this.countAdjEquals(r, c, i -> this.board[i].getTileValue() == TileValue.MINE)
-                ));
+        for (int i = 0; i < this.board.length; i++) {
+            if (this.board[i].isMine()) {
+                continue;
             }
+            this.board[i].setTileValue(TileValue.getTile(
+                    this.countAdjIf(i, j -> this.board[j].getTileValue() == TileValue.MINE)
+            ));
         }
     }
 
@@ -160,11 +156,11 @@ public class Board {
 
     private void uncoverAdj(int index, List<Tile> selectedTiles) {
         // count if TileValue == FLAGGED and if TileValue == MINE
-
-        int adjFlags = countAdjEquals(
+        int adjFlags = countAdjIf(
                 index,
                 i -> this.board[i].isFlagged() && this.board[i].getTileValue() == TileValue.MINE
         );
+
         if (adjFlags != this.board[index].getTileValue().getCode()) {
             return;
         }
@@ -209,8 +205,8 @@ public class Board {
         selectedTiles.add(this.board[index]);
     }
 
-    private int countAdjEquals(int index, Predicate<Integer> equals) {
-        return this.countAdjEquals(
+    private int countAdjIf(int index, Predicate<Integer> equals) {
+        return this.countAdjIf(
                 Tile.getRowFromIndex(index, this.col),
                 Tile.getColFromIndex(index, this.col),
                 equals
@@ -218,48 +214,21 @@ public class Board {
     }
 
     // Predicate<Integer> receives index as its parameter
-    private int countAdjEquals(int row, int col, Predicate<Integer> equals) {
-        int index = Tile.getIndexFromCoord(row, col, this.col);
+    private int countAdjIf(int row, int col, Predicate<Integer> equals) {
         int count = 0;
-        
-        boolean validLeft = col != 0;
-        boolean validRight = col != this.col - 1;
-        boolean validTop = row != 0;
-        boolean validBottom = row != this.row - 1;
-
-        // Calculate three tiles on the left (top left, left, bottom left)
-        if (validLeft) {
-            if (equals.test(index - 1)) {
-                count++;
-            }
-            if (validTop && equals.test(index - this.col - 1)) {
-                count++;
-            }
-            if (validBottom && equals.test(index + this.col - 1)) {
-                count++;
+        for (int rAdd = -1; rAdd <= 1; rAdd++) {
+            for (int cAdd = -1; cAdd <=1; cAdd++) {
+                if (rAdd == 0 && cAdd == 0) {
+                    continue;
+                }
+                int newRow = row + rAdd;
+                int newCol = col + cAdd;
+                if (newRow >= 0 && newRow < this.row && newCol >= 0 && newCol < this.col
+                        && equals.test(Tile.getIndexFromCoord(newRow, newCol, this.col))) {
+                    count++;
+                }
             }
         }
-        // Calculate three tiles on the right (top right, right, bottom right)
-        if (validRight) {
-            if (equals.test(index + 1)) {
-                count++;
-            }
-            if (validTop && equals.test(index - this.col + 1)) {
-                count++;
-            }
-            if (validBottom && equals.test(index + this.col + 1)) {
-                count++;
-            }
-        }
-        // Calculate one tile directly above
-        if (validTop && equals.test(index - this.col)) {
-            count++;
-        }
-        // Calculate one tile directly below
-        if (validBottom && equals.test(index + this.col)) {
-            count++;
-        }
-        
         return count;
     }
     
@@ -282,7 +251,7 @@ public class Board {
         // If #_of_nonFlagged_adjacent_covered_cells + #_of_adjacent_flags == tile.number_value
         // Then flag all adjacent covered cells
         // isCovered() returns true if tile is covered (regardless of whether it is flagged or not)
-        int numCoveredTiles = this.countAdjEquals(index, i -> this.board[i].isCovered());
+        int numCoveredTiles = this.countAdjIf(index, i -> this.board[i].isCovered());
         
         if (this.board[index].getTileValue().getCode() != numCoveredTiles) {
             return;
