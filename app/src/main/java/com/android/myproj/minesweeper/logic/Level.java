@@ -3,8 +3,8 @@ package com.android.myproj.minesweeper.logic;
 public enum Level {
 
     EASY(10, 10, 10, 75, 1),
-    INTERMEDIATE(12, 14, 32, 50, 2),
-    EXPERT(14, 22, 60, 20, 3);
+    INTERMEDIATE(12, 14, 25, 50, 2),
+    EXPERT(14, 22, 55, 40, 3);
 
     private final int col;
     private final int row;
