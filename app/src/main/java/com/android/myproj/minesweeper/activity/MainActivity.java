@@ -20,6 +20,7 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -99,9 +100,11 @@ public class MainActivity extends AppCompatActivity {
             intermediateButton.setLayoutParams(lp);
 
             // Remove progress bar
-            ((FrameLayout) findViewById(R.id.frameLayout_progress_inside_circle)).removeAllViews();
-            ((FrameLayout) findViewById(R.id.frameLayout_progress_outside_arc)).removeAllViews();
-            ((FrameLayout) findViewById(R.id.frameLayout_progress_outside_circle)).removeAllViews();
+            this.removeAllViews(
+                    findViewById(R.id.frameLayout_progress_inside_circle),
+                    findViewById(R.id.frameLayout_progress_outside_arc),
+                    findViewById(R.id.frameLayout_progress_outside_circle)
+            );
             ((TextView) findViewById(R.id.tv_progress)).setText("");
             return;
         }
@@ -136,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout frameOutsideArc = findViewById(R.id.frameLayout_progress_outside_arc);
         FrameLayout frameOutsideCircle = findViewById(R.id.frameLayout_progress_outside_circle);
 
+        // Clear anything inside the FrameLayouts
+        this.removeAllViews(frameInside, frameOutsideArc, frameOutsideCircle);
+
         // Draw Circles and Arcs
         SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
         float right = myPref.getFloat(Key.PREFERENCES_WIDTH, 131);
@@ -154,6 +160,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Show progress as percentage
         ((TextView) findViewById(R.id.tv_progress)).setText("" + progress + "%");
+    }
+
+    private void removeAllViews(ViewGroup... viewGroups) {
+        for (ViewGroup viewGroup : viewGroups) {
+            viewGroup.removeAllViews();
+        }
     }
 
     public void onClick(View view) {
@@ -216,23 +228,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             run.run();
         }
-    }
-
-    private AlertDialog.Builder buildGameoverAlert() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-        builder.setTitle("You have an ongoing game. Are you sure you want to start a new game?");
-
-        builder.setPositiveButton("Continue", (dialogInterface, i) -> {});
-        builder.setNegativeButton("Go Back", (dialogInterface, i) -> {});
-
-        // Alert Dialog 이외의 공간을 터치 했을때 Alert 팝업이 안사라지도록 함
-        // 무조건 +ve, -ve, neutral 버튼을 눌러야 Alert 팝업이 사라짐
-        builder.setCancelable(false);
-        // If the above is set to false and none of the +ve, -ve, neutral buttons are initialized,
-        // The user will not be able to make the Alert Dialog disappear
-
-        return builder;
     }
 
     private final View.OnClickListener onSettingClick = view -> {
