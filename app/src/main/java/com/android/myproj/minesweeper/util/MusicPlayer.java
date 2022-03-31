@@ -1,21 +1,19 @@
 package com.android.myproj.minesweeper.util;
 
-import android.content.Context;
+import android.app.Activity;
 import android.media.MediaPlayer;
 
 public class MusicPlayer {
 
     private MediaPlayer mediaPlayer;
 
-    public void playMusic(Context context, int resid, boolean playMusic) {
+    public void playMusic(Activity activity, int resid, boolean playMusic) {
         if (!playMusic) {
             return;
         }
 
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.release();
-        }
-        mediaPlayer = MediaPlayer.create(context, resid);
+        this.destroyPlayer();
+        mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), resid);
         mediaPlayer.start();
     }
 

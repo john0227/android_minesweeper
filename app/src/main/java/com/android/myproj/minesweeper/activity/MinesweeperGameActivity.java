@@ -222,8 +222,14 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         builder.setTitle(message);
         builder.setMessage("Try again?");
 
-        builder.setPositiveButton("New Game", (dialogInterface, i) -> createNewGame());
-        builder.setNegativeButton("Main Menu", (dialogInterface, i) -> finish());
+        builder.setPositiveButton("New Game", (dialogInterface, i) -> {
+            cleanup();
+            createNewGame();
+        });
+        builder.setNegativeButton("Main Menu", (dialogInterface, i) -> {
+            cleanup();
+            finish();
+        });
 
         // Alert Dialog 이외의 공간을 터치 했을때 Alert 팝업이 안사라지도록 함
         // 무조건 +ve, -ve, neutral 버튼을 눌러야 Alert 팝업이 사라짐
@@ -304,7 +310,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Disallow restarting during animation
         isClickable = false;
 
-        musicPlayer.playMusic(getApplicationContext(), R.raw.explosion, playSound);
+        musicPlayer.playMusic(this, R.raw.explosion, playSound);
 
         // 1. Explode the selected MINE cell and reveal all other MINE cells
         List<Integer> indices = this.game.getMineIndices();
@@ -340,7 +346,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                         public void run() {
                             if (level == Level.EASY || i % 2 == 0) {
                                 MusicPlayer tempPlayer = new MusicPlayer();
-                                tempPlayer.playMusic(getApplicationContext(), R.raw.explosion, playSound);
+                                tempPlayer.playMusic(MinesweeperGameActivity.this, R.raw.explosion, playSound);
                                 playersToDestroy.add(tempPlayer);
                             }
                             i++;
@@ -414,6 +420,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 if (selMenu.equals("New Game")) {
                     createNewGame();
                 } else if (selMenu.equals("Main Menu")) {
+                    cleanup();
                     finish();
                 } else if (selMenu.equals("Sound")) {
                     menuItem.setChecked(!playSound);
@@ -469,7 +476,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         if (((RadioButton)findViewById(R.id.rbtn_flag)).isChecked()) {
             List<Tile> flaggedTiles = this.game.flagTile(index);
             if (flaggedTiles.size() > 0) {
-                musicPlayer.playMusic(getApplicationContext(), R.raw.click, playSound);
+                musicPlayer.playMusic(this, R.raw.click, playSound);
             }
             tv_mine_count.setText("" + this.game.getLeftoverMine());
             for (Tile ft : flaggedTiles) {
@@ -500,7 +507,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
 
         // Uncover selected tiles
-        musicPlayer.playMusic(getApplicationContext(), R.raw.click, playSound);
+        musicPlayer.playMusic(this, R.raw.click, playSound);
         for (Tile t : tiles) {
             setImage(this.imageButtons[game.getTileIndex(t)], game.getTileValue(t));
         }
