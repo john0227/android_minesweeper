@@ -76,13 +76,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             }
 
             init();
-            LogService.warn(this, "passed init()");
-
             setting();
-            LogService.warn(this, "passed setting()");
-
             activateGame();
-            LogService.warn(this, "passed activatedGame()");
         } catch (Exception e) {
             LogService.error(this, e.getMessage(), e);
         }
@@ -207,11 +202,11 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             this.savedState = JSONUtil.readJSONFile(this);
         }
         if (JSONUtil.existsSavedData(this)) {
-            LogService.warn(this, "Saved data");
+            LogService.info(this, "Saved data");
             this.restoreGame();
             JSONUtil.clearSavedData(this);
         } else {
-            LogService.warn(this, "No Saved data");
+            LogService.info(this, "No Saved data");
             this.game = new Game(level);
             this.stopwatch = new Stopwatch(findViewById(R.id.tv_time));
         }
@@ -221,6 +216,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MinesweeperGameActivity.this);
 
         builder.setTitle(message);
+        builder.setMessage("Try again?");
 
         builder.setPositiveButton("New Game", (dialogInterface, i) -> createNewGame());
         builder.setNegativeButton("Main Menu", (dialogInterface, i) -> finish());
@@ -242,7 +238,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private void saveGame() {
-        LogService.warn(this, "saveGame() called...saving data...");
+        LogService.info(this, "saveGame() called...saving data...");
         try {
             JSONObject savedGameState = this.game.save();
             savedGameState.put(JSONKey.KEY_LEVEL, level.getCode());
@@ -255,7 +251,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private void restoreGame() {
-        LogService.warn(this, "Restoring saved data");
+        LogService.info(this, "Restoring saved data");
         try {
             JSONObject savedState = JSONUtil.readJSONFile(this);
             // Restore game and display tiles accordingly
@@ -375,7 +371,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private void createNewGame() {
-        LogService.warn(MinesweeperGameActivity.this, "Clearing saved data...Creating new game...");
+        LogService.info(MinesweeperGameActivity.this, "Clearing saved data...Creating new game...");
 
         // Set isGameOver to true
         isGameOver = true;

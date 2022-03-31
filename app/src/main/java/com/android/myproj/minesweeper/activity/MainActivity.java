@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             setContentView(R.layout.activity_main);
 
-            LogService.warn(this, "====== MainActivity created ======");
+            LogService.info(this, "====== MainActivity created ======");
             init();
             setting();
         } catch (Exception e) {
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         // Retrieve saved JSONObject and check if there is data to restore
         JSONObject savedState = JSONUtil.readJSONFile(this);
         if (!JSONUtil.existsSavedData(this)) {
+            LogService.info(this, "====== No SavedData =====");
             this.existsSavedData = false;
 
             // Make RESUME button invisible
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        LogService.warn(this, "====== SavedData exists =====");
+        LogService.info(this, "====== SavedData exists =====");
         this.existsSavedData = true;
         Level level = Level.getLevelFromCode(savedState.getInt(JSONKey.KEY_LEVEL));
 
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             // =================================================================================
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-            builder.setTitle("You have an ongoing game. Are you sure you want to start a new game?");
+            builder.setMessage("You have an ongoing game. Are you sure you want to start a new game?");
 
             builder.setPositiveButton("Continue", (dialogInterface, i) -> run.run());
             builder.setNegativeButton("Go Back", (dialogInterface, i) -> {});
@@ -276,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private final ActivityResultCallback<ActivityResult> activityResultCallback = result -> {
-        LogService.warn(MainActivity.this, "Returned from game to Main Screen");
+        LogService.info(MainActivity.this, "Returned from game to Main Screen");
         try {
             setting();
         } catch (JSONException jse) {
