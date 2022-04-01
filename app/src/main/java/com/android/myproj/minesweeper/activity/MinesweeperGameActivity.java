@@ -43,6 +43,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     // Views
     private ImageButton[] imageButtons;
     private ImageButton ibtn_setting;
+    private ImageButton ibtn_hint;
     private TextView tv_mine_count;
 
     // Dependent Objects
@@ -146,6 +147,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private void init() {
         this.imageButtons = new ImageButton[level.getRow() * level.getCol()];
         this.ibtn_setting = findViewById(R.id.ibtn_setting);
+        this.ibtn_hint = findViewById(R.id.ibtn_hint);
         this.tv_mine_count = findViewById(R.id.tv_mine_count);
 
         this.musicPlayer = new MusicPlayer();
@@ -171,6 +173,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // Add Listener to Setting ImageButton
         this.ibtn_setting.setOnClickListener(onSettingClick);
+
+        // Add Listener to Hint ImageButton
+        this.ibtn_hint.setOnClickListener(onHintClick);
 
         // Add this.musicPlayer to list to destroy later
         this.playersToDestroy.add(this.musicPlayer);
@@ -449,6 +454,22 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         });
         // Showing the popup menu
         popupMenu.show();
+    };
+
+    private final View.OnClickListener onHintClick = view -> {
+        // If game has not yet started, start game
+        if (!MinesweeperGameActivity.this.hasStarted) {
+            MinesweeperGameActivity.this.hasStarted = true;
+            stopwatch.startTimer();
+            this.game.start(-1);
+        }
+
+        Tile tileToReveal = this.game.showHint();
+        if (tileToReveal == null) {
+            // there is no uncover-able Tile
+            return;
+        }
+        setImage(this.imageButtons[game.getTileIndex(tileToReveal)], game.getTileValue(tileToReveal));
     };
 
     private final View.OnClickListener onTileClick = view -> {

@@ -141,6 +141,10 @@
 
     <include
         android:id="@+id/radiogroup_sel_flag"
-        layout="@layout/game_base_layout" />
+        layout="@layout/radiogroup_sel_flag" />
+
+    <include
+        android:id="@+id/ibtn_hint"
+        layout="@layout/image_button_hint" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

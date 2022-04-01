@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -56,12 +57,15 @@ public class Board {
             }
         }
 
+        Predicate<Integer> canPlaceAtIndex = tileIndex == -1
+                ? i -> !this.board[i].isMine()
+                : i -> i != tileIndex && !this.isAdjacent(tileIndex, i) && !this.board[i].isMine();
+
         Random random = new Random();
         int mineCount = 0;
         while (mineCount < this.mines) {
-            int indexToPlace = random.nextInt(this.row * this.col);
-            if (indexToPlace != tileIndex
-                    && !this.isAdjacent(tileIndex, indexToPlace) && !this.board[indexToPlace].isMine()) {
+            int indexToPlace = random.nextInt(this.board.length);
+            if (canPlaceAtIndex.test(indexToPlace)) {
                 this.board[indexToPlace].setTileValue(TileValue.MINE);
                 mineCount++;
             }
@@ -243,6 +247,31 @@ public class Board {
 
     protected boolean hasUncoveredAll() {
         return coveredTiles == 0;
+    }
+
+    protected Tile showHint() {
+        // Check if it is possible to reveal a cell
+        int count = 0;
+        for (Tile tile : this.board) {
+            if (tile.isUncoverable() && tile.getTileValue().getCode() > 0) {
+                count++;
+            }
+        }
+        // If there is no uncover-able Tile, return null
+        if (count == 0) {
+            return null;
+        }
+
+        int randIndex;
+        while (true) {
+            Random random = new Random();
+            randIndex = random.nextInt(this.board.length);
+            if (this.board[randIndex].isUncoverable() && this.board[randIndex].getTileValue().getCode() > 0) {
+                this.coveredTiles--;
+                this.board[randIndex].select();
+                return this.board[randIndex];
+            }
+        }
     }
 
     protected JSONObject save() throws JSONException {

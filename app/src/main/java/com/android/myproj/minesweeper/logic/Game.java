@@ -29,10 +29,6 @@ public class Game {
         return this.board.getFlaggedTiles();
     }
 
-    public void setLeftoverMine(int leftoverMine) {
-        this.leftoverMine = leftoverMine;
-    }
-
     public void start(int tileIndex) {
         this.board.generateTiles(tileIndex);
     }
@@ -76,6 +72,10 @@ public class Game {
 
     public boolean hasWon() {
         return this.board.hasUncoveredAll();
+    }
+
+    public Tile showHint() {
+        return this.board.showHint();
     }
 
     public JSONObject save() throws JSONException {
