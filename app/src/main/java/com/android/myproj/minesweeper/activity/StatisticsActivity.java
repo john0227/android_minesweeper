@@ -6,7 +6,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.view.View;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.game.logic.Level;
@@ -21,6 +21,8 @@ public class StatisticsActivity extends FragmentActivity {
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
 
+    private int currentPos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,46 +36,21 @@ public class StatisticsActivity extends FragmentActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        viewPager.unregisterOnPageChangeCallback(updateHeight);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        viewPager.registerOnPageChangeCallback(updateHeight);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        viewPager.unregisterOnPageChangeCallback(updateHeight);
-    }
-
     private void setting() {
-        viewPager = findViewById(R.id.vp2_statistics);
-        pagerAdapter = new ScreenSlidePagerAdapter(this);
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.registerOnPageChangeCallback(updateHeight);
+        // Set ViewPager2 Object
+        this.viewPager = findViewById(R.id.vp2_statistics);
+        this.pagerAdapter = new ScreenSlidePagerAdapter(this);
+        this.viewPager.setAdapter(pagerAdapter);
+
+        // Store current position
+        this.currentPos = 0;
     }
 
-    private ViewPager2.OnPageChangeCallback updateHeight = new ViewPager2.OnPageChangeCallback() {
-        @Override
-        public void onPageSelected(int position) {
-            super.onPageSelected(position);
+    public void onResetClick(View view) {
+        int index = viewPager.getCurrentItem();
 
-            int item = viewPager.getCurrentItem();
-            LogService.info(StatisticsActivity.this, "Showing " + (item + 1) + "th item");
-            LinearLayout view = switch (item) {
-                                    case 0 -> view = findViewById(R.id.linearL_overall_statistics);
-                                    default -> view = findViewById(R.id.linearL_statistics);
-                                };
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(view.getLayoutParams());
-            viewPager.setLayoutParams(layoutParams);
-        }
-    };
+        LogService.info(StatisticsActivity.this, "Clicked button in " + (index + 1) + "th page");
+    }
 
     private class ScreenSlidePagerAdapter extends FragmentStateAdapter {
         public ScreenSlidePagerAdapter(FragmentActivity fragmentActivity) {

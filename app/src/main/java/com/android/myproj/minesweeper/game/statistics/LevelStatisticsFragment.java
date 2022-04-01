@@ -12,8 +12,10 @@ import com.android.myproj.minesweeper.game.logic.Level;
 
 public class LevelStatisticsFragment extends Fragment {
 
-    public LevelStatisticsFragment(Level level) {
+    private final Level level;
 
+    public LevelStatisticsFragment(Level level) {
+        this.level = level;
     }
 
     @Override
@@ -21,7 +23,7 @@ public class LevelStatisticsFragment extends Fragment {
 
         // Change statistics value
 
-        return (ViewGroup) inflater.inflate(R.layout.layout_statistics, container, false);
+        return inflater.inflate(R.layout.layout_statistics, container, false);
     }
 
 }

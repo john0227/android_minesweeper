@@ -185,8 +185,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 // Create Tiles as ImageButton
                 ImageButton tile = new ImageButton(this);
                 tile.setTag(tileNum);
-                int id = View.generateViewId();
-                tile.setId(id);
+                tile.setId(View.generateViewId());
                 tile.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.covered, null));
                 tile.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 tile.setPadding(0, 0, 0, 0);
