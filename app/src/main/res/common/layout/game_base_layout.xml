@@ -1,0 +1,27 @@
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rg_sel_flag"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="30dp"
+    android:layout_marginBottom="25dp"
+    android:orientation="horizontal"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <RadioButton
+        android:id="@+id/rbtn_sel"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/radiobutton_toggle_click"
+        android:button="@null"
+        android:checked="true" />
+
+    <RadioButton
+        android:id="@+id/rbtn_flag"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/radiobutton_toggle_flag"
+        android:button="@null" />
+</RadioGroup>

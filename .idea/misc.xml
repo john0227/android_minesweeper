@@ -4,7 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/App/Dkit/SDK/platforms/android-32/data/res/drawable/btn_default.xml" value="0.209" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/button_reset_statistics.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/image_button_setting.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/imagebutton_setting.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/layout_overall_statistics.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/layout_statistics.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/layout_statistics_common.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/radiogroup_touch_flag.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/viewpager2_statistics.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/menu/main_menu_setting.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/menu/menu_setting.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/drawable/flag_radiobutton_toggle.xml" value="0.3255" />
@@ -21,7 +28,8 @@
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_expert_level.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_intermediate_level.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_main.xml" value="0.33" />
-        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_statistics.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_statistics.xml" value="0.33" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/example_activity.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/menu/main_menu_setting.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/menu/menu_setting.xml" value="0.38697916666666665" />
       </map>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -19,33 +18,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include layout="@layout/image_button_setting" />
-
-    <RadioGroup
-        android:id="@+id/rg_sel_flag"
-        android:layout_width="90dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <RadioButton
-            android:id="@+id/rbtn_sel"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/radiobutton_toggle_click"
-            android:button="@null"
-            android:checked="true" />
-
-        <RadioButton
-            android:id="@+id/rbtn_flag"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/radiobutton_toggle_flag"
-            android:button="@null" />
-    </RadioGroup>
 
     <ImageView
         android:id="@+id/iv_mine_count"
@@ -90,92 +62,85 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/rg_sel_flag"
+        app:layout_constraintBottom_toTopOf="@+id/radiogroup_sel_flag"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_mine_count"
-        app:layout_constraintVertical_bias="0.35">
+        app:layout_constraintTop_toBottomOf="@+id/iv_mine_count">
 
         <LinearLayout
             android:id="@+id/linearLayout0"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout3"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout4"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout6"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout7"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout8"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout9"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="#595757"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="horizontal"></LinearLayout>
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/radiogroup_sel_flag"
+        layout="@layout/game_base_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
