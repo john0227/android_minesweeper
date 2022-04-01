@@ -12,12 +12,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.logic.Game;
@@ -44,7 +46,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private ImageButton[] imageButtons;
     private ImageButton ibtn_setting;
     private ImageButton ibtn_hint;
+    private RadioButton rbtn_flag;
     private TextView tv_mine_count;
+    private ToggleButton tbtn_sel_flag;
 
     // Dependent Objects
     private MusicPlayer musicPlayer;
@@ -57,6 +61,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
     // Java-Provided Objects/Variables
     private List<MusicPlayer> playersToDestroy;
+    private boolean isFlag;
     private boolean hasStarted;
     private boolean isGameOver;
     private boolean isClickable;
@@ -148,7 +153,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.imageButtons = new ImageButton[level.getRow() * level.getCol()];
         this.ibtn_setting = findViewById(R.id.ibtn_setting);
         this.ibtn_hint = findViewById(R.id.ibtn_hint);
+        this.rbtn_flag = findViewById(R.id.rbtn_flag);
         this.tv_mine_count = findViewById(R.id.tv_mine_count);
+        this.tbtn_sel_flag = findViewById(R.id.tbtn_sel_flag);
 
         this.musicPlayer = new MusicPlayer();
 
@@ -156,6 +163,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.stopwatch = new Stopwatch(findViewById(R.id.tv_time));
 
         this.playersToDestroy = new ArrayList<>();
+        this.isFlag = false;
         this.hasStarted = false;
         this.isGameOver = false;
         this.isClickable = true;
@@ -176,6 +184,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // Add Listener to Hint ImageButton
         this.ibtn_hint.setOnClickListener(onHintClick);
+
+        // Add Listener to Flag RadioButon
+        // this.rbtn_flag.setOnCheckedChangeListener(onRadioFlagChange);
+
+        // Add Listener to SelFlag ToggleButton
+        this.tbtn_sel_flag.setOnCheckedChangeListener(onToggleFlagChange);
 
         // Add this.musicPlayer to list to destroy later
         this.playersToDestroy.add(this.musicPlayer);
@@ -403,6 +417,19 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         MinesweeperGameActivity.this.recreate();
     }
 
+    private final CompoundButton.OnCheckedChangeListener onRadioFlagChange = (button, isChecked) -> {
+        isFlag = isChecked;
+    };
+
+    private final CompoundButton.OnCheckedChangeListener onToggleFlagChange = (button, isChecked) -> {
+        isFlag = isChecked;
+        if (isChecked) {
+            button.setBackgroundResource(R.drawable.flagged);
+        } else {
+            button.setBackgroundResource(R.drawable.mouse_pointer);
+        }
+    };
+
     private final View.OnClickListener onSettingClick = view -> {
         if (!isClickable) {
             return;
@@ -494,7 +521,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
 
         // If FLAG RadioButton is turned on, flag the selected cell (if possible) and exit
-        if (((RadioButton)findViewById(R.id.rbtn_flag)).isChecked()) {
+        if (isFlag) {
             List<Tile> flaggedTiles = this.game.flagTile(index);
             if (flaggedTiles.size() > 0) {
                 musicPlayer.playMusic(this, R.raw.click, playSound);

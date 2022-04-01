@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/radiogroup_sel_flag"
+        app:layout_constraintBottom_toTopOf="@+id/ibtn_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_mine_count">
@@ -139,9 +139,8 @@
 
     </LinearLayout>
 
-    <include
-        android:id="@+id/radiogroup_sel_flag"
-        layout="@layout/radiogroup_sel_flag" />
+    <include layout="@layout/radiogroup_sel_flag" />
+    <include layout="@layout/toggle_button_sel_flag" />
 
     <include
         android:id="@+id/ibtn_hint"
