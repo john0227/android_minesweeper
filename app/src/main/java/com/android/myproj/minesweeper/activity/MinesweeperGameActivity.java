@@ -1,11 +1,15 @@
 package com.android.myproj.minesweeper.activity;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -22,15 +26,17 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.android.myproj.minesweeper.R;
+import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.logic.Game;
 import com.android.myproj.minesweeper.logic.Level;
 import com.android.myproj.minesweeper.logic.Tile;
 import com.android.myproj.minesweeper.logic.TileValue;
-import com.android.myproj.minesweeper.util.JSONKey;
+import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.util.JSONUtil;
-import com.android.myproj.minesweeper.util.Key;
+import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MusicPlayer;
+import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.Stopwatch;
 
 import org.json.JSONException;
@@ -51,6 +57,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private ToggleButton tbtn_sel_flag;
 
     // Dependent Objects
+    private ActivityResultLauncher<Intent> resultLauncher;
     private MusicPlayer musicPlayer;
     private JSONObject savedState;
 
@@ -169,8 +176,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.isClickable = true;
 
         // Retrieve sound setting from previously saved SharedPreferences (true by default)
-        SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
-        this.playSound = myPref.getBoolean(Key.PREFERENCES_SOUND, true);
+        this.playSound = MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_SOUND, true);
+
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                activityResultCallback
+        );
     }
 
     private void setting() {
@@ -185,11 +196,23 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Add Listener to Hint ImageButton
         this.ibtn_hint.setOnClickListener(onHintClick);
 
-        // Add Listener to Flag RadioButon
-        // this.rbtn_flag.setOnCheckedChangeListener(onRadioFlagChange);
-
-        // Add Listener to SelFlag ToggleButton
-        this.tbtn_sel_flag.setOnCheckedChangeListener(onToggleFlagChange);
+        ConstraintLayout parent = findViewById(R.id.layout_parent);
+        // Retrieve flag setting (toggle by default)
+        if(MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_FLAG_TOGGLE, true)) {
+            // Add Listener to SelFlag ToggleButton
+            this.tbtn_sel_flag.setOnCheckedChangeListener(onToggleFlagChange);
+            // Remove RadioGroup from View
+            parent.removeView(findViewById(R.id.rg_sel_flag));
+            this.rbtn_flag = null;
+            LogService.info(this, "Removed radiobutton");
+        } else {
+            // Add Listener to Flag RadioButton
+             this.rbtn_flag.setOnCheckedChangeListener(onRadioFlagChange);
+            // Remove tbtn_sel_flag from View
+            parent.removeView(this.tbtn_sel_flag);
+            this.tbtn_sel_flag = null;
+            LogService.info(this, "Removed togglebutton");
+        }
 
         // Add this.musicPlayer to list to destroy later
         this.playersToDestroy.add(this.musicPlayer);
@@ -243,7 +266,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         builder.setPositiveButton("New Game", (dialogInterface, i) -> {
             cleanup();
-            createNewGame();
+            createNewGame(true);
         });
         builder.setNegativeButton("Main Menu", (dialogInterface, i) -> {
             cleanup();
@@ -260,10 +283,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private void updateSoundSetting() {
-        SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
-        SharedPreferences.Editor myPrefEditor = myPref.edit();
-        myPrefEditor.putBoolean(Key.PREFERENCES_SOUND, this.playSound);
-        myPrefEditor.apply();
+        MySharedPreferencesUtil.putBoolean(this, Key.PREFERENCES_SOUND, this.playSound);
     }
 
     private void saveGame() {
@@ -399,20 +419,22 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
-    private void createNewGame() {
-        LogService.info(MinesweeperGameActivity.this, "Clearing saved data...Creating new game...");
-
-        // Set isGameOver to true
-        isGameOver = true;
-
-        // Garbage collection
-        cleanup();
-        try {
-            // Delete any saved data
-            JSONUtil.clearSavedData(MinesweeperGameActivity.this);
-        } catch (IOException ioe) {
-            LogService.error(MinesweeperGameActivity.this, ioe.getMessage(), ioe);
+    private void createNewGame(boolean restart) {
+        if (restart) {
+            LogService.info(MinesweeperGameActivity.this, "Clearing saved data...");
+            // Set isGameOver to true
+            isGameOver = true;
+            // Garbage collection
+            cleanup();
+            try {
+                // Delete any saved data
+                JSONUtil.clearSavedData(MinesweeperGameActivity.this);
+            } catch (IOException ioe) {
+                LogService.error(MinesweeperGameActivity.this, ioe.getMessage(), ioe);
+            }
         }
+
+        LogService.info(MinesweeperGameActivity.this, "Creating new game...");
         // Recreate Activity
         MinesweeperGameActivity.this.recreate();
     }
@@ -430,6 +452,40 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     };
 
+    private PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
+        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        menuItem.setActionView(new View(getApplicationContext()));
+
+        String selMenu = menuItem.getTitle().toString();
+        switch (selMenu) {
+            case "Setting" -> resultLauncher.launch(new Intent(this, SettingActivity.class));
+            case "New Game" -> createNewGame(true);
+            case "Main Menu" -> {
+                cleanup();
+                finish();
+            }
+            case "Sound" -> {
+                menuItem.setChecked(!playSound);
+                playSound = !playSound;
+                updateSoundSetting();
+                menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                return false;
+            }
+            default -> LogService.error(this, "Selected menu from SETTING popup menu is invalid: " + selMenu);
+        }
+
+        return true;
+    };
+
     private final View.OnClickListener onSettingClick = view -> {
         if (!isClickable) {
             return;
@@ -440,45 +496,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // Inflating popup menu from popup_menu.xml file
         popupMenu.getMenuInflater().inflate(R.menu.menu_setting, popupMenu.getMenu());
-        popupMenu.getMenu().getItem(2).setChecked(playSound);
+        popupMenu.getMenu().getItem(3).setChecked(playSound);
+        popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
 
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-                menuItem.setActionView(new View(getApplicationContext()));
-
-                String selMenu = menuItem.getTitle().toString();
-                if (selMenu.equals("New Game")) {
-                    createNewGame();
-                } else if (selMenu.equals("Main Menu")) {
-                    cleanup();
-                    finish();
-                } else if (selMenu.equals("Sound")) {
-                    menuItem.setChecked(!playSound);
-                    playSound = !playSound;
-                    updateSoundSetting();
-                    menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-                        @Override
-                        public boolean onMenuItemActionExpand(MenuItem item) {
-                            return false;
-                        }
-                        @Override
-                        public boolean onMenuItemActionCollapse(MenuItem item) {
-                            return false;
-                        }
-                    });
-                    return false;
-                } else {
-                    LogService.error(
-                            MinesweeperGameActivity.this,
-                            "Selected menu from SETTING popup menu is invalid: " + selMenu
-                    );
-                }
-
-                return true;
-            }
-        });
         // Showing the popup menu
         popupMenu.show();
     };
@@ -566,6 +586,19 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
             tv_mine_count.setText("YOU WON :)");
             buildGameoverAlert("YOU WON :)").show();
+        }
+    };
+
+    private final ActivityResultCallback<ActivityResult> activityResultCallback = result -> {
+        LogService.info(MinesweeperGameActivity.this, "Returned from setting to game");
+        switch (result.getResultCode()) {
+            case ResCode.SETTING_ALL_CHANGED, ResCode.SETTING_FLAG_CHANGED -> createNewGame(false);
+            case ResCode.SETTING_SOUND_CHANGED -> playSound = MySharedPreferencesUtil.getBoolean(
+                        MinesweeperGameActivity.this,
+                        Key.PREFERENCES_SOUND,
+                        true
+                );
+            default -> {}
         }
     };
 

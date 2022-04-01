@@ -3,14 +3,13 @@ package com.android.myproj.minesweeper.logic;
 import androidx.core.util.Consumer;
 import androidx.core.util.Predicate;
 
-import com.android.myproj.minesweeper.util.JSONKey;
+import com.android.myproj.minesweeper.config.JSONKey;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 

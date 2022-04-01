@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,11 +27,13 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.android.myproj.minesweeper.R;
+import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.logic.Level;
-import com.android.myproj.minesweeper.util.JSONKey;
+import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.util.JSONUtil;
-import com.android.myproj.minesweeper.util.Key;
+import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
+import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +42,8 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityResultLauncher<Intent> resultLauncher;
+    private ActivityResultLauncher<Intent> resultLauncherGame;
+    private ActivityResultLauncher<Intent> resultLauncherSetting;
     private ImageButton ibtn_setting;
 
     private boolean playSound;
@@ -66,14 +68,17 @@ public class MainActivity extends AppCompatActivity {
         this.ibtn_setting = findViewById(R.id.ibtn_setting);
 
         // Set Callback Function
-        resultLauncher = registerForActivityResult(
+        resultLauncherGame = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                activityResultCallback
+                gameResultCallback
+        );
+        resultLauncherSetting = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                settingResultCallback
         );
 
         // Retrieve sound setting from previously saved SharedPreferences (true by default)
-        SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
-        this.playSound = myPref.getBoolean(Key.PREFERENCES_SOUND, true);
+        this.playSound = MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_SOUND, true);
     }
 
     private void setting() throws JSONException {
@@ -143,9 +148,8 @@ public class MainActivity extends AppCompatActivity {
         this.removeAllViews(frameInside, frameOutsideArc, frameOutsideCircle);
 
         // Draw Circles and Arcs
-        SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
-        float right = myPref.getFloat(Key.PREFERENCES_WIDTH, 131);
-        float bottom = myPref.getFloat(Key.PREFERENCES_HEIGHT, 131);
+        float right = MySharedPreferencesUtil.getFloat(this, Key.PREFERENCES_WIDTH, 131);
+        float bottom = MySharedPreferencesUtil.getFloat(this, Key.PREFERENCES_HEIGHT, 131);
         MyArc insideCircle = new MyArc(this, Color.parseColor("#CACFD2"), 360,
                 new RectF(20, 20, right - 20, bottom - 20));
         MyArc outsideArc = new MyArc(this, Color.parseColor("#CA3CF0"), 360 * progress / 100F,
@@ -168,17 +172,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClick(View view) {
+    public void onButtonClick(View view) {
         // Save width and height to SharedPreferences
-        SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
-        SharedPreferences.Editor myPrefEditor = myPref.edit();
-        if (myPref.contains(Key.PREFERENCES_WIDTH)) {
-            myPrefEditor.putFloat(Key.PREFERENCES_WIDTH, findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredWidth());
+        if (MySharedPreferencesUtil.contains(this, Key.PREFERENCES_WIDTH)) {
+            MySharedPreferencesUtil.putFloat(this, Key.PREFERENCES_WIDTH,
+                    findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredWidth());
         }
-        if (myPref.contains(Key.PREFERENCES_HEIGHT)) {
-            myPrefEditor.putFloat(Key.PREFERENCES_HEIGHT, findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredHeight());
+        if (MySharedPreferencesUtil.contains(this, Key.PREFERENCES_HEIGHT)) {
+            MySharedPreferencesUtil.putFloat(this, Key.PREFERENCES_HEIGHT,
+                    findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredHeight());
         }
-        myPrefEditor.apply();
 
         Intent intent = new Intent(this, MinesweeperGameActivity.class);
 
@@ -202,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Pass Level code
             intent.putExtra(Key.LEVEL_KEY, code);
-            resultLauncher.launch(intent);
+            resultLauncherGame.launch(intent);
         };
 
         // If there is saved data, but player did not choose resume, alert the player
@@ -230,20 +233,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private final View.OnClickListener onSettingClick = view -> {
-         // Initializing the popup menu and giving the reference as current context
-        PopupMenu popupMenu = new PopupMenu(MainActivity.this, ibtn_setting);
+    private PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
+        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        menuItem.setActionView(new View(getApplicationContext()));
 
-        // Inflating popup menu from popup_menu.xml file
-        popupMenu.getMenuInflater().inflate(R.menu.main_menu_setting, popupMenu.getMenu());
-        popupMenu.getMenu().getItem(0).setChecked(playSound);
-
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-                menuItem.setActionView(new View(getApplicationContext()));
-
+        String selMenu = menuItem.getTitle().toString();
+        switch (selMenu) {
+            case "Setting" -> resultLauncherSetting.launch(new Intent(MainActivity.this, SettingActivity.class));
+            case "Sound" -> {
                 menuItem.setChecked(!playSound);
                 playSound = !playSound;
                 updateSoundSetting();
@@ -259,24 +256,48 @@ public class MainActivity extends AppCompatActivity {
                 });
                 return false;
             }
-        });
+            default -> LogService.error(this, "Selected menu from SETTING popup menu is invalid: " + selMenu);
+        }
+
+        return true;
+    };
+
+    private final View.OnClickListener onSettingClick = view -> {
+         // Initializing the popup menu and giving the reference as current context
+        PopupMenu popupMenu = new PopupMenu(MainActivity.this, ibtn_setting);
+
+        // Inflating popup menu from popup_menu.xml file
+        popupMenu.getMenuInflater().inflate(R.menu.main_menu_setting, popupMenu.getMenu());
+        popupMenu.getMenu().getItem(1).setChecked(playSound);
+        popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
+
         // Showing the popup menu
         popupMenu.show();
     };
 
     private void updateSoundSetting() {
-        SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
-        SharedPreferences.Editor myPrefEditor = myPref.edit();
-        myPrefEditor.putBoolean(Key.PREFERENCES_SOUND, this.playSound);
-        myPrefEditor.apply();
+        MySharedPreferencesUtil.putBoolean(this, Key.PREFERENCES_SOUND, this.playSound);
     }
 
-    private final ActivityResultCallback<ActivityResult> activityResultCallback = result -> {
+    private final ActivityResultCallback<ActivityResult> gameResultCallback = result -> {
         LogService.info(MainActivity.this, "Returned from game to Main Screen");
         try {
             setting();
         } catch (JSONException jse) {
             LogService.error(MainActivity.this, jse.getMessage(), jse);
+        }
+    };
+
+    private final ActivityResultCallback<ActivityResult> settingResultCallback = result -> {
+        LogService.info(MainActivity.this, "Returned from setting to Main Screen");
+        switch (result.getResultCode()) {
+            case ResCode.SETTING_ALL_CHANGED, ResCode.SETTING_SOUND_CHANGED ->
+                    playSound = MySharedPreferencesUtil.getBoolean(
+                        MainActivity.this,
+                        Key.PREFERENCES_SOUND,
+                        true
+                    );
+            default -> {}
         }
     };
 

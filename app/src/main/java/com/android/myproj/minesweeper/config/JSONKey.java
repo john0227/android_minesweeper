@@ -1,4 +1,4 @@
-package com.android.myproj.minesweeper.util;
+package com.android.myproj.minesweeper.config;
 
 public class JSONKey {
 

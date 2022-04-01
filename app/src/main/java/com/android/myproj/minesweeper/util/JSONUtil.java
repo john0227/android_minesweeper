@@ -1,9 +1,11 @@
 package com.android.myproj.minesweeper.util;
 
-import static com.android.myproj.minesweeper.util.JSONKey.FILE_NAME;
+import static com.android.myproj.minesweeper.config.JSONKey.FILE_NAME;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+
+import com.android.myproj.minesweeper.config.JSONKey;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;

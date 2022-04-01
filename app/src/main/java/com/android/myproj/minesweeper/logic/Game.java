@@ -1,6 +1,6 @@
 package com.android.myproj.minesweeper.logic;
 
-import com.android.myproj.minesweeper.util.JSONKey;
+import com.android.myproj.minesweeper.config.JSONKey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
