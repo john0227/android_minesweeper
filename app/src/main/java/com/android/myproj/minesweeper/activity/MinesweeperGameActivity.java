@@ -27,16 +27,17 @@ import android.widget.ToggleButton;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.ResCode;
-import com.android.myproj.minesweeper.logic.Game;
-import com.android.myproj.minesweeper.logic.Level;
-import com.android.myproj.minesweeper.logic.Tile;
-import com.android.myproj.minesweeper.logic.TileValue;
 import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.game.logic.Game;
+import com.android.myproj.minesweeper.game.logic.Level;
+import com.android.myproj.minesweeper.game.logic.Tile;
+import com.android.myproj.minesweeper.game.logic.TileValue;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MusicPlayer;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
+import com.android.myproj.minesweeper.util.StatUtil;
 import com.android.myproj.minesweeper.util.Stopwatch;
 
 import org.json.JSONException;
@@ -73,6 +74,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private boolean isGameOver;
     private boolean isClickable;
     private boolean playSound;
+    private boolean noHint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +176,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.hasStarted = false;
         this.isGameOver = false;
         this.isClickable = true;
+        this.noHint = true;
 
         // Retrieve sound setting from previously saved SharedPreferences (true by default)
         this.playSound = MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_SOUND, true);
@@ -227,8 +230,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 // Create Tiles as ImageButton
                 ImageButton tile = new ImageButton(this);
                 tile.setTag(tileNum);
-                int id = View.generateViewId();
-                tile.setId(id);
+                tile.setId(View.generateViewId());
                 tile.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.covered, null));
                 tile.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 tile.setPadding(0, 0, 0, 0);
@@ -247,7 +249,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         if (this.savedState == null) {
             this.savedState = JSONUtil.readJSONFile(this);
         }
-        if (JSONUtil.existsSavedData(this)) {
+        if (JSONUtil.existsSavedGame(this)) {
             LogService.info(this, "Saved data");
             this.restoreGame();
             JSONUtil.clearSavedData(this);
@@ -433,6 +435,37 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 LogService.error(MinesweeperGameActivity.this, ioe.getMessage(), ioe);
             }
         }
+    }
+    
+    private void gameOverAction(boolean hasWon, int indexLastSelected) {
+        if (hasWon) {
+            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
+            stopwatch.pauseTimer();
+            tv_mine_count.setText("YOU WON :)");
+//            StatUtil.updateStat(this, this.level, this.stopwatch.getTotalTimeInSeconds());
+            buildGameoverAlert("YOU WON :)").show();
+        } else {
+            stopwatch.destroyTimer();
+            // Set text
+            tv_mine_count.setText("GAME OVER :(");
+            animateExplosion(indexLastSelected);
+        }
+    }
+
+    private void createNewGame() {
+        LogService.info(MinesweeperGameActivity.this, "Clearing saved data...Creating new game...");
+
+        // Set isGameOver to true
+        isGameOver = true;
+
+        // Garbage collection
+        cleanup();
+        try {
+            // Delete any saved data
+            JSONUtil.clearSavedData(MinesweeperGameActivity.this);
+        } catch (IOException ioe) {
+            LogService.error(MinesweeperGameActivity.this, ioe.getMessage(), ioe);
+        }
 
         LogService.info(MinesweeperGameActivity.this, "Creating new game...");
         // Recreate Activity
@@ -566,11 +599,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // If selected tile is a MINE cell
         if (game.getTileValue(tiles.get(0)) == TileValue.MINE) {
             this.isGameOver = true;  // finish()
-            stopwatch.destroyTimer();
-
-            // Set text
-            tv_mine_count.setText("GAME OVER :(");
-            animateExplosion(index);
+            // TODO
+//            stopwatch.destroyTimer();
+//
+//            // Set text
+//            tv_mine_count.setText("GAME OVER :(");
+//            animateExplosion(index);
             return;
         }
 
@@ -583,9 +617,10 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Check if all non-mine cells are uncovered
         if (game.hasWon()) {
             this.isGameOver = true;
-            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
-            tv_mine_count.setText("YOU WON :)");
-            buildGameoverAlert("YOU WON :)").show();
+            // TODO
+//            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
+//            tv_mine_count.setText("YOU WON :)");
+//            buildGameoverAlert("YOU WON :)").show();
         }
     };
 

@@ -1,4 +1,4 @@
-package com.android.myproj.minesweeper.logic;
+package com.android.myproj.minesweeper.game.logic;
 
 import androidx.core.util.Consumer;
 import androidx.core.util.Predicate;
@@ -286,7 +286,7 @@ public class Board {
             tileValueArray[i] = tile.getTileValue().getCode();
         }
 
-        savedState.put(JSONKey.KEY_EXISTS_SAVED_DATA, true);
+        savedState.put(JSONKey.KEY_EXISTS_SAVED_GAME, true);
         savedState.put(JSONKey.KEY_COVERED_TILES, this.coveredTiles);
         savedState.put(JSONKey.KEY_ARRAY_IS_COVERED, new JSONArray(isCoveredArray));
         savedState.put(JSONKey.KEY_ARRAY_IS_FLAGGED, new JSONArray(isFlaggedArray));

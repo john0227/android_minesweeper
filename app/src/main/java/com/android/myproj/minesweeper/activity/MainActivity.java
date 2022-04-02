@@ -28,8 +28,8 @@ import android.widget.TextView;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.ResCode;
-import com.android.myproj.minesweeper.logic.Level;
 import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
@@ -82,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setting() throws JSONException {
+        // Create saved data for statistics if there are none
+        try {
+            JSONUtil.createDefaultStatIfNone(this);
+        } catch (JSONException | IOException e) {
+            LogService.error(this, "Was unable to create default saved data for statistics", e);
+        }
+
         // Bind PopupMenu to ImageButton
         this.ibtn_setting.setOnClickListener(onSettingClick);
 
@@ -91,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve saved JSONObject and check if there is data to restore
         JSONObject savedState = JSONUtil.readJSONFile(this);
-        if (!JSONUtil.existsSavedData(this)) {
+        if (!JSONUtil.existsSavedGame(this)) {
             LogService.info(this, "====== No SavedData =====");
             this.existsSavedData = false;
 
@@ -194,7 +201,8 @@ public class MainActivity extends AppCompatActivity {
             default -> throw new RuntimeException();
         }
 
-        Runnable run = () -> {
+        Runnable launchGame = () -> {
+            // TODO : Remove this if statement
             if (code != Key.RETRIEVE_LEVEL_CODE) {
                 try {
                     JSONUtil.clearSavedData(this);
@@ -202,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
                     LogService.error(MainActivity.this, ioe.getMessage(), ioe);
                 }
             }
-
             // Pass Level code
             intent.putExtra(Key.LEVEL_KEY, code);
             resultLauncherGame.launch(intent);
@@ -210,27 +217,31 @@ public class MainActivity extends AppCompatActivity {
 
         // If there is saved data, but player did not choose resume, alert the player
         if (existsSavedData && code != Key.RETRIEVE_LEVEL_CODE) {
-            // =================================================================================
-            // =============== Building AlertDialog ============================================
-            // =================================================================================
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-            builder.setMessage("You have an ongoing game. Are you sure you want to start a new game?");
-
-            builder.setPositiveButton("Continue", (dialogInterface, i) -> run.run());
-            builder.setNegativeButton("Go Back", (dialogInterface, i) -> {});
-
-            // Alert Dialog 이외의 공간을 터치 했을때 Alert 팝업이 안사라지도록 함
-            // 무조건 +ve, -ve, neutral 버튼을 눌러야 Alert 팝업이 사라짐
-            builder.setCancelable(false);
-            // =================================================================================
-            // =================================================================================
-            // =================================================================================
-
-            builder.show();
+            this.showAlertDialog(launchGame);
         } else {
-            run.run();
+            launchGame.run();
         }
+    }
+
+    private void showAlertDialog(Runnable toRun) {
+        // =================================================================================
+        // =============== Building AlertDialog ============================================
+        // =================================================================================
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setMessage("You have an ongoing game. Are you sure you want to start a new game?");
+
+        builder.setPositiveButton("Continue", (dialogInterface, i) -> toRun.run());
+        builder.setNegativeButton("Go Back", (dialogInterface, i) -> {});
+
+        // Alert Dialog 이외의 공간을 터치 했을때 Alert 팝업이 안사라지도록 함
+        // 무조건 +ve, -ve, neutral 버튼을 눌러야 Alert 팝업이 사라짐
+        builder.setCancelable(false);
+        // =================================================================================
+        // =================================================================================
+        // =================================================================================
+
+        builder.show();
     }
 
     private PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
@@ -283,8 +294,8 @@ public class MainActivity extends AppCompatActivity {
         LogService.info(MainActivity.this, "Returned from game to Main Screen");
         try {
             setting();
-        } catch (JSONException jse) {
-            LogService.error(MainActivity.this, jse.getMessage(), jse);
+        } catch (JSONException je) {
+            LogService.error(MainActivity.this, je.getMessage(), je);
         }
     };
 
