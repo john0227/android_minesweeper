@@ -2,6 +2,7 @@ package com.android.myproj.minesweeper.util;
 
 import android.app.Activity;
 
+import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
 
 import org.json.JSONException;
