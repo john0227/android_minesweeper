@@ -35,6 +35,10 @@ public class Stopwatch {
         return this.timeMinutes;
     }
 
+    public long getTotalTimeInSeconds() {
+        return this.timeMinutes * 60L + this.timeSeconds;
+    }
+
     public void startTimer() {
         if (this.isRunning) {
             return;

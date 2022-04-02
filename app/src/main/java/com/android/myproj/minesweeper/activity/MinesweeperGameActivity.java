@@ -29,6 +29,7 @@ import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.Key;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MusicPlayer;
+import com.android.myproj.minesweeper.util.StatUtil;
 import com.android.myproj.minesweeper.util.Stopwatch;
 
 import org.json.JSONException;
@@ -60,6 +61,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private boolean isGameOver;
     private boolean isClickable;
     private boolean playSound;
+    private boolean noHint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +159,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.hasStarted = false;
         this.isGameOver = false;
         this.isClickable = true;
+        this.noHint = true;
 
         // Retrieve sound setting from previously saved SharedPreferences (true by default)
         SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
@@ -384,7 +387,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
             stopwatch.pauseTimer();
             tv_mine_count.setText("YOU WON :)");
-            updateWinStat();
+//            StatUtil.updateStat(this, this.level, this.stopwatch.getTotalTimeInSeconds());
             buildGameoverAlert("YOU WON :)").show();
         } else {
             stopwatch.destroyTimer();
@@ -392,11 +395,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             tv_mine_count.setText("GAME OVER :(");
             animateExplosion(indexLastSelected);
         }
-    }
-
-    private void updateWinStat() {
-        JSONObject savedStat = JSONUtil.readJSONFile(this);
-
     }
 
     private void createNewGame() {
@@ -517,6 +515,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // If selected tile is a MINE cell
         if (game.getTileValue(tiles.get(0)) == TileValue.MINE) {
             this.isGameOver = true;  // finish()
+            // TODO
 //            stopwatch.destroyTimer();
 //
 //            // Set text
@@ -534,6 +533,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Check if all non-mine cells are uncovered
         if (game.hasWon()) {
             this.isGameOver = true;
+            // TODO
 //            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
 //            tv_mine_count.setText("YOU WON :)");
 //            buildGameoverAlert("YOU WON :)").show();
