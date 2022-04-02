@@ -204,7 +204,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         if (this.savedState == null) {
             this.savedState = JSONUtil.readJSONFile(this);
         }
-        if (JSONUtil.existsSavedData(this)) {
+        if (JSONUtil.existsSavedGame(this)) {
             LogService.info(this, "Saved data");
             this.restoreGame();
             JSONUtil.clearSavedData(this);
@@ -379,6 +379,26 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
+    private void gameOverAction(boolean hasWon, int indexLastSelected) {
+        if (hasWon) {
+            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
+            stopwatch.pauseTimer();
+            tv_mine_count.setText("YOU WON :)");
+            updateWinStat();
+            buildGameoverAlert("YOU WON :)").show();
+        } else {
+            stopwatch.destroyTimer();
+            // Set text
+            tv_mine_count.setText("GAME OVER :(");
+            animateExplosion(indexLastSelected);
+        }
+    }
+
+    private void updateWinStat() {
+        JSONObject savedStat = JSONUtil.readJSONFile(this);
+
+    }
+
     private void createNewGame() {
         LogService.info(MinesweeperGameActivity.this, "Clearing saved data...Creating new game...");
 
@@ -497,11 +517,11 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // If selected tile is a MINE cell
         if (game.getTileValue(tiles.get(0)) == TileValue.MINE) {
             this.isGameOver = true;  // finish()
-            stopwatch.destroyTimer();
-
-            // Set text
-            tv_mine_count.setText("GAME OVER :(");
-            animateExplosion(index);
+//            stopwatch.destroyTimer();
+//
+//            // Set text
+//            tv_mine_count.setText("GAME OVER :(");
+//            animateExplosion(index);
             return;
         }
 
@@ -514,9 +534,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Check if all non-mine cells are uncovered
         if (game.hasWon()) {
             this.isGameOver = true;
-            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
-            tv_mine_count.setText("YOU WON :)");
-            buildGameoverAlert("YOU WON :)").show();
+//            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
+//            tv_mine_count.setText("YOU WON :)");
+//            buildGameoverAlert("YOU WON :)").show();
         }
     };
 
