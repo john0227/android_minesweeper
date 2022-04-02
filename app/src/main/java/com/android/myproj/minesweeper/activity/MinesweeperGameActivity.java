@@ -111,6 +111,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+        LogService.info(this, "===== Pausing Game =====");
+
         // Pause timer
         this.stopwatch.pauseTimer();
         // Release any active MusicPlayer
@@ -135,6 +137,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LogService.info(this, "===== Destroying Game =====");
         cleanup();
     }
 
@@ -295,7 +298,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             savedGameState.put(JSONKey.KEY_LEVEL, level.getCode());
             savedGameState.put(JSONKey.KEY_SECONDS, this.stopwatch.getTimeSeconds());
             savedGameState.put(JSONKey.KEY_MINUTES, this.stopwatch.getTimeMinutes());
-            JSONUtil.writeToJSONFile(this, savedGameState.toString());
+            JSONUtil.writeToJSONFile(MinesweeperGameActivity.this, savedGameState.toString());
+            LogService.info(this, "==== " + JSONUtil.readJSONFile(this) + " =====");
         } catch (JSONException | IOException e) {
             LogService.error(this, e.getMessage(), e);
         }
@@ -434,10 +438,15 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             } catch (IOException ioe) {
                 LogService.error(MinesweeperGameActivity.this, ioe.getMessage(), ioe);
             }
+
         }
+        LogService.info(MinesweeperGameActivity.this, "Creating new game...");
+        // Recreate Activity
+        MinesweeperGameActivity.this.recreate();
     }
     
     private void gameOverAction(boolean hasWon, int indexLastSelected) {
+        this.isGameOver = true;
         if (hasWon) {
             musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
             stopwatch.pauseTimer();
@@ -452,30 +461,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
-    private void createNewGame() {
-        LogService.info(MinesweeperGameActivity.this, "Clearing saved data...Creating new game...");
-
-        // Set isGameOver to true
-        isGameOver = true;
-
-        // Garbage collection
-        cleanup();
-        try {
-            // Delete any saved data
-            JSONUtil.clearSavedData(MinesweeperGameActivity.this);
-        } catch (IOException ioe) {
-            LogService.error(MinesweeperGameActivity.this, ioe.getMessage(), ioe);
-        }
-
-        LogService.info(MinesweeperGameActivity.this, "Creating new game...");
-        // Recreate Activity
-        MinesweeperGameActivity.this.recreate();
-    }
-
-    private final CompoundButton.OnCheckedChangeListener onRadioFlagChange = (button, isChecked) -> {
-        isFlag = isChecked;
-    };
-
+    private final CompoundButton.OnCheckedChangeListener onRadioFlagChange = (button, isChecked) -> isFlag = isChecked;
     private final CompoundButton.OnCheckedChangeListener onToggleFlagChange = (button, isChecked) -> {
         isFlag = isChecked;
         if (isChecked) {
@@ -494,6 +480,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             case "Setting" -> resultLauncher.launch(new Intent(this, SettingActivity.class));
             case "New Game" -> createNewGame(true);
             case "Main Menu" -> {
+                LogService.info(this, "===== Returning to Main Screen =====");
                 cleanup();
                 finish();
             }
@@ -598,13 +585,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // If selected tile is a MINE cell
         if (game.getTileValue(tiles.get(0)) == TileValue.MINE) {
-            this.isGameOver = true;  // finish()
-            // TODO
-//            stopwatch.destroyTimer();
-//
-//            // Set text
-//            tv_mine_count.setText("GAME OVER :(");
-//            animateExplosion(index);
+            gameOverAction(false, index);
             return;
         }
 
@@ -616,11 +597,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // Check if all non-mine cells are uncovered
         if (game.hasWon()) {
-            this.isGameOver = true;
-            // TODO
-//            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
-//            tv_mine_count.setText("YOU WON :)");
-//            buildGameoverAlert("YOU WON :)").show();
+            gameOverAction(true, index);
         }
     };
 

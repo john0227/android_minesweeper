@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve saved JSONObject and check if there is data to restore
         JSONObject savedState = JSONUtil.readJSONFile(this);
+        LogService.info(this, "Saved State: " + savedState);
         if (!JSONUtil.existsSavedGame(this)) {
             LogService.info(this, "====== No SavedData =====");
             this.existsSavedData = false;
@@ -293,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultCallback<ActivityResult> gameResultCallback = result -> {
         LogService.info(MainActivity.this, "Returned from game to Main Screen");
         try {
+            LogService.info(MainActivity.this, JSONUtil.readJSONFile(MainActivity.this).toString());
             setting();
         } catch (JSONException je) {
             LogService.error(MainActivity.this, je.getMessage(), je);

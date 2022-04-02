@@ -5,6 +5,8 @@ import static com.android.myproj.minesweeper.config.JSONKey.FILE_SAVED_DATA;
 import android.content.Context;
 import android.content.ContextWrapper;
 
+import com.android.myproj.minesweeper.activity.MainActivity;
+import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
 
 import org.apache.commons.io.FileUtils;
@@ -17,7 +19,7 @@ import java.io.IOException;
 
 public class JSONUtil {
 
-    private static final String CLEAR_DATA = "{ \"exists_saved_data\": false }";
+    private static final String CLEAR_DATA = "{ \"exists_saved_game\": false }";
 
     public static void writeToJSONFile(ContextWrapper contextWrapper, String... contents) throws IOException {
         File file = getFileSavedData(contextWrapper);
@@ -86,16 +88,18 @@ public class JSONUtil {
                 return false;
             }
 
+            LogService.info(new MainActivity(), "===== Saved game in JSONUtil =====");
             JSONObject jsonObject = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
             return jsonObject.getBoolean(JSONKey.KEY_EXISTS_SAVED_GAME);
         } catch (JSONException | IOException e) {
+            LogService.warn(new MainActivity(), "===== Error while saving game =====", e);
             return false;
         }
     }
 
     public static void createDefaultStatIfNone(ContextWrapper contextWrapper) throws JSONException, IOException {
         // Create default statistics JSONObject
-        JSONObject defaultStat = new JSONObject();
+        JSONObject defaultStat = readJSONFile(contextWrapper);
         // Create default stat for each level if there is none
         for (String keySavedStat : JSONKey.KEYS_SAVED_STAT) {
             createDefaultStatIfNone(contextWrapper, keySavedStat);
@@ -106,7 +110,7 @@ public class JSONUtil {
 
     public static void createDefaultStatIfNone(ContextWrapper contextWrapper, String keySavedStat) throws JSONException, IOException {
         // Create default statistics JSONObject
-        JSONObject defaultStat = new JSONObject();
+        JSONObject defaultStat = readJSONFile(contextWrapper);
         // Create default stat for given level if there is none
         if (!existsSavedStat(contextWrapper, keySavedStat)) {
             defaultStat.put(keySavedStat, true);
