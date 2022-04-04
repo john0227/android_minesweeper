@@ -48,6 +48,17 @@ public class JSONUtil {
         }
     }
 
+    public static Object readKeyFromFile(ContextWrapper contextWrapper, String key) {
+        JSONObject savedStat = readJSONFile(contextWrapper);
+        Object valueRead;
+        try {
+            valueRead = savedStat.get(key);
+        } catch (JSONException je) {
+            valueRead = null;
+        }
+        return valueRead;
+    }
+
     public static List<Object> readKeysFromFile(ContextWrapper contextWrapper, String... keys) {
         JSONObject savedStat = readJSONFile(contextWrapper);
         List<Object> valuesRead = new ArrayList<>();
@@ -96,13 +107,6 @@ public class JSONUtil {
         writeToJSONFile(contextWrapper, defaultStat);
     }
 
-    public static void createDefaultStat(ContextWrapper contextWrapper) throws JSONException, IOException {
-        // Create default stat for each level if there is none
-        for (String keySavedStat : JSONKey.KEYS_SAVED_STAT) {
-            createDefaultStat(contextWrapper, keySavedStat);
-        }
-    }
-
     public static void createDefaultStat(ContextWrapper contextWrapper, String keySavedStat) throws JSONException, IOException {
         // Create default statistics JSONObject
         JSONObject defaultStat = readJSONFile(contextWrapper);
@@ -114,7 +118,7 @@ public class JSONUtil {
         writeToJSONFile(contextWrapper, defaultStat);
     }
 
-    private static boolean existsSavedStat(ContextWrapper contextWrapper, String keySavedStat) {
+    public static boolean existsSavedStat(ContextWrapper contextWrapper, String keySavedStat) {
         try {
             JSONObject jsonObject = readJSONFile(contextWrapper);
             return jsonObject.getBoolean(keySavedStat);

@@ -8,8 +8,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.game.logic.Level;
@@ -46,31 +44,35 @@ public class StatisticsActivity extends FragmentActivity {
         // Set ViewPager2 Object
         this.viewPager = findViewById(R.id.vp2_statistics);
         this.pagerAdapter = new ScreenSlidePagerAdapter(this);
-        this.viewPager.setAdapter(pagerAdapter);
+        this.viewPager.setAdapter(this.pagerAdapter);
     }
 
     public void onResetClick(View view) {
         int index = viewPager.getCurrentItem();
         LogService.info(StatisticsActivity.this, "Clicked button in " + (index + 1) + "th page");
 
+        boolean hasReset = false;
         if (index == 0) {
             // If player clicked RESET button in Overall Statistics, reset all statistics
             try {
-                StatUtil.resetAllStats(this);
+                hasReset = StatUtil.resetAllStats(this);
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Unable to reset statistics", e);
             }
         } else {
-            Level level = Level.getLevelFromCode(index);
             try {
-                StatUtil.resetStat(this, level);
+                hasReset = StatUtil.resetStat(this, Level.getLevelFromCode(index));
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Unable to reset statistics", e);
             }
         }
 
-        // Notify the adapter that there has been a change
-        this.pagerAdapter.notifyAll();
+        if (hasReset) {
+            // Notify the adapter that there has been a change
+            ((ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
+            this.viewPager.setAdapter(this.pagerAdapter);
+            this.viewPager.setCurrentItem(index, false);
+        }
     }
 
     public class ScreenSlidePagerAdapter extends FragmentStateAdapter {
@@ -92,6 +94,21 @@ public class StatisticsActivity extends FragmentActivity {
         public int getItemCount() {
             return NUM_PAGES;
         }
+
+        public void notifyItemChangedAt(int position) {
+            if (position == 0) {
+                this.resetFragment(0, 1, 2, 3);
+            } else {
+                this.resetFragment(0, position);
+            }
+        }
+
+        private void resetFragment(int... positions) {
+            for (int position : positions) {
+                this.createFragment(position);
+            }
+        }
+
     }
 
 }

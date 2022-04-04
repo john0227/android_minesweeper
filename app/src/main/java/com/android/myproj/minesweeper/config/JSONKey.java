@@ -1,5 +1,7 @@
 package com.android.myproj.minesweeper.config;
 
+import com.android.myproj.minesweeper.game.logic.Level;
+
 public class JSONKey {
 
     public static final String FILE_SAVED_DATA = "storage.json";
@@ -80,5 +82,15 @@ public class JSONKey {
             KEY_STAT_EXPERT_CURR_STREAK,
             KEY_STAT_EXPERT_NO_HINT_WINS
     };
+
+    private static final String[][] ALL_KEYS_BY_LEVEL = new String[][] {
+        KEYS_EASY_STAT,
+        KEYS_INTERMEDIATE_STAT,
+        KEYS_EXPERT_STAT
+    };
+
+    public static String getStatKeyByLevel(int keyIndex, Level level) {
+        return ALL_KEYS_BY_LEVEL[level.getCode() - 1][keyIndex];
+    }
 
 }

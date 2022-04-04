@@ -15,13 +15,24 @@ import java.util.List;
 
 public class StatUtil {
 
-    public static void resetStat(Activity activity, Level level) throws JSONException, IOException {
+    public static boolean resetStat(Activity activity, Level level) throws JSONException, IOException {
         String keySavedStat = getSavedStatKey(level);
-        JSONUtil.createDefaultStat(activity, keySavedStat);
+        Object statGameStarted = JSONUtil.readKeyFromFile(activity, JSONKey.getStatKeyByLevel(0, level));
+        if (statGameStarted != null && (int) statGameStarted != 0) {
+            JSONUtil.createDefaultStat(activity, keySavedStat);
+            return true;
+        }
+        return false;
     }
 
-    public static void resetAllStats(Activity activity) throws JSONException, IOException {
-        JSONUtil.createDefaultStat(activity);
+    public static boolean resetAllStats(Activity activity) throws JSONException, IOException {
+        boolean hasReset = false;
+        for (int i = 1; i <= 3; i++) {
+            if (resetStat(activity, Level.getLevelFromCode(i))) {
+                hasReset = true;
+            }
+        }
+        return hasReset;
     }
 
     public static void updateAllStat(Activity activity, Level level, int time, boolean noHint)
