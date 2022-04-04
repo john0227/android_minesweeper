@@ -8,6 +8,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.game.logic.Level;
@@ -72,6 +73,11 @@ public class StatisticsActivity extends FragmentActivity {
             ((ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
             this.viewPager.setAdapter(this.pagerAdapter);
             this.viewPager.setCurrentItem(index, false);
+            // Notify the user that the stats have been reset
+            Toast.makeText(this, "Statistics have been reset", Toast.LENGTH_SHORT).show();
+        } else {
+            // Notify the user that there was nothing to reset
+            Toast.makeText(this, "Nothing to reset", Toast.LENGTH_SHORT).show();
         }
     }
 
