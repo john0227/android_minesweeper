@@ -273,9 +273,7 @@ public class Board {
         }
     }
 
-    protected JSONObject save() throws JSONException {
-        JSONObject savedState = new JSONObject();
-
+    protected void save(JSONObject savedState) throws JSONException {
         int[] isCoveredArray = new int[this.board.length];
         int[] isFlaggedArray = new int[this.board.length];
         int[] tileValueArray = new int[this.board.length];
@@ -291,8 +289,6 @@ public class Board {
         savedState.put(JSONKey.KEY_ARRAY_IS_COVERED, new JSONArray(isCoveredArray));
         savedState.put(JSONKey.KEY_ARRAY_IS_FLAGGED, new JSONArray(isFlaggedArray));
         savedState.put(JSONKey.KEY_ARRAY_TILE_VALUE, new JSONArray(tileValueArray));
-
-        return savedState;
     }
 
     public void restore(JSONObject savedState) throws JSONException {

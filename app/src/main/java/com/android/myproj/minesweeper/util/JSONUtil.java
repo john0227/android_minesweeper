@@ -5,8 +5,6 @@ import static com.android.myproj.minesweeper.config.JSONKey.FILE_SAVED_DATA;
 import android.content.Context;
 import android.content.ContextWrapper;
 
-import com.android.myproj.minesweeper.activity.MainActivity;
-import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
 
 import org.apache.commons.io.FileUtils;
@@ -16,12 +14,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JSONUtil {
 
-    private static final String CLEAR_DATA = "{ \"exists_saved_game\": false }";
-
-    public static void writeToJSONFile(ContextWrapper contextWrapper, String... contents) throws IOException {
+    public static void writeToJSONFile(ContextWrapper contextWrapper, JSONObject dataToSave) throws IOException {
         File file = getFileSavedData(contextWrapper);
 
         // Create file if it does not exist
@@ -30,9 +28,7 @@ public class JSONUtil {
         }
 
         FileOutputStream fos = new FileOutputStream(file);
-        for (String content : contents) {
-            fos.write((content + "\n").getBytes());
-        }
+        fos.write(dataToSave.toString().getBytes());
         fos.close();
     }
 
@@ -52,60 +48,39 @@ public class JSONUtil {
         }
     }
 
-    public static void clearSavedData(ContextWrapper contextWrapper) throws IOException {
-        File file = getFileSavedData(contextWrapper);
-
-        // Create file if it does not exist
-        if (!file.exists()) {
-            file.createNewFile();
-            return;
+    public static List<Object> readKeysFromFile(ContextWrapper contextWrapper, String... keys) {
+        JSONObject savedStat = readJSONFile(contextWrapper);
+        List<Object> valuesRead = new ArrayList<>();
+        for (String key : keys) {
+            try {
+                valuesRead.add(savedStat.get(key));
+            } catch (JSONException je) {
+                valuesRead.add(null);
+            }
         }
-
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(CLEAR_DATA.getBytes());
-        fos.close();
+        return valuesRead;
     }
 
-    public static void incrementKeyValue(ContextWrapper contextWrapper, String key, int inc) throws IOException, JSONException {
-        File file = getFileSavedData(contextWrapper);
-
-        // Create file if it does not exist
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-
-        JSONObject jsonObject = readJSONFile(contextWrapper);
-        jsonObject.put(key, jsonObject.getInt(key) + inc);
+    public static void clearSavedGame(ContextWrapper contextWrapper) throws JSONException, IOException {
+        JSONObject savedGame = readJSONFile(contextWrapper);
+        savedGame.put(JSONKey.KEY_EXISTS_SAVED_GAME, false);
+        writeToJSONFile(contextWrapper, savedGame);
     }
 
     public static boolean existsSavedGame(ContextWrapper contextWrapper) {
-        File file = getFileSavedData(contextWrapper);
-
         try {
-            // If file does not exist, create one and return empty JSONObject
-            if (!file.exists()) {
-                file.createNewFile();
-                return false;
-            }
-
-            LogService.info(new MainActivity(), "===== Saved game in JSONUtil =====");
-            JSONObject jsonObject = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
+            JSONObject jsonObject = readJSONFile(contextWrapper);
             return jsonObject.getBoolean(JSONKey.KEY_EXISTS_SAVED_GAME);
-        } catch (JSONException | IOException e) {
-            LogService.warn(new MainActivity(), "===== Error while saving game =====", e);
+        } catch (JSONException e) {
             return false;
         }
     }
 
     public static void createDefaultStatIfNone(ContextWrapper contextWrapper) throws JSONException, IOException {
-        // Create default statistics JSONObject
-        JSONObject defaultStat = readJSONFile(contextWrapper);
         // Create default stat for each level if there is none
         for (String keySavedStat : JSONKey.KEYS_SAVED_STAT) {
             createDefaultStatIfNone(contextWrapper, keySavedStat);
         }
-        // Write JSONObject to save file
-        writeToJSONFile(contextWrapper, defaultStat.toString());
     }
 
     public static void createDefaultStatIfNone(ContextWrapper contextWrapper, String keySavedStat) throws JSONException, IOException {
@@ -118,22 +93,32 @@ public class JSONUtil {
                 defaultStat.put(key, 0);
             }
         }
-        writeToJSONFile(contextWrapper, defaultStat.toString());
+        writeToJSONFile(contextWrapper, defaultStat);
+    }
+
+    public static void createDefaultStat(ContextWrapper contextWrapper) throws JSONException, IOException {
+        // Create default stat for each level if there is none
+        for (String keySavedStat : JSONKey.KEYS_SAVED_STAT) {
+            createDefaultStat(contextWrapper, keySavedStat);
+        }
+    }
+
+    public static void createDefaultStat(ContextWrapper contextWrapper, String keySavedStat) throws JSONException, IOException {
+        // Create default statistics JSONObject
+        JSONObject defaultStat = readJSONFile(contextWrapper);
+        // Create default stat for given level
+        defaultStat.put(keySavedStat, true);
+        for (String key : getAllKeysForLevel(keySavedStat)) {
+            defaultStat.put(key, 0);
+        }
+        writeToJSONFile(contextWrapper, defaultStat);
     }
 
     private static boolean existsSavedStat(ContextWrapper contextWrapper, String keySavedStat) {
-        File file = getFileSavedData(contextWrapper);
-
         try {
-            // If file does not exist, create one and return empty JSONObject
-            if (!file.exists()) {
-                file.createNewFile();
-                return false;
-            }
-            JSONObject jsonObject = new JSONObject(FileUtils.readFileToString(file, "UTF-8"));
-
+            JSONObject jsonObject = readJSONFile(contextWrapper);
             return jsonObject.getBoolean(keySavedStat);
-        } catch (JSONException | IOException e) {
+        } catch (JSONException e) {
             return false;
         }
     }

@@ -2,6 +2,7 @@ package com.android.myproj.minesweeper.util;
 
 import android.app.Activity;
 
+import com.android.myproj.minesweeper.activity.StatisticsActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
 
@@ -9,15 +10,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StatUtil {
 
-    public static void updateStat(Activity activity, Level level, long time, boolean noHint) throws JSONException {
-        String keySavedStat = switch (level) {
-            case EASY -> JSONKey.KEY_EXISTS_SAVED_EASY_STAT;
-            case INTERMEDIATE -> JSONKey.KEY_EXISTS_SAVED_INTERMEDIATE_STAT;
-            case EXPERT -> JSONKey.KEY_EXISTS_SAVED_EXPERT_STAT;
-        };
+    public static void resetStat(Activity activity, Level level) throws JSONException, IOException {
+        String keySavedStat = getSavedStatKey(level);
+        JSONUtil.createDefaultStat(activity, keySavedStat);
+    }
+
+    public static void resetAllStats(Activity activity) throws JSONException, IOException {
+        JSONUtil.createDefaultStat(activity);
+    }
+
+    public static void updateAllStat(Activity activity, Level level, int time, boolean noHint)
+            throws JSONException, IOException {
+        String keySavedStat = getSavedStatKey(level);
 
         try {
             JSONUtil.createDefaultStatIfNone(activity, keySavedStat);
@@ -26,7 +35,7 @@ public class StatUtil {
         }
 
         JSONObject savedStat = JSONUtil.readJSONFile(activity);
-        String[] allLevelKeys = JSONUtil.getAllKeysForLevel(keySavedStat);
+        String[] allLevelKeys = getAllLevelKeys(level);
 
         updateGameWon(savedStat, allLevelKeys);
         updateWinRate(savedStat, allLevelKeys);
@@ -35,42 +44,110 @@ public class StatUtil {
         updateCurrStreak(savedStat, allLevelKeys);
         updateBestStreak(savedStat, allLevelKeys);
         updateWinsNoHint(savedStat, allLevelKeys, noHint);
+
+        JSONUtil.writeToJSONFile(activity, savedStat);
+    }
+
+    public static List<Integer> getStatistics(Activity activity, Level level) {
+        List<Integer> stats = new ArrayList<>();
+        List<Object> values = JSONUtil.readKeysFromFile(activity, getAllLevelKeys(level));
+        for (Object value : values) {
+            stats.add((Integer) value);
+        }
+        return stats;
+    }
+
+    public static List<Integer> getOverallStatistics(Activity activity) {
+        List<Object> easyOverallStat = JSONUtil.readKeysFromFile(
+                activity,
+                JSONKey.KEY_STAT_EASY_GAMES_STARTED,
+                JSONKey.KEY_STAT_EASY_GAMES_WON,
+                JSONKey.KEY_STAT_EASY_WIN_RATE
+        );
+        List<Object> intermediateOverallStat = JSONUtil.readKeysFromFile(
+                activity,
+                JSONKey.KEY_STAT_INTERMEDIATE_GAMES_STARTED,
+                JSONKey.KEY_STAT_INTERMEDIATE_GAMES_WON,
+                JSONKey.KEY_STAT_INTERMEDIATE_WIN_RATE
+        );
+        List<Object> expertOverallStat = JSONUtil.readKeysFromFile(
+                activity,
+                JSONKey.KEY_STAT_EXPERT_GAMES_STARTED,
+                JSONKey.KEY_STAT_EXPERT_GAMES_WON,
+                JSONKey.KEY_STAT_EXPERT_WIN_RATE
+        );
+
+        List<Integer> overallStat = new ArrayList<>();
+        overallStat.add((Integer) easyOverallStat.get(0) + (Integer) intermediateOverallStat.get(0) + (Integer) expertOverallStat.get(0));
+        overallStat.add((Integer) easyOverallStat.get(1) + (Integer) intermediateOverallStat.get(1) + (Integer) expertOverallStat.get(1));
+        int totalGames = overallStat.get(0);
+        int gamesWon = overallStat.get(1);
+        int winRate = (int) (((double) gamesWon / totalGames) * 10000);
+        overallStat.add(winRate);
+        return overallStat;
+    }
+
+    public static String getSavedStatKey(Level level) {
+        return switch (level) {
+            case EASY -> JSONKey.KEY_EXISTS_SAVED_EASY_STAT;
+            case INTERMEDIATE -> JSONKey.KEY_EXISTS_SAVED_INTERMEDIATE_STAT;
+            case EXPERT -> JSONKey.KEY_EXISTS_SAVED_EXPERT_STAT;
+        };
+    }
+
+    public static String[] getAllLevelKeys(Level level) {
+        return switch (level) {
+            case EASY -> JSONKey.KEYS_EASY_STAT;
+            case INTERMEDIATE -> JSONKey.KEYS_INTERMEDIATE_STAT;
+            case EXPERT -> JSONKey.KEYS_EXPERT_STAT;
+        };
+    }
+
+    public static void updateGameStarted(JSONObject savedStat, Level level) throws JSONException {
+        String[] keys = getAllLevelKeys(level);
+        savedStat.put(keys[0], savedStat.getInt(keys[0]) + 1);
     }
 
     private static void updateGameWon(JSONObject savedStat, String[] keys) throws JSONException {
-        savedStat.put(keys[1], savedStat.getLong(keys[1]) + 1);
+        savedStat.put(keys[1], savedStat.getInt(keys[1]) + 1);
+    }
+
+    public static void updateWinRate(JSONObject savedStat, Level level) throws JSONException {
+        updateWinRate(savedStat, getAllLevelKeys(level));
     }
 
     private static void updateWinRate(JSONObject savedStat, String[] keys) throws JSONException {
-        long totalGames = savedStat.getLong(keys[0]);
-        long gamesWon = savedStat.getLong(keys[1]);
-        int winRate = (int) ((totalGames / gamesWon) * 100);
+        int totalGames = savedStat.getInt(keys[0]);
+        int gamesWon = savedStat.getInt(keys[1]);
+        int winRate = (int) (((double) gamesWon / totalGames) * 10000);  // save rate with precision up to two decimal places
         savedStat.put(keys[2], winRate);
     }
 
-    private static void updateBestTime(JSONObject savedStat, String[] keys, long time) throws JSONException {
-        long bestTime = savedStat.getLong(keys[3]);
+    private static void updateBestTime(JSONObject savedStat, String[] keys, int time) throws JSONException {
+        int bestTime = savedStat.getInt(keys[3]);
+        bestTime = bestTime == 0 ? Integer.MAX_VALUE : bestTime;
         if (time < bestTime) {
             savedStat.put(keys[3], time);
         }
     }
 
-    private static void updateAvgTime(JSONObject savedStat, String[] keys, long time) throws JSONException {
-        long currAvg = savedStat.getLong(keys[4]);
-        long totalGames = savedStat.getLong(keys[0]);
-        long newAvg = currAvg + (time - currAvg) / (totalGames);
+    private static void updateAvgTime(JSONObject savedStat, String[] keys, int time) throws JSONException {
+        int currAvg = savedStat.getInt(keys[4]);
+        currAvg = currAvg == 0 ? time : currAvg;
+        int totalGames = savedStat.getInt(keys[0]);
+        int newAvg = currAvg + (int) ((double) (time - currAvg) / totalGames);
         savedStat.put(keys[4], newAvg);
     }
 
     private static void updateCurrStreak(JSONObject savedStat, String[] keys) throws JSONException {
-        savedStat.put(keys[5], savedStat.getLong(keys[5]) + 1);
+        savedStat.put(keys[6], savedStat.getInt(keys[6]) + 1);
     }
 
     private static void updateBestStreak(JSONObject savedStat, String[] keys) throws JSONException {
-        long currStreak = savedStat.getLong(keys[5]);
-        long bestStreak = savedStat.getLong(keys[6]);
+        int currStreak = savedStat.getInt(keys[6]);
+        int bestStreak = savedStat.getInt(keys[5]);
         if (currStreak > bestStreak) {
-            savedStat.put(keys[6], currStreak);
+            savedStat.put(keys[5], currStreak);
         }
     }
 
@@ -78,7 +155,16 @@ public class StatUtil {
         if (!noHint) {
             return;
         }
-        savedStat.put(keys[7], savedStat.getLong(keys[7]) + 1);
+        savedStat.put(keys[7], savedStat.getInt(keys[7]) + 1);
+    }
+
+    public static void resetCurrStreak(JSONObject savedStat, Level level) throws JSONException {
+        String key = switch (level) {
+            case EASY -> JSONKey.KEY_STAT_EASY_CURR_STREAK;
+            case INTERMEDIATE -> JSONKey.KEY_STAT_INTERMEDIATE_CURR_STREAK;
+            case EXPERT -> JSONKey.KEY_STAT_EXPERT_CURR_STREAK;
+        };
+        savedStat.put(key, 0);
     }
 
 }

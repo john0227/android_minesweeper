@@ -78,10 +78,9 @@ public class Game {
         return this.board.showHint();
     }
 
-    public JSONObject save() throws JSONException {
-        JSONObject savedState = this.board.save();
+    public void save(JSONObject savedState) throws JSONException {
+        this.board.save(savedState);
         savedState.put(JSONKey.KEY_LEFTOVER_MINES, this.leftoverMine);
-        return savedState;
     }
 
     public static Game restore(JSONObject savedState) throws JSONException {

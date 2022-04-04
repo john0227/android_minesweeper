@@ -34,6 +34,7 @@ import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
+import com.android.myproj.minesweeper.util.StatUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private void setting() throws JSONException {
         // Create saved data for statistics if there are none
         try {
+            LogService.info(this, "Creating saved data if necessary...");
             JSONUtil.createDefaultStatIfNone(this);
         } catch (JSONException | IOException e) {
             LogService.error(this, "Was unable to create default saved data for statistics", e);
@@ -98,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrieve saved JSONObject and check if there is data to restore
         JSONObject savedState = JSONUtil.readJSONFile(this);
-        LogService.info(this, "Saved State: " + savedState);
         if (!JSONUtil.existsSavedGame(this)) {
             LogService.info(this, "====== No SavedData =====");
             this.existsSavedData = false;
@@ -203,21 +204,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Runnable launchGame = () -> {
-            // TODO : Remove this if statement
-            if (code != Key.RETRIEVE_LEVEL_CODE) {
-                try {
-                    JSONUtil.clearSavedData(this);
-                } catch (IOException ioe) {
-                    LogService.error(MainActivity.this, ioe.getMessage(), ioe);
-                }
-            }
             // Pass Level code
             intent.putExtra(Key.LEVEL_KEY, code);
             resultLauncherGame.launch(intent);
         };
 
         // If there is saved data, but player did not choose resume, alert the player
-        if (existsSavedData && code != Key.RETRIEVE_LEVEL_CODE) {
+        if (this.existsSavedData && code != Key.RETRIEVE_LEVEL_CODE) {
             this.showAlertDialog(launchGame);
         } else {
             launchGame.run();
@@ -232,7 +225,10 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setMessage("You have an ongoing game. Are you sure you want to start a new game?");
 
-        builder.setPositiveButton("Continue", (dialogInterface, i) -> toRun.run());
+        builder.setPositiveButton("Continue", (dialogInterface, i) -> {
+            updateSavedData();
+            toRun.run();
+        });
         builder.setNegativeButton("Go Back", (dialogInterface, i) -> {});
 
         // Alert Dialog 이외의 공간을 터치 했을때 Alert 팝업이 안사라지도록 함
@@ -245,6 +241,23 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    // If this method is called, the player must have started a new game even though there was a saved game
+    // i.e. this.existsSavedData == true &&
+    private void updateSavedData() {
+        try {
+            // Clear corresponding saved game data
+            JSONUtil.clearSavedGame(this);
+            // Updates the Win Rate and Current Win Streak statistics of the game level not resumed by player
+            JSONObject savedData = JSONUtil.readJSONFile(this);
+            Level savedLevel = Level.getLevelFromCode(savedData.getInt(JSONKey.KEY_LEVEL));
+            StatUtil.updateWinRate(savedData, savedLevel);
+            StatUtil.resetCurrStreak(savedData, savedLevel);
+            JSONUtil.writeToJSONFile(this, savedData);
+        } catch (JSONException | IOException e) {
+            LogService.error(MainActivity.this, e.getMessage(), e);
+        }
+    }
+
     private PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         menuItem.setActionView(new View(getApplicationContext()));
@@ -252,6 +265,9 @@ public class MainActivity extends AppCompatActivity {
         String selMenu = menuItem.getTitle().toString();
         switch (selMenu) {
             case "Setting" -> resultLauncherSetting.launch(new Intent(MainActivity.this, SettingActivity.class));
+            case "Statistics" -> {
+                startActivity(new Intent(MainActivity.this, StatisticsActivity.class));
+            }
             case "Sound" -> {
                 menuItem.setChecked(!playSound);
                 playSound = !playSound;
@@ -280,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Inflating popup menu from popup_menu.xml file
         popupMenu.getMenuInflater().inflate(R.menu.main_menu_setting, popupMenu.getMenu());
-        popupMenu.getMenu().getItem(1).setChecked(playSound);
+        popupMenu.getMenu().getItem(2).setChecked(playSound);
         popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
 
         // Showing the popup menu
@@ -293,12 +309,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final ActivityResultCallback<ActivityResult> gameResultCallback = result -> {
         LogService.info(MainActivity.this, "Returned from game to Main Screen");
+        LogService.info(this, JSONUtil.readJSONFile(this).toString());
         try {
-            LogService.info(MainActivity.this, JSONUtil.readJSONFile(MainActivity.this).toString());
             setting();
         } catch (JSONException je) {
             LogService.error(MainActivity.this, je.getMessage(), je);
         }
+        LogService.info(this, JSONUtil.readJSONFile(this).toString());
     };
 
     private final ActivityResultCallback<ActivityResult> settingResultCallback = result -> {

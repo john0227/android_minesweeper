@@ -90,9 +90,11 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 default -> throw new RuntimeException("Invalid level: " + this.level);
             }
 
+            LogService.info(this, JSONUtil.readJSONFile(this).toString());
             init();
             setting();
-            activateGame();
+            generateGameScreen();
+            LogService.info(this, JSONUtil.readJSONFile(this).toString());
         } catch (Exception e) {
             LogService.error(this, e.getMessage(), e);
         }
@@ -247,19 +249,37 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
-    private void activateGame() throws IOException {
+    private void generateGameScreen() throws JSONException, IOException {
         // Retrieve and restore saved data if any
         if (this.savedState == null) {
             this.savedState = JSONUtil.readJSONFile(this);
         }
         if (JSONUtil.existsSavedGame(this)) {
-            LogService.info(this, "Saved data");
+            LogService.info(this, "Starting game...There is saved data");
             this.restoreGame();
-            JSONUtil.clearSavedData(this);
+            JSONUtil.clearSavedGame(this);
         } else {
-            LogService.info(this, "No Saved data");
+            LogService.info(this, "Starting game...There is no Saved data");
             this.game = new Game(level);
             this.stopwatch = new Stopwatch(findViewById(R.id.tv_time));
+        }
+    }
+
+    private void startGame(int index) {
+        MinesweeperGameActivity.this.hasStarted = true;
+        stopwatch.startTimer();
+
+        // Generate mine cells
+        this.game.start(index);
+
+        // Update Games Started statistics
+        try {
+            LogService.info(this, "Updating games started");
+            JSONObject savedData = JSONUtil.readJSONFile(this);
+            StatUtil.updateGameStarted(savedData, this.level);
+            JSONUtil.writeToJSONFile(this, savedData);
+        } catch (JSONException | IOException e) {
+            LogService.error(this, "Could not update Games Started", e);
         }
     }
 
@@ -294,12 +314,13 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private void saveGame() {
         LogService.info(this, "saveGame() called...saving data...");
         try {
-            JSONObject savedGameState = this.game.save();
+            JSONObject savedGameState = JSONUtil.readJSONFile(this);
+            this.game.save(savedGameState);
+
             savedGameState.put(JSONKey.KEY_LEVEL, level.getCode());
             savedGameState.put(JSONKey.KEY_SECONDS, this.stopwatch.getTimeSeconds());
             savedGameState.put(JSONKey.KEY_MINUTES, this.stopwatch.getTimeMinutes());
-            JSONUtil.writeToJSONFile(MinesweeperGameActivity.this, savedGameState.toString());
-            LogService.info(this, "==== " + JSONUtil.readJSONFile(this) + " =====");
+            JSONUtil.writeToJSONFile(MinesweeperGameActivity.this, savedGameState);
         } catch (JSONException | IOException e) {
             LogService.error(this, e.getMessage(), e);
         }
@@ -434,9 +455,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             cleanup();
             try {
                 // Delete any saved data
-                JSONUtil.clearSavedData(MinesweeperGameActivity.this);
-            } catch (IOException ioe) {
-                LogService.error(MinesweeperGameActivity.this, ioe.getMessage(), ioe);
+                JSONUtil.clearSavedGame(MinesweeperGameActivity.this);
+            } catch (JSONException | IOException e) {
+                LogService.error(MinesweeperGameActivity.this, e.getMessage(), e);
             }
 
         }
@@ -451,9 +472,24 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
             stopwatch.pauseTimer();
             tv_mine_count.setText("YOU WON :)");
-//            StatUtil.updateStat(this, this.level, this.stopwatch.getTotalTimeInSeconds());
+            try {
+                // Update all statistics
+                StatUtil.updateAllStat(this, this.level, this.stopwatch.getTotalTimeInSeconds(), this.noHint);
+            } catch (JSONException | IOException e) {
+                LogService.error(this, "Could not save statistics", e);
+            }
             buildGameoverAlert("YOU WON :)").show();
         } else {
+            // Update win rate and current win streak
+            JSONObject savedStat = JSONUtil.readJSONFile(this);
+            try {
+                StatUtil.updateWinRate(savedStat, this.level);
+                StatUtil.resetCurrStreak(savedStat, this.level);
+                JSONUtil.writeToJSONFile(this, savedStat);
+            } catch (JSONException | IOException e) {
+                LogService.error(this, "Was unable to update win rate and current win streak", e);
+            }
+            // Destroy stopwatch
             stopwatch.destroyTimer();
             // Set text
             tv_mine_count.setText("GAME OVER :(");
@@ -481,7 +517,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             case "New Game" -> createNewGame(true);
             case "Main Menu" -> {
                 LogService.info(this, "===== Returning to Main Screen =====");
-                cleanup();
                 finish();
             }
             case "Sound" -> {
@@ -536,6 +571,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             // there is no uncover-able Tile
             return;
         }
+
+        noHint = false;
         setImage(this.imageButtons[game.getTileIndex(tileToReveal)], game.getTileValue(tileToReveal));
     };
 
@@ -555,9 +592,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // If the player has clicked his/her first cell
         if (!MinesweeperGameActivity.this.hasStarted) {
-            MinesweeperGameActivity.this.hasStarted = true;
-            stopwatch.startTimer();
-            this.game.start(index);
+            this.startGame(index);
         }
 
         // If FLAG RadioButton is turned on, flag the selected cell (if possible) and exit

@@ -35,8 +35,14 @@ public class Stopwatch {
         return this.timeMinutes;
     }
 
-    public long getTotalTimeInSeconds() {
-        return this.timeMinutes * 60L + this.timeSeconds;
+    public int getTotalTimeInSeconds() {
+        // Returning int instead of long
+        // Because for this value to overflow,
+        // Approx, this.timeMinutes * 60 must be greater than 2,000,000,000
+        // which means player must have been playing for 2,000,000,000 / 60 (approx 33,333,333) minutes
+        // which means player must have been playing for 33,333,333 / 60 (approx 555,555) hours
+        // which means player must have been playing for 555,555 / 24 (approx 23,148) days (which I deemed highly unlikely)
+        return this.timeMinutes * 60 + this.timeSeconds;
     }
 
     public void startTimer() {
