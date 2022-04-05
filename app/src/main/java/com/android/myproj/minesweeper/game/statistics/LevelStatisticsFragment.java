@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.StatUtil;

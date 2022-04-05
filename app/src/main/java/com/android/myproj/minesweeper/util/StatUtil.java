@@ -2,7 +2,6 @@ package com.android.myproj.minesweeper.util;
 
 import android.app.Activity;
 
-import com.android.myproj.minesweeper.activity.StatisticsActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
 

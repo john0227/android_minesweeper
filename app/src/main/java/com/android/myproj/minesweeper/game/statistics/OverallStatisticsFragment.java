@@ -7,16 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.StatUtil;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class OverallStatisticsFragment extends StatisticsFragment {
 
