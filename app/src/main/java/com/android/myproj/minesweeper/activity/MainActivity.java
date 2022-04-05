@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         Level level = Level.getLevelFromCode(savedState.getInt(JSONKey.KEY_LEVEL));
 
         // If there is data to restore, make RESUME button visible
-        resumeButton.setBackgroundResource(android.R.drawable.btn_default);
+        resumeButton.setBackgroundColor(ContextCompat.getColor(this, R.color.purple_level_1));
         switch (level) {
             case EASY -> resumeButton.setText(R.string.btn_resume_easy);
             case INTERMEDIATE -> resumeButton.setText(R.string.btn_resume_intermediate);
@@ -215,11 +215,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAlertDialog(Runnable toRun) {
-        // =================================================================================
-        // =============== Building AlertDialog ============================================
-        // =================================================================================
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyDialogTheme);
 
+        builder.setTitle("Resume Game?");
         builder.setMessage("You have an ongoing game. Are you sure you want to start a new game?");
 
         builder.setPositiveButton("Continue", (dialogInterface, i) -> {
@@ -227,13 +225,6 @@ public class MainActivity extends AppCompatActivity {
             toRun.run();
         });
         builder.setNegativeButton("Go Back", (dialogInterface, i) -> {});
-
-        // Alert Dialog 이외의 공간을 터치 했을때 Alert 팝업이 안사라지도록 함
-        // 무조건 +ve, -ve, neutral 버튼을 눌러야 Alert 팝업이 사라짐
-        builder.setCancelable(false);
-        // =================================================================================
-        // =================================================================================
-        // =================================================================================
 
         builder.show();
     }
@@ -255,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
+    private final PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         menuItem.setActionView(new View(getApplicationContext()));
 

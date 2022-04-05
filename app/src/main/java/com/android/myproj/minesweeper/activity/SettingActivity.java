@@ -89,7 +89,7 @@ public class SettingActivity extends AppCompatActivity {
         setResult(this.resCode);
     }
 
-    private View.OnClickListener onSoundClick = view -> {
+    private final View.OnClickListener onSoundClick = view -> {
         // Toggle checkbox
         ((CheckedTextView) view).toggle();
 
@@ -104,7 +104,7 @@ public class SettingActivity extends AppCompatActivity {
         setResultCode(ResCode.SETTING_SOUND_CHANGED);
     };
 
-    private CompoundButton.OnCheckedChangeListener onFlagClick = (compoundButton, isChecked) -> {
+    private final CompoundButton.OnCheckedChangeListener onFlagClick = (compoundButton, isChecked) -> {
         MySharedPreferencesUtil.putBoolean(SettingActivity.this, Key.PREFERENCES_FLAG_TOGGLE, isChecked);
         setResultCode(ResCode.SETTING_FLAG_CHANGED);
     };

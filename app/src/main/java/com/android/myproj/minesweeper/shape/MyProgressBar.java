@@ -1,9 +1,12 @@
 package com.android.myproj.minesweeper.shape;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.RectF;
 import android.view.ViewGroup;
+
+import androidx.core.content.ContextCompat;
+
+import com.android.myproj.minesweeper.R;
 
 public class MyProgressBar {
 
@@ -38,7 +41,7 @@ public class MyProgressBar {
 
         this.container.addView(new MyRectF(
                 this.activity,
-                Color.parseColor("#9882df"),
+                ContextCompat.getColor(this.activity, R.color.purple_700),
                 new RectF(left, top, right, bottom)
         ));
     }

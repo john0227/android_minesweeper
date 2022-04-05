@@ -2,7 +2,7 @@ package com.android.myproj.minesweeper.game.logic;
 
 public class Tile {
 
-    private int index;
+    private final int index;
     private boolean isCovered;
     private boolean isFlagged;
     private TileValue tileValue;
@@ -65,7 +65,7 @@ public class Tile {
     }
 
     protected static int getRowFromIndex(int index, int board_col) {
-        return (int) (index / board_col);
+        return index / board_col;
     }
 
     protected static int getColFromIndex(int index, int board_col) {

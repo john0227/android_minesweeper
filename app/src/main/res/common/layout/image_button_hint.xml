@@ -4,10 +4,12 @@
     android:id="@+id/ibtn_setting"
     android:layout_width="50dp"
     android:layout_height="50dp"
-    android:layout_marginBottom="25dp"
     android:layout_marginEnd="30dp"
+    android:layout_marginBottom="25dp"
     android:background="@null"
     android:scaleType="centerCrop"
-    app:srcCompat="@drawable/hint"
+    android:tint="@color/purple_tint"
+    android:tintMode="add"
+    app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent" />
+    app:srcCompat="@drawable/hint" />

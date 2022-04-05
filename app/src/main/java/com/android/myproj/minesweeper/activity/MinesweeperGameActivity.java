@@ -4,12 +4,15 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -101,7 +104,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
+    protected void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
 
         if (this.hasStarted && !this.isGameOver) {
@@ -238,6 +241,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 tile.setId(View.generateViewId());
                 tile.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.covered, null));
                 tile.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                tile.setImageTintList(AppCompatResources.getColorStateList(this, R.color.purple_tint));
+                tile.setImageTintMode(PorterDuff.Mode.LIGHTEN);
                 tile.setPadding(0, 0, 0, 0);
                 tile.setOnClickListener(onTileClick);
 
@@ -284,7 +289,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private AlertDialog.Builder buildGameoverAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MinesweeperGameActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MinesweeperGameActivity.this, R.style.MyDialogTheme);
 
         builder.setTitle(message);
         builder.setMessage("Try again?");

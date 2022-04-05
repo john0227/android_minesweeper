@@ -31,8 +31,6 @@ public class MyRectF extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        LogService.info(new StatisticsActivity(), "========= onDraw() =========");
-
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(color);
 

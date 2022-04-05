@@ -15,7 +15,7 @@ import java.util.List;
 
 public class OverallStatisticsFragment extends StatisticsFragment {
 
-    private Activity activity;
+    private final Activity activity;
     private ViewGroup container;
 
     public OverallStatisticsFragment(Activity activity) {

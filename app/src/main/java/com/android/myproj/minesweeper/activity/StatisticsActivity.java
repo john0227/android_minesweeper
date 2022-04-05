@@ -1,6 +1,7 @@
 package com.android.myproj.minesweeper.activity;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -183,7 +184,8 @@ public class StatisticsActivity extends FragmentActivity {
             super.onPageSelected(pos);
             for (int i = 0; i < levelButtons.size(); i++) {
                 if (i == pos) {
-                    levelButtons.get(i).setTextColor(Color.parseColor("#9882df"));
+                    levelButtons.get(i).setTextColor(
+                            ContextCompat.getColor(StatisticsActivity.this, R.color.purple_700));
                 } else {
                     levelButtons.get(i).setTextColor(Color.WHITE);
                 }

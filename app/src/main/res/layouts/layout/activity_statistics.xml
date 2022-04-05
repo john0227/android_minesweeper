@@ -15,6 +15,7 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:text="Statistics"
+            android:textColor="@color/text_level_base_header1"
             android:textSize="25dp"
             android:textStyle="bold" />
 

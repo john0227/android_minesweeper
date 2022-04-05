@@ -16,6 +16,7 @@
         android:padding="25dp"
         android:tag="INTERMEDIATE"
         android:text="Intermediate"
+        android:textColor="#DDDDDD"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,6 +32,7 @@
         android:padding="25dp"
         android:tag="EASY"
         android:text="Easy"
+        android:textColor="#DDDDDD"
         android:textSize="25dp"
         app:layout_constraintBottom_toTopOf="@+id/btn_intermediate"
         app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
@@ -45,6 +47,7 @@
         android:padding="25dp"
         android:tag="EXPERT"
         android:text="Expert"
+        android:textColor="#DDDDDD"
         android:textSize="25dp"
         app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
         app:layout_constraintStart_toStartOf="@+id/btn_intermediate"
@@ -55,6 +58,7 @@
         android:layout_width="0dp"
         android:layout_height="80dp"
         android:layout_marginBottom="20dp"
+        android:padding="0dp"
         app:layout_constraintBottom_toTopOf="@+id/btn_easy"
         app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
         app:layout_constraintStart_toStartOf="@+id/btn_intermediate">
@@ -64,12 +68,12 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginBottom="20dp"
-            android:background="@android:color/transparent"
             android:enabled="false"
             android:onClick="onButtonClick"
-            android:padding="20dp"
+            android:padding="0dp"
             android:paddingEnd="80dp"
-            android:tag="RESUME" />
+            android:tag="RESUME"
+            android:textColor="#333333" />
     </FrameLayout>
 
     <FrameLayout
@@ -127,5 +131,7 @@
             android:textSize="14dp"
             android:textStyle="bold" />
     </FrameLayout>
+
+    <include layout="@layout/layout_navigation" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,8 +17,8 @@ import java.util.Locale;
 
 public class LevelStatisticsFragment extends StatisticsFragment {
 
-    private Activity activity;
-    private Level level;
+    private final Activity activity;
+    private final Level level;
     private ViewGroup container;
 
     public LevelStatisticsFragment(Activity activity, Level level) {
@@ -44,8 +44,8 @@ public class LevelStatisticsFragment extends StatisticsFragment {
                 .setText(new DecimalFormat("##0.0#").format((double) stats.get(2) / 100) + "%");
 
         // Fill Statistics (Time section) : Best Time, Avg Time
-        ((TextView) container.findViewById(R.id.tv_best_time)).setText(this.formatTime(stats.get(3).intValue()));
-        ((TextView) container.findViewById(R.id.tv_avg_time)).setText(this.formatTime(stats.get(4).intValue()));
+        ((TextView) container.findViewById(R.id.tv_best_time)).setText(this.formatTime(stats.get(3)));
+        ((TextView) container.findViewById(R.id.tv_avg_time)).setText(this.formatTime(stats.get(4)));
 
         // Fill Statistics (Streak section) : Best Win Streak, Current Win Streak, Wins with No Hints
         ((TextView) container.findViewById(R.id.tv_best_streak)).setText("" + stats.get(5));
