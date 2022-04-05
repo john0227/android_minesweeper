@@ -10,11 +10,11 @@
         android:id="@+id/btn_reset_stat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:background="@null"
         android:onClick="onResetClick"
         android:text="Reset Statistics"
-        android:textColor="#AAAAAA"
-        android:layout_marginTop="10dp"
+        android:textColor="@color/text_color_change"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

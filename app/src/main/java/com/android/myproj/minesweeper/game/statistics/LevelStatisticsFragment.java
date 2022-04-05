@@ -17,10 +17,11 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class LevelStatisticsFragment extends Fragment {
+public class LevelStatisticsFragment extends StatisticsFragment {
 
     private Activity activity;
     private Level level;
+    private ViewGroup container;
 
     public LevelStatisticsFragment(Activity activity, Level level) {
         this.activity = activity;
@@ -29,12 +30,12 @@ public class LevelStatisticsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
-        ViewGroup newContainer = (ViewGroup) inflater.inflate(R.layout.layout_statistics, container, false);
-        showStat(newContainer);
-        return newContainer;
+        this.container = (ViewGroup) inflater.inflate(R.layout.layout_statistics, container, false);
+        showStat();
+        return this.container;
     }
 
-    private void showStat(ViewGroup container) {
+    public void showStat() {
         // Retrieve win rate as long as well
         List<Integer> stats = StatUtil.getStatistics(activity, this.level);
 

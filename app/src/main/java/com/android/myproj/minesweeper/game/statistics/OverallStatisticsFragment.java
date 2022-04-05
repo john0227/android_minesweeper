@@ -18,9 +18,10 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class OverallStatisticsFragment extends Fragment {
+public class OverallStatisticsFragment extends StatisticsFragment {
 
     private Activity activity;
+    private ViewGroup container;
 
     public OverallStatisticsFragment(Activity activity) {
         this.activity = activity;
@@ -28,12 +29,12 @@ public class OverallStatisticsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
-        ViewGroup newContainer = (ViewGroup) inflater.inflate(R.layout.layout_overall_statistics, container, false);
-        showStat(newContainer);
-        return newContainer;
+        this.container = (ViewGroup) inflater.inflate(R.layout.layout_overall_statistics, container, false);
+        showStat();
+        return this.container;
     }
 
-    private void showStat(ViewGroup container) {
+    public void showStat() {
         List<Integer> stats = StatUtil.getOverallStatistics(activity);
 
         // Fill Statistics (Games section) : Games Started, Games Won, Win Rate

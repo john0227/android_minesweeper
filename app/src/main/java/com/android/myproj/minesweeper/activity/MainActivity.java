@@ -30,6 +30,7 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
+import com.android.myproj.minesweeper.shape.MyArc;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
@@ -265,9 +266,7 @@ public class MainActivity extends AppCompatActivity {
         String selMenu = menuItem.getTitle().toString();
         switch (selMenu) {
             case "Setting" -> resultLauncherSetting.launch(new Intent(MainActivity.this, SettingActivity.class));
-            case "Statistics" -> {
-                startActivity(new Intent(MainActivity.this, StatisticsActivity.class));
-            }
+            case "Statistics" -> startActivity(new Intent(MainActivity.this, StatisticsActivity.class));
             case "Sound" -> {
                 menuItem.setChecked(!playSound);
                 playSound = !playSound;
@@ -331,31 +330,31 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private static class MyArc extends View {
-
-        private final int color;
-        private final float sweepAngle;
-        private final Paint paint;
-        private final RectF rectF;
-
-        public MyArc(Context context, @ColorInt int color, float sweepAngle, RectF rectF) {
-            super(context);
-            this.color = color;
-            this.sweepAngle = sweepAngle == 0 ? 1 : sweepAngle;
-            this.rectF = rectF;
-            paint = new Paint();
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(color);
-
-            canvas.drawArc(rectF, -90, this.sweepAngle, true, paint);
-        }
-
-    }
+//    private static class MyArc extends View {
+//
+//        private final int color;
+//        private final float sweepAngle;
+//        private final Paint paint;
+//        private final RectF rectF;
+//
+//        public MyArc(Context context, @ColorInt int color, float sweepAngle, RectF rectF) {
+//            super(context);
+//            this.color = color;
+//            this.sweepAngle = sweepAngle == 0 ? 1 : sweepAngle;
+//            this.rectF = rectF;
+//            paint = new Paint();
+//        }
+//
+//        @Override
+//        protected void onDraw(Canvas canvas) {
+//            super.onDraw(canvas);
+//
+//            paint.setStyle(Paint.Style.FILL);
+//            paint.setColor(color);
+//
+//            canvas.drawArc(rectF, -90, this.sweepAngle, true, paint);
+//        }
+//
+//    }
 
 }
