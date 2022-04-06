@@ -18,5 +18,6 @@
     <color name="text_level_1">#FFF0F0F0</color>
     <color name="icon_tint_purple">#FF7350E0</color>
     <color name="purple_tint">#5C7350E0</color>
-    <color name="button_tint">#441F4A</color>
+    <color name="button_tint">#FF441F4A</color>
+    <color name="button_background">#FF453566</color>
 </resources>

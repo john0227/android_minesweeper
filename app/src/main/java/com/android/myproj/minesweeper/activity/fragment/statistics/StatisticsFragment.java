@@ -1,4 +1,4 @@
-package com.android.myproj.minesweeper.game.statistics;
+package com.android.myproj.minesweeper.activity.fragment.statistics;
 
 import androidx.fragment.app.Fragment;
 

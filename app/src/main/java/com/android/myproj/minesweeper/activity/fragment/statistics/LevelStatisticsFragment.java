@@ -1,4 +1,4 @@
-package com.android.myproj.minesweeper.game.statistics;
+package com.android.myproj.minesweeper.activity.fragment.statistics;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -19,16 +19,19 @@ public class LevelStatisticsFragment extends StatisticsFragment {
 
     private final Activity activity;
     private final Level level;
+    private final View.OnClickListener listener;
     private ViewGroup container;
 
-    public LevelStatisticsFragment(Activity activity, Level level) {
+    public LevelStatisticsFragment(Activity activity, Level level, View.OnClickListener listener) {
         this.activity = activity;
         this.level = level;
+        this.listener = listener;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
         this.container = (ViewGroup) inflater.inflate(R.layout.layout_statistics, container, false);
+        this.container.findViewById(R.id.btn_reset_stat).setOnClickListener(this.listener);
         showStat();
         return this.container;
     }

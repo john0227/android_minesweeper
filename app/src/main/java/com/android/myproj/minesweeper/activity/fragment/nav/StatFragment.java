@@ -1,26 +1,31 @@
-package com.android.myproj.minesweeper.activity;
+package com.android.myproj.minesweeper.activity.fragment.nav;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
 import com.android.myproj.minesweeper.R;
+import com.android.myproj.minesweeper.activity.fragment.statistics.LevelStatisticsFragment;
+import com.android.myproj.minesweeper.activity.fragment.statistics.OverallStatisticsFragment;
+import com.android.myproj.minesweeper.activity.fragment.statistics.StatisticsFragment;
 import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.game.statistics.LevelStatisticsFragment;
-import com.android.myproj.minesweeper.game.statistics.OverallStatisticsFragment;
-import com.android.myproj.minesweeper.game.statistics.StatisticsFragment;
 import com.android.myproj.minesweeper.shape.MyProgressBar;
 import com.android.myproj.minesweeper.util.ConvertUnitUtil;
 import com.android.myproj.minesweeper.util.LogService;
@@ -32,9 +37,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatisticsActivity extends FragmentActivity {
+public class StatFragment extends Fragment implements View.OnClickListener {
 
     private static final int NUM_PAGES = 4;
+    
+    private Activity activity;
+    private View rootLayout;
 
     // To be used when drawing rectangle
     private final float PROGRESS_BAR_HEIGHT_DP = 5;
@@ -50,60 +58,71 @@ public class StatisticsActivity extends FragmentActivity {
     private LinearLayout btnContainer;
     private List<Button> levelButtons;
     private MyProgressBar progressBar;
+    
+    private boolean isAttached;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.isAttached = true;
+    }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (this.isAttached) {
+            this.activity = getActivity();
+        }
+        
         try {
-            setContentView(R.layout.activity_statistics);
+            this.rootLayout = inflater.inflate(R.layout.activity_statistics, container, false);
 
             setting();
-            methodAfterSetting();
         } catch (Exception e) {
-            LogService.error(this, e.getMessage(), e);
+            LogService.error(this.activity, e.getMessage(), e);
         }
+        return this.rootLayout;
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         viewPager.unregisterOnPageChangeCallback(changeButtonColor);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         viewPager.registerOnPageChangeCallback(changeButtonColor);
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         viewPager.unregisterOnPageChangeCallback(changeButtonColor);
     }
 
     private void setting() {
-        this.scrollbarContainer = findViewById(R.id.frame_scrollbar_container);
-        this.btnContainer = findViewById(R.id.linearL_button_container_stat);
+        this.scrollbarContainer = this.rootLayout.findViewById(R.id.frame_scrollbar_container);
+        this.btnContainer = this.rootLayout.findViewById(R.id.linearL_button_container_stat);
 
         // Add Level buttons to buttonList
         this.levelButtons = new ArrayList<>();
-        this.levelButtons.add(findViewById(R.id.btn_overall_stat));
-        this.levelButtons.add(findViewById(R.id.btn_easy_stat));
-        this.levelButtons.add(findViewById(R.id.btn_intermediate_stat));
-        this.levelButtons.add(findViewById(R.id.btn_expert_stat));
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_overall_stat));
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_easy_stat));
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_intermediate_stat));
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_expert_stat));
 
         // Set ViewPager2 Object
-        this.viewPager = findViewById(R.id.vp2_statistics);
-        this.pagerAdapter = new ScreenSlidePagerAdapter(this);
+        this.viewPager = this.rootLayout.findViewById(R.id.vp2_statistics);
+        this.pagerAdapter = new StatFragment.ScreenSlidePagerAdapter((FragmentActivity) this.activity);
         this.viewPager.setAdapter(this.pagerAdapter);
         this.viewPager.registerOnPageChangeCallback(changeButtonColor);
 
         // Create MyProgressBar object
-        this.progressBar = new MyProgressBar(this, this.scrollbarContainer);
+        this.progressBar = new MyProgressBar(this.activity, this.scrollbarContainer);
         // Store necessary dimension
-        this.progressBarHeightPx = ConvertUnitUtil.convertDpToPx(this, this.PROGRESS_BAR_HEIGHT_DP);
+        this.progressBarHeightPx = ConvertUnitUtil.convertDpToPx(this.activity, this.PROGRESS_BAR_HEIGHT_DP);
         // Prepare to draw progress bar
         new Handler().postDelayed(
                 () -> this.progressBar.drawProgressBar(
@@ -114,41 +133,66 @@ public class StatisticsActivity extends FragmentActivity {
         );
     }
 
-    private void methodAfterSetting() {
-        new Handler().postDelayed(() ->
-        LogService.info(this, ""+this.levelButtons.get(0).getWidth())
-                , 20);
-    }
-
-    public void onResetClick(View view) {
+    @Override
+    public void onClick(View view) {
         int index = viewPager.getCurrentItem();
 
         boolean hasReset = false;
         if (index == 0) {
             // If player clicked RESET button in Overall Statistics, reset all statistics
             try {
-                hasReset = StatUtil.resetAllStats(this);
+                hasReset = StatUtil.resetAllStats(this.activity);
             } catch (JSONException | IOException e) {
-                LogService.error(this, "Unable to reset statistics", e);
+                LogService.error(this.activity, "Unable to reset statistics", e);
             }
         } else {
             try {
-                hasReset = StatUtil.resetStat(this, Level.getLevelFromCode(index));
+                hasReset = StatUtil.resetStat(this.activity, Level.getLevelFromCode(index));
             } catch (JSONException | IOException e) {
-                LogService.error(this, "Unable to reset statistics", e);
+                LogService.error(this.activity, "Unable to reset statistics", e);
             }
         }
 
         if (hasReset) {
             // Notify the adapter that there has been a change
-            ((ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
+            ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
             // Notify the user that the stats have been reset
-            Toast.makeText(this, "Statistics have been reset", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.activity, "Statistics have been reset", Toast.LENGTH_SHORT).show();
         } else {
             // Notify the user that there was nothing to reset
-            Toast.makeText(this, "Nothing to reset", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.activity, "Nothing to reset", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public View.OnClickListener onResetClick = view -> {
+        int index = viewPager.getCurrentItem();
+
+        boolean hasReset = false;
+        if (index == 0) {
+            // If player clicked RESET button in Overall Statistics, reset all statistics
+            try {
+                hasReset = StatUtil.resetAllStats(this.activity);
+            } catch (JSONException | IOException e) {
+                LogService.error(this.activity, "Unable to reset statistics", e);
+            }
+        } else {
+            try {
+                hasReset = StatUtil.resetStat(this.activity, Level.getLevelFromCode(index));
+            } catch (JSONException | IOException e) {
+                LogService.error(this.activity, "Unable to reset statistics", e);
+            }
+        }
+
+        if (hasReset) {
+            // Notify the adapter that there has been a change
+            ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
+            // Notify the user that the stats have been reset
+            Toast.makeText(this.activity, "Statistics have been reset", Toast.LENGTH_SHORT).show();
+        } else {
+            // Notify the user that there was nothing to reset
+            Toast.makeText(this.activity, "Nothing to reset", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     private final ViewPager2.OnPageChangeCallback changeButtonColor = new ViewPager2.OnPageChangeCallback() {
 
@@ -184,13 +228,11 @@ public class StatisticsActivity extends FragmentActivity {
             super.onPageSelected(pos);
             for (int i = 0; i < levelButtons.size(); i++) {
                 if (i == pos) {
-                    levelButtons.get(i).setTextColor(
-                            ContextCompat.getColor(StatisticsActivity.this, R.color.purple_700));
+                    levelButtons.get(i).setTextColor(ContextCompat.getColor(activity, R.color.purple_700));
                 } else {
                     levelButtons.get(i).setTextColor(Color.WHITE);
                 }
             }
-            LogService.info(StatisticsActivity.this, "Selected Page: " + pos);
             this.storeDimension(pos);
             this.drawRect(pos, 0);
         }
@@ -198,10 +240,10 @@ public class StatisticsActivity extends FragmentActivity {
 
         private Button getButtonAtPos(int pos) {
             return switch (pos) {
-                case 0 -> findViewById(R.id.btn_overall_stat);
-                case 1 -> findViewById(R.id.btn_easy_stat);
-                case 2 -> findViewById(R.id.btn_intermediate_stat);
-                case 3 -> findViewById(R.id.btn_expert_stat);
+                case 0 -> rootLayout.findViewById(R.id.btn_overall_stat);
+                case 1 -> rootLayout.findViewById(R.id.btn_easy_stat);
+                case 2 -> rootLayout.findViewById(R.id.btn_intermediate_stat);
+                case 3 -> rootLayout.findViewById(R.id.btn_expert_stat);
                 default -> throw new RuntimeException("Invalid ViewPager2 position");
             };
         }
@@ -234,10 +276,9 @@ public class StatisticsActivity extends FragmentActivity {
         @NonNull
         @Override
         public Fragment createFragment(int pos) {
-            LogService.info(StatisticsActivity.this, "Creating Fragments");
             StatisticsFragment fragment = switch (pos) {
-                case 0 -> new OverallStatisticsFragment(StatisticsActivity.this);
-                case 1, 2, 3 -> new LevelStatisticsFragment(StatisticsActivity.this, Level.getLevelFromCode(pos));
+                case 0 -> new OverallStatisticsFragment(activity, StatFragment.this);
+                case 1, 2, 3 -> new LevelStatisticsFragment(activity, Level.getLevelFromCode(pos), StatFragment.this);
                 default -> throw new RuntimeException("Invalid Level received");
             };
             this.fragments[pos] = fragment;
@@ -265,5 +306,5 @@ public class StatisticsActivity extends FragmentActivity {
         }
 
     }
-
+    
 }

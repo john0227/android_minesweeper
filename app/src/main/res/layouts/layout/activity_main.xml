@@ -3,135 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.MainActivity">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/image_button_setting" />
-
-    <Button
-        android:id="@+id/btn_intermediate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onButtonClick"
-        android:padding="25dp"
-        android:tag="INTERMEDIATE"
-        android:text="Intermediate"
-        android:textColor="#DDDDDD"
-        android:textSize="25dp"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_main"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:background="#9D7AEA"
+        app:backgroundTint="#9D7AEA"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:menu="@menu/menu_navigation">
 
-    <Button
-        android:id="@+id/btn_easy"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:onClick="onButtonClick"
-        android:padding="25dp"
-        android:tag="EASY"
-        android:text="Easy"
-        android:textColor="#DDDDDD"
-        android:textSize="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_intermediate"
-        app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-        app:layout_constraintStart_toStartOf="@+id/btn_intermediate" />
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
-    <Button
-        android:id="@+id/btn_expert"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:onClick="onButtonClick"
-        android:padding="25dp"
-        android:tag="EXPERT"
-        android:text="Expert"
-        android:textColor="#DDDDDD"
-        android:textSize="25dp"
-        app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-        app:layout_constraintStart_toStartOf="@+id/btn_intermediate"
-        app:layout_constraintTop_toBottomOf="@+id/btn_intermediate" />
-
-    <FrameLayout
-        android:id="@+id/frame_button"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="20dp"
-        android:padding="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_easy"
-        app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-        app:layout_constraintStart_toStartOf="@+id/btn_intermediate">
-
-        <Button
-            android:id="@+id/btn_resume"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="20dp"
-            android:enabled="false"
-            android:onClick="onButtonClick"
-            android:padding="0dp"
-            android:paddingEnd="80dp"
-            android:tag="RESUME"
-            android:textColor="#333333" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/frameLayout_progress_outside_circle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="20dp"
-        android:background="@android:color/transparent"
-        android:padding="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/frame_button"
-        app:layout_constraintEnd_toEndOf="@+id/frame_button"
-        app:layout_constraintTop_toTopOf="@+id/frame_button"></FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/frameLayout_progress_outside_arc"
-        android:layout_width="0dp"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/main_nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@android:color/transparent"
-        android:padding="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintEnd_toEndOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintStart_toStartOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintTop_toTopOf="@+id/frameLayout_progress_outside_circle">
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/frameLayout_progress_inside_circle"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@android:color/transparent"
-        android:padding="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintEnd_toEndOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintStart_toStartOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintTop_toTopOf="@+id/frameLayout_progress_outside_circle">
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/frameLayout_progress_tv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@android:color/transparent"
-        android:padding="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintEnd_toEndOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintStart_toStartOf="@+id/frameLayout_progress_outside_circle"
-        app:layout_constraintTop_toTopOf="@+id/frameLayout_progress_outside_circle">
-
-        <TextView
-            android:id="@+id/tv_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="#CD5EEA"
-            android:textSize="14dp"
-            android:textStyle="bold" />
-    </FrameLayout>
-
-    <include layout="@layout/layout_navigation" />
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toTopOf="@id/nav_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/main_bottom_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

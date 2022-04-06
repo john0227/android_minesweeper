@@ -6,10 +6,6 @@
        android:title="Setting" />
 
    <item
-       android:id="@+id/menu_statistics"
-       android:title="Statistics" />
-
-   <item
         android:id="@+id/menu_setting_sound"
         android:checkable="true"
         android:title="Sound" />
