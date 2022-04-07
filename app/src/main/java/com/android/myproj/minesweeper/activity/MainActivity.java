@@ -38,6 +38,16 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (this.viewPager2.getCurrentItem() == 0) {
+            super.onBackPressed();
+        } else {
+//            this.viewPager2.setCurrentItem(0);
+            this.bottomNavigationView.setSelectedItemId(R.id.homeFragment);
+        }
+    }
+
     private void setting() {
         this.viewPager2 = findViewById(R.id.vp2_fragment);
         this.viewPager2.setUserInputEnabled(false);
