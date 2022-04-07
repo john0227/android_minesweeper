@@ -2,18 +2,17 @@ package com.android.myproj.minesweeper.activity.fragment.nav;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -36,6 +35,7 @@ import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.shape.MyArc;
+import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
     
     private ActivityResultLauncher<Intent> resultLauncherGame;
     private ActivityResultLauncher<Intent> resultLauncherSetting;
-    private ImageButton ibtn_setting;
+    private Button btn_setting;
 
     private boolean isAttached;
     private boolean playSound;
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
         }
         
         try {
-            this.rootLayout = inflater.inflate(R.layout.activity_home, container, false);
+            this.rootLayout = inflater.inflate(R.layout.fragment_home, container, false);
 
             init();
             setting();
@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void init() {
-        this.ibtn_setting = this.rootLayout.findViewById(R.id.ibtn_setting);
+        this.btn_setting = this.rootLayout.findViewById(R.id.btn_setting);
 
         // Set Callback Function
         resultLauncherGame = registerForActivityResult(
@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment {
         this.rootLayout.findViewById(R.id.btn_resume).setOnClickListener(onButtonClick);
 
         // Bind PopupMenu to ImageButton
-        this.ibtn_setting.setOnClickListener(onSettingClick);
+        this.btn_setting.setOnClickListener(onSettingClick);
 
         // Reposition buttons if necessary
         this.repositionButtons();
@@ -130,6 +130,10 @@ public class HomeFragment extends Fragment {
 
         // Retrieve saved JSONObject and check if there is data to restore
         JSONObject savedState = JSONUtil.readJSONFile(this.activity);
+
+        // =================================================================
+        // ============ If player does not have an ongoing game ============
+        // =================================================================
         if (!JSONUtil.existsSavedGame(this.activity)) {
             LogService.info(this.activity, "====== No SavedData =====");
             this.existsSavedData = false;
@@ -153,6 +157,9 @@ public class HomeFragment extends Fragment {
             return;
         }
 
+        // =================================================================
+        // ================= If player has an ongoing game =================
+        // =================================================================
         LogService.info(this.activity, "====== SavedData exists =====");
         this.existsSavedData = true;
         Level level = Level.getLevelFromCode(savedState.getInt(JSONKey.KEY_LEVEL));
@@ -248,18 +255,19 @@ public class HomeFragment extends Fragment {
     };
 
     private void showAlertDialog(Runnable toRun) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.activity, R.style.MyDialogTheme);
-
-        builder.setTitle("Resume Game?");
-        builder.setMessage("You have an ongoing game. Are you sure you want to start a new game?");
-
-        builder.setPositiveButton("Continue", (dialogInterface, i) -> {
+        String title = "Resume Game?";
+        String message = "You have an ongoing game. Are you sure you want to start a new game?";
+        String posText = "Continue";
+        String negText = "Go Back";
+        DialogInterface.OnClickListener posAction = (dialogInterface, i) -> {
             updateSavedData();
             toRun.run();
-        });
-        builder.setNegativeButton("Go Back", (dialogInterface, i) -> {});
+        };
+        DialogInterface.OnClickListener negAction = (dialogInterface, i) -> {};
 
-        builder.show();
+        AlertDialogBuilderUtil.buildAlertDialog(
+                this.activity, title, message, posText, negText, posAction, negAction, true
+        ).show();
     }
 
     // If this method is called, the player must have started a new game even though there was a saved game
@@ -277,6 +285,10 @@ public class HomeFragment extends Fragment {
         } catch (JSONException | IOException e) {
             LogService.error(this.activity, e.getMessage(), e);
         }
+    }
+
+    private void updateSoundSetting() {
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_SOUND, this.playSound);
     }
 
     private final PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
@@ -310,7 +322,7 @@ public class HomeFragment extends Fragment {
 
     private final View.OnClickListener onSettingClick = view -> {
         // Initializing the popup menu and giving the reference as current context
-        PopupMenu popupMenu = new PopupMenu(this.activity, ibtn_setting);
+        PopupMenu popupMenu = new PopupMenu(this.activity, btn_setting);
 
         // Inflating popup menu from popup_menu.xml file
         popupMenu.getMenuInflater().inflate(R.menu.home_menu_setting, popupMenu.getMenu());
@@ -320,10 +332,6 @@ public class HomeFragment extends Fragment {
         // Showing the popup menu
         popupMenu.show();
     };
-
-    private void updateSoundSetting() {
-        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_SOUND, this.playSound);
-    }
 
     private final ActivityResultCallback<ActivityResult> gameResultCallback = result -> {
         LogService.info(this.activity, "Returned from game to Home Screen");

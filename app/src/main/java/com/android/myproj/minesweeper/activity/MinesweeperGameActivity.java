@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import com.android.myproj.minesweeper.game.logic.Game;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.game.logic.Tile;
 import com.android.myproj.minesweeper.game.logic.TileValue;
+import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
@@ -289,27 +291,17 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private AlertDialog.Builder buildGameoverAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MinesweeperGameActivity.this, R.style.MyDialogTheme);
-
-        builder.setTitle(message);
-        builder.setMessage("Try again?");
-
-        builder.setPositiveButton("New Game", (dialogInterface, i) -> {
+        DialogInterface.OnClickListener posAction = (dialogInterface, i) -> {
             cleanup();
             createNewGame(true);
-        });
-        builder.setNegativeButton("Main Menu", (dialogInterface, i) -> {
+        };
+        DialogInterface.OnClickListener negAction = (dialogInterface, i) -> {
             cleanup();
             finish();
-        });
+        };
 
-        // Alert Dialog 이외의 공간을 터치 했을때 Alert 팝업이 안사라지도록 함
-        // 무조건 +ve, -ve, neutral 버튼을 눌러야 Alert 팝업이 사라짐
-        builder.setCancelable(false);
-        // If the above is set to false and none of the +ve, -ve, neutral buttons are initialized,
-        // The user will not be able to make the Alert Dialog disappear
-
-        return builder;
+        return AlertDialogBuilderUtil.buildAlertDialog(this, message, "Try again?",
+                "New Game", "Main Menu", posAction, negAction, false);
     }
 
     private void updateSoundSetting() {

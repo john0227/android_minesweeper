@@ -2,6 +2,7 @@ package com.android.myproj.minesweeper.activity.fragment.nav;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.util.Supplier;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -25,15 +27,15 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.fragment.statistics.LevelStatisticsFragment;
 import com.android.myproj.minesweeper.activity.fragment.statistics.OverallStatisticsFragment;
 import com.android.myproj.minesweeper.activity.fragment.statistics.StatisticsFragment;
+import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.shape.MyProgressBar;
+import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
 import com.android.myproj.minesweeper.util.ConvertUnitUtil;
+import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.StatUtil;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +60,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     private LinearLayout btnContainer;
     private List<Button> levelButtons;
     private MyProgressBar progressBar;
-    
+
     private boolean isAttached;
 
     @Override
@@ -73,9 +75,9 @@ public class StatFragment extends Fragment implements View.OnClickListener {
         if (this.isAttached) {
             this.activity = getActivity();
         }
-        
+
         try {
-            this.rootLayout = inflater.inflate(R.layout.activity_statistics, container, false);
+            this.rootLayout = inflater.inflate(R.layout.fragment_statistics, container, false);
 
             setting();
         } catch (Exception e) {
@@ -100,6 +102,30 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         viewPager.unregisterOnPageChangeCallback(changeButtonColor);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int index = viewPager.getCurrentItem();
+        Supplier<Integer> reset = (index == 0)
+                ? () -> StatUtil.resetAllStats(this.activity)
+                : () -> StatUtil.resetStat(this.activity, Level.getLevelFromCode(index));
+
+        if (JSONUtil.existsSavedGame(this.activity)) {
+            int levelCode = (int) JSONUtil.readKeyFromFile(this.activity, JSONKey.KEY_LEVEL);
+            if (index == 0) {
+                // Reset Overall Statistics
+                resetAllStatIf(levelCode, reset);
+            } else if (levelCode == index) {
+                // Level trying to reset has an ongoing game
+                resetStatIf(levelCode, reset);
+            } else {
+                // Level trying to reset does not have an ongoing game
+                this.toastResetResult(index, reset.get());
+            }
+        } else {
+            this.toastResetResult(index, reset.get());
+        }
     }
 
     private void setting() {
@@ -133,66 +159,65 @@ public class StatFragment extends Fragment implements View.OnClickListener {
         );
     }
 
-    @Override
-    public void onClick(View view) {
-        int index = viewPager.getCurrentItem();
-
-        boolean hasReset = false;
-        if (index == 0) {
-            // If player clicked RESET button in Overall Statistics, reset all statistics
-            try {
-                hasReset = StatUtil.resetAllStats(this.activity);
-            } catch (JSONException | IOException e) {
-                LogService.error(this.activity, "Unable to reset statistics", e);
-            }
-        } else {
-            try {
-                hasReset = StatUtil.resetStat(this.activity, Level.getLevelFromCode(index));
-            } catch (JSONException | IOException e) {
-                LogService.error(this.activity, "Unable to reset statistics", e);
-            }
+    private void resetAllStatIf(int levelCode, Supplier<Integer> reset) {
+        if (StatUtil.isResettable(this.activity)
+                && !StatUtil.isResettable(this.activity, Level.getLevelFromCode(levelCode))) {
+            this.toastResetResult(0, reset.get());
+            return;
         }
+        this.resetStatIf(levelCode, reset);
+    }
 
-        if (hasReset) {
+    private void resetStatIf(int levelCode, Supplier<Integer> reset) {
+        if (StatUtil.isResettable(this.activity, Level.getLevelFromCode(levelCode))) {
+            this.showResetAlertDialog(reset);
+            return;
+        }
+        this.toastResetResult(-1, StatUtil.RES_NOTHING_TO_RESET);
+    }
+
+    private void toastResetResult(int index, int result) {
+        if (StatUtil.equalsResCode(result, StatUtil.RES_RESET)) {
             // Notify the adapter that there has been a change
             ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
             // Notify the user that the stats have been reset
             Toast.makeText(this.activity, "Statistics have been reset", Toast.LENGTH_SHORT).show();
-        } else {
+        } else if (StatUtil.equalsResCode(result, StatUtil.RES_NO_RESET)) {
+            // Notify the user that nothing was reset
+            Toast.makeText(this.activity, "Statistics was not reset", Toast.LENGTH_SHORT).show();
+        } else if (StatUtil.equalsResCode(result, StatUtil.RES_NOTHING_TO_RESET)) {
             // Notify the user that there was nothing to reset
             Toast.makeText(this.activity, "Nothing to reset", Toast.LENGTH_SHORT).show();
+        }
+
+        if (StatUtil.equalsResCode(result, StatUtil.RES_ERROR_WHILE_RESETTING)) {
+            // Notify the user that there was an error while resetting
+            Toast.makeText(this.activity, "Something went wrong while resetting", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public View.OnClickListener onResetClick = view -> {
-        int index = viewPager.getCurrentItem();
+    private void showResetAlertDialog(Supplier<Integer> reset) {
+        String title = "You have an ongoing game.";
+        String message = "Are you sure you want to reset? " +
+                "The result of the ongoing game will not be reflected in your statistics if you reset.";
+        String posText = "Reset";
+        String negText = "Go Back";
+        DialogInterface.OnClickListener posAction =
+                (dialogInterface, i) -> toastResetResult(viewPager.getCurrentItem(), reset.get());
+        DialogInterface.OnClickListener negAction =
+                (dialogInterface, i) -> toastResetResult(-1, StatUtil.RES_NO_RESET);
+        DialogInterface.OnCancelListener cancelAction =
+                dialogInterface -> toastResetResult(-1, StatUtil.RES_NO_RESET);
 
-        boolean hasReset = false;
-        if (index == 0) {
-            // If player clicked RESET button in Overall Statistics, reset all statistics
-            try {
-                hasReset = StatUtil.resetAllStats(this.activity);
-            } catch (JSONException | IOException e) {
-                LogService.error(this.activity, "Unable to reset statistics", e);
-            }
-        } else {
-            try {
-                hasReset = StatUtil.resetStat(this.activity, Level.getLevelFromCode(index));
-            } catch (JSONException | IOException e) {
-                LogService.error(this.activity, "Unable to reset statistics", e);
-            }
-        }
 
-        if (hasReset) {
-            // Notify the adapter that there has been a change
-            ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
-            // Notify the user that the stats have been reset
-            Toast.makeText(this.activity, "Statistics have been reset", Toast.LENGTH_SHORT).show();
-        } else {
-            // Notify the user that there was nothing to reset
-            Toast.makeText(this.activity, "Nothing to reset", Toast.LENGTH_SHORT).show();
-        }
-    };
+        AlertDialogBuilderUtil.buildAlertDialog(this.activity, title, message, posText, negText,
+                posAction, negAction, cancelAction, true
+        ).show();
+    }
+
+    public void updateView() {
+        ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3);
+    }
 
     private final ViewPager2.OnPageChangeCallback changeButtonColor = new ViewPager2.OnPageChangeCallback() {
 
@@ -300,8 +325,15 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
         private void updateFragment(int... positions) {
             for (int position : positions) {
-                this.fragments[position].showStat();
-                this.notifyItemChanged(position);
+                StatisticsFragment fragment = fragments[position];
+                if (fragment != null) {
+                    try {
+                        fragment.showStat();
+                        this.notifyItemChanged(position);
+                    } catch (Exception e) {
+                        LogService.error(activity, "Error while resetting Stat at page: " + position, e);
+                    }
+                }
             }
         }
 

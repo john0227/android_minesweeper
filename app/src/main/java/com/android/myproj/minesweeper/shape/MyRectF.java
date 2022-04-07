@@ -8,9 +8,6 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
-import com.android.myproj.minesweeper.activity.StatisticsActivity;
-import com.android.myproj.minesweeper.util.LogService;
-
 public class MyRectF extends View {
 
     private final int color;

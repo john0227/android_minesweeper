@@ -11,14 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            layout="@layout/image_button_setting"
+        <Button
+            android:id="@+id/btn_setting"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="12dp"
-            app:layout_constraintEnd_toEndOf="@+id/root_constraint_layout"
-            app:layout_constraintTop_toTopOf="@+id/root_constraint_layout" />
+            android:background="@drawable/setting"
+            android:backgroundTint="@color/button_tint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/btn_intermediate"

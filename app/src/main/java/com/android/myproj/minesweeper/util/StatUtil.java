@@ -14,24 +14,46 @@ import java.util.List;
 
 public class StatUtil {
 
-    public static boolean resetStat(Activity activity, Level level) throws JSONException, IOException {
-        String keySavedStat = getSavedStatKey(level);
-        Object statGameStarted = JSONUtil.readKeyFromFile(activity, JSONKey.getStatKeyByLevel(0, level));
-        if (statGameStarted != null && (int) statGameStarted != 0) {
-            JSONUtil.createDefaultStat(activity, keySavedStat);
-            return true;
-        }
-        return false;
+    // Result codes for resetting statistics
+    public static final int RES_ERROR_WHILE_RESETTING = 0b0001;  // If exception was raised while resetting
+    public static final int RES_RESET                 = 0b0010;  // If statistics has been reset
+    public static final int RES_NOTHING_TO_RESET      = 0b0100;  // If there is nothing to reset (GAME_STARTED == 0)
+    public static final int RES_NO_RESET              = 0b1000;  // If User opted to not reset after AlertDialog
+
+    public static boolean equalsResCode(int result, int resCode) {
+        return (result | resCode) == resCode;
     }
 
-    public static boolean resetAllStats(Activity activity) throws JSONException, IOException {
-        boolean hasReset = false;
-        for (int i = 1; i <= 3; i++) {
-            if (resetStat(activity, Level.getLevelFromCode(i))) {
-                hasReset = true;
+    public static boolean isResettable(Activity activity, Level level) {
+        // Check if GAMES_STARTED stat is nonzero
+        return getStatistics(activity, level).get(0) != 0;
+    }
+
+    public static boolean isResettable(Activity activity) {
+        return isResettable(activity, Level.EASY)
+                || isResettable(activity, Level.INTERMEDIATE)
+                || isResettable(activity, Level.EXPERT);
+    }
+
+    public static int resetStat(Activity activity, Level level) {
+        try {
+            if (isResettable(activity, level)) {
+                String keySavedStat = getSavedStatKey(level);
+                JSONUtil.createDefaultStat(activity, keySavedStat);
+                return RES_RESET;
             }
+            return RES_NOTHING_TO_RESET;
+        } catch (JSONException | IOException e) {
+            return RES_ERROR_WHILE_RESETTING;
         }
-        return hasReset;
+    }
+
+    public static int resetAllStats(Activity activity) {
+        int hasReset = 0;
+        for (int i = 1; i <= 3; i++) {
+            hasReset = resetStat(activity, Level.getLevelFromCode(i)) | hasReset;
+        }
+        return (hasReset & RES_RESET) == RES_RESET ? RES_RESET : hasReset;
     }
 
     public static void updateAllStat(Activity activity, Level level, int time, boolean noHint)
@@ -47,15 +69,21 @@ public class StatUtil {
         JSONObject savedStat = JSONUtil.readJSONFile(activity);
         String[] allLevelKeys = getAllLevelKeys(level);
 
-        updateGameWon(savedStat, allLevelKeys);
-        updateWinRate(savedStat, allLevelKeys);
-        updateBestTime(savedStat, allLevelKeys, time);
-        updateAvgTime(savedStat, allLevelKeys, time);
-        updateCurrStreak(savedStat, allLevelKeys);
-        updateBestStreak(savedStat, allLevelKeys);
-        updateWinsNoHint(savedStat, allLevelKeys, noHint);
+        // Only update statistics if GAMES_STARTED_STAT != 0
+        // Because the user may reset statistics AFTER starting a game
+        // -> this would reset GAMES_START_STAT and all other stats to 0
+        // -> but if the player wins a game, the stats below will be updated while GAMES_START_STAT remains zero
+        if (getStatistics(activity, level).get(0) != 0) {
+            updateGameWon(savedStat, allLevelKeys);
+            updateWinRate(savedStat, allLevelKeys);
+            updateBestTime(savedStat, allLevelKeys, time);
+            updateAvgTime(savedStat, allLevelKeys, time);
+            updateCurrStreak(savedStat, allLevelKeys);
+            updateBestStreak(savedStat, allLevelKeys);
+            updateWinsNoHint(savedStat, allLevelKeys, noHint);
 
-        JSONUtil.writeToJSONFile(activity, savedStat);
+            JSONUtil.writeToJSONFile(activity, savedStat);
+        }
     }
 
     public static List<Integer> getStatistics(Activity activity, Level level) {
