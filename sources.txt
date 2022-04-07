@@ -1,0 +1,49 @@
+Icons used in Settings and Statistics Page (Under res/common/drawable)
+    setting_sound.png :
+        Sound icons created by alkhalifi design - Flaticon (https://www.flaticon.com/free-icons/sound)
+    games_started.png :
+        Pixel icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/pixel)
+        Bomb icons created by inipagistudio - Flaticon (https://www.flaticon.com/free-icons/bomb)
+    games_won.png :
+        Crown icons created by feen - Flaticon (https://www.flaticon.com/free-icons/crown)
+    win_rate.png :
+        Flag icons created by vectorsmarket15 - Flaticon (https://www.flaticon.com/free-icons/flag)
+    best_time.png :
+        Time icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/time)
+    time.png :
+        Clock icons created by dmitri13 - Flaticon (https://www.flaticon.com/free-icons/clock)
+    best_win_streak.png :
+        Double arrow icons created by IconKanan - Flaticon (https://www.flaticon.com/free-icons/double-arrow)
+    win_streak.png :
+        Right icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/right)
+    wins_no_hint.png :
+        Flag icons created by vectorsmarket15 - Flaticon (https://www.flaticon.com/free-icons/flag)
+        Turned off icons created by Rakib Hassan Rahim - Flaticon (https://www.flaticon.com/free-icons/turned-off)
+
+Minesweeper Cells (Under res/common/drawable)
+    mine.png, mine_0.png ~ mine_8.png, covered.png, flagged.png :
+        https://github.com/pardahlman/minesweeper/tree/master/Images
+    mine_explode.png :
+        https://www.pngwing.com/en/free-png-vxhwi
+
+Navigation Bar Icons (Under res/common/drawable)
+    nav_home.png
+        Home button icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/home-button)
+    nav_statistics.png
+        Bar graph icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/bar-graph)
+
+Other image
+    mouse_pointer.png
+        https://images.wondershare.com/recoverit/article/2021/06/mouse-cursor-1.jpg
+    setting.png
+        https://commons.wikimedia.org/wiki/File:GNOME_Settings_icon.svg
+    hint.png
+        https://www.iconsdb.com/orange-icons/light-bulb-6-icon.html
+
+Sound Effect (Under res/common/raw)
+    click.mp3 :
+        https://youtu.be/NEy_3tQ2s3E?t=18
+    explosion.mp3 :
+        https://www.youtube.com/watch?v=9FMquJzgDGQ
+    game_won.mp3 :
+        https://www.youtube.com/watch?v=_Z3ra0CxCE0
