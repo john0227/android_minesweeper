@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="MyDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:background">@color/purple_level_2</item>
+        <item name="android:background">@color/alert_dialog_background</item>
     </style>
 </resources>

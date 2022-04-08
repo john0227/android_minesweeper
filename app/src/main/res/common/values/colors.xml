@@ -20,4 +20,5 @@
     <color name="purple_tint">#5C7350E0</color>
     <color name="button_tint">#FF441F4A</color>
     <color name="button_background">#FF453566</color>
+    <color name="alert_dialog_background">#FFD6C0D7</color>
 </resources>
