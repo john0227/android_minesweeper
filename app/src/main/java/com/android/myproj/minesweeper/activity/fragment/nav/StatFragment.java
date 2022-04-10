@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -106,6 +107,66 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.btn_reset_stat) {
+            this.onResetButtonClick();
+        } else if (this.isLevelBtnId(view.getId())) {
+            this.onLevelButtonClick(view);
+        }
+    }
+
+    private void setting() {
+        this.scrollbarContainer = this.rootLayout.findViewById(R.id.frame_scrollbar_container);
+        this.btnContainer = this.rootLayout.findViewById(R.id.linearL_button_container_stat);
+
+        // Add Level buttons to buttonList
+        this.levelButtons = new ArrayList<>();
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_overall_stat));
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_easy_stat));
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_intermediate_stat));
+        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_expert_stat));
+        for (Button button : this.levelButtons) {
+            button.setOnClickListener(this);
+        }
+
+        // Set ViewPager2 Object
+        this.viewPager = this.rootLayout.findViewById(R.id.vp2_statistics);
+        this.pagerAdapter = new StatFragment.ScreenSlidePagerAdapter((FragmentActivity) this.activity);
+        this.viewPager.setAdapter(this.pagerAdapter);
+        this.viewPager.registerOnPageChangeCallback(changeButtonColor);
+
+        // Create MyProgressBar object
+        this.progressBar = new MyProgressBar(this.activity, this.scrollbarContainer);
+        // Store necessary dimension
+        this.progressBarHeightPx = ConvertUnitUtil.convertDpToPx(this.activity, this.PROGRESS_BAR_HEIGHT_DP);
+        // Prepare to draw progress bar
+        new Handler().postDelayed(
+                () -> this.progressBar.drawProgressBar(
+                        this.progressBarPadding,
+                        this.progressBarBottom - this.progressBarHeightPx
+                ),
+                50
+        );
+    }
+
+    private boolean isLevelBtnId(@IdRes int viewId) {
+        for (Button button : this.levelButtons) {
+            if (button.getId() == viewId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void onLevelButtonClick(View view) {
+        for (int i = 0; i < NUM_PAGES; i++) {
+            if (view.getId() == this.levelButtons.get(i).getId()) {
+                this.viewPager.setCurrentItem(i);
+                return;
+            }
+        }
+    }
+
+    private void onResetButtonClick() {
         int index = viewPager.getCurrentItem();
         Supplier<Integer> reset = (index == 0)
                 ? () -> StatUtil.resetAllStats(this.activity)
@@ -126,37 +187,6 @@ public class StatFragment extends Fragment implements View.OnClickListener {
         } else {
             this.toastResetResult(index, reset.get());
         }
-    }
-
-    private void setting() {
-        this.scrollbarContainer = this.rootLayout.findViewById(R.id.frame_scrollbar_container);
-        this.btnContainer = this.rootLayout.findViewById(R.id.linearL_button_container_stat);
-
-        // Add Level buttons to buttonList
-        this.levelButtons = new ArrayList<>();
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_overall_stat));
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_easy_stat));
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_intermediate_stat));
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_expert_stat));
-
-        // Set ViewPager2 Object
-        this.viewPager = this.rootLayout.findViewById(R.id.vp2_statistics);
-        this.pagerAdapter = new StatFragment.ScreenSlidePagerAdapter((FragmentActivity) this.activity);
-        this.viewPager.setAdapter(this.pagerAdapter);
-        this.viewPager.registerOnPageChangeCallback(changeButtonColor);
-
-        // Create MyProgressBar object
-        this.progressBar = new MyProgressBar(this.activity, this.scrollbarContainer);
-        // Store necessary dimension
-        this.progressBarHeightPx = ConvertUnitUtil.convertDpToPx(this.activity, this.PROGRESS_BAR_HEIGHT_DP);
-        // Prepare to draw progress bar
-        new Handler().postDelayed(
-                () -> this.progressBar.drawProgressBar(
-                        this.progressBarPadding,
-                        this.progressBarBottom - this.progressBarHeightPx
-                ),
-                50
-        );
     }
 
     private void resetAllStatIf(int levelCode, Supplier<Integer> reset) {
