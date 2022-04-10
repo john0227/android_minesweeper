@@ -6,6 +6,11 @@
         android:title="Home"/>
 
     <item
+        android:id="@+id/historyFragment"
+        android:icon="@drawable/nav_history"
+        android:title="History"/>
+
+    <item
         android:id="@+id/statFragment"
         android:icon="@drawable/nav_statistics"
         android:title="Statistics"/>

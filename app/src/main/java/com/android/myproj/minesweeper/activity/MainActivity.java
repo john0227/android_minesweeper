@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.android.myproj.minesweeper.R;
+import com.android.myproj.minesweeper.activity.fragment.nav.HistoryFragment;
 import com.android.myproj.minesweeper.activity.fragment.nav.HomeFragment;
 import com.android.myproj.minesweeper.activity.fragment.nav.StatFragment;
 import com.android.myproj.minesweeper.util.LogService;
@@ -18,7 +19,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends FragmentActivity {
 
-    private static final int NUM_PAGES = 2;
+    private static final int NUM_PAGES = 3;
 
     private StatFragment statFragment;
     private ViewPager2 viewPager2;
@@ -64,8 +65,10 @@ public class MainActivity extends FragmentActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             if (item.getItemId() == R.id.homeFragment) {
                 viewPager2.setCurrentItem(0);
-            } else if (item.getItemId() == R.id.statFragment) {
+            } else if (item.getItemId() == R.id.historyFragment) {
                 viewPager2.setCurrentItem(1);
+            } else if (item.getItemId() == R.id.statFragment) {
+                viewPager2.setCurrentItem(2);
                 if (statFragment != null) {
                     statFragment.updateView();
                 }
@@ -94,7 +97,8 @@ public class MainActivity extends FragmentActivity {
             LogService.info(MainActivity.this, "========== Creating New Fragment: " + position + " ==========");
             switch (position) {
                 case 0: return new HomeFragment();
-                case 1: {
+                case 1: return new HistoryFragment();
+                case 2: {
                     statFragment = new StatFragment();
                     return statFragment;
                 }

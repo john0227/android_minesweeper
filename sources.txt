@@ -29,6 +29,8 @@ Minesweeper Cells (Under res/common/drawable)
 Navigation Bar Icons (Under res/common/drawable)
     nav_home.png
         Home button icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/home-button)
+    nav_history
+        Pending icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/pending)
     nav_statistics.png
         Bar graph icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/bar-graph)
 

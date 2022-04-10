@@ -16,27 +16,19 @@
             android:layout_height="wrap_content"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:text="Statistics"
+            android:text="History"
             android:textColor="@color/text_level_base_header1"
             android:textSize="25dp"
             android:textStyle="bold" />
 
         <LinearLayout
-            android:id="@+id/linearL_button_container_stat"
+            android:id="@+id/linearL_button_container_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_overall_stat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@null"
-                android:text="Overall" />
-
-            <Button
-                android:id="@+id/btn_easy_stat"
+                android:id="@+id/btn_easy_history"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -44,7 +36,7 @@
                 android:text="Easy" />
 
             <Button
-                android:id="@+id/btn_intermediate_stat"
+                android:id="@+id/btn_intermediate_history"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -52,7 +44,7 @@
                 android:text="Intermediate" />
 
             <Button
-                android:id="@+id/btn_expert_stat"
+                android:id="@+id/btn_expert_history"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -62,7 +54,7 @@
         </LinearLayout>
 
         <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/vp2_stat"
+            android:id="@+id/vp2_history"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -71,6 +63,8 @@
     <FrameLayout
         android:id="@+id/frame_scrollbar_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 
 </FrameLayout>

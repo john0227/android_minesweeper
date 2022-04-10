@@ -129,7 +129,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
         }
 
         // Set ViewPager2 Object
-        this.viewPager = this.rootLayout.findViewById(R.id.vp2_statistics);
+        this.viewPager = this.rootLayout.findViewById(R.id.vp2_stat);
         this.pagerAdapter = new StatFragment.ScreenSlidePagerAdapter((FragmentActivity) this.activity);
         this.viewPager.setAdapter(this.pagerAdapter);
         this.viewPager.registerOnPageChangeCallback(changeButtonColor);

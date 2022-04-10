@@ -32,10 +32,18 @@
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/fragment2.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/fragment_1.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/fragment_2.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/fragment_history.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/fragment_statistics.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/history_layout.xml" value="0.384375" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/history_rv_item.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/layout_history.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/layout_overall_statistics.xml" value="0.33" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/layout_statistics.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/layout_statistics_common.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/recycler_view_history.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/statistics_common_layout.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/statistics_layout.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/fragments/layout/statistics_overall_layout.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_easy_level.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_expert_level.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_home.xml" value="0.33" />

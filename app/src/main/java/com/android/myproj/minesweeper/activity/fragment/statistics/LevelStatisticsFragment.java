@@ -30,7 +30,7 @@ public class LevelStatisticsFragment extends StatisticsFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
-        this.container = (ViewGroup) inflater.inflate(R.layout.layout_statistics, container, false);
+        this.container = (ViewGroup) inflater.inflate(R.layout.statistics_layout, container, false);
         this.container.findViewById(R.id.btn_reset_stat).setOnClickListener(this.listener);
         showStat();
         return this.container;
