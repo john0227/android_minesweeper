@@ -43,7 +43,6 @@ public class MainActivity extends FragmentActivity {
         if (this.viewPager2.getCurrentItem() == 0) {
             super.onBackPressed();
         } else {
-//            this.viewPager2.setCurrentItem(0);
             this.bottomNavigationView.setSelectedItemId(R.id.homeFragment);
         }
     }
@@ -56,6 +55,7 @@ public class MainActivity extends FragmentActivity {
 
         this.bottomNavigationView = findViewById(R.id.nav_main);
         this.bottomNavigationView.setOnItemSelectedListener(onItemSelectedListener);
+        this.bottomNavigationView.setOnItemReselectedListener(onItemReselectedListener);
     }
 
     private final NavigationBarView.OnItemSelectedListener onItemSelectedListener =
@@ -71,6 +71,14 @@ public class MainActivity extends FragmentActivity {
                 }
             }
             return true;
+        }
+    };
+
+    private final NavigationBarView.OnItemReselectedListener onItemReselectedListener =
+            new NavigationBarView.OnItemReselectedListener() {
+        @Override
+        public void onNavigationItemReselected(@NonNull MenuItem item) {
+            // Don't do anything
         }
     };
 

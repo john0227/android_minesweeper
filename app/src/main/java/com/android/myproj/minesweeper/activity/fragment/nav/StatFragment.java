@@ -144,7 +144,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
                         this.progressBarPadding,
                         this.progressBarBottom - this.progressBarHeightPx
                 ),
-                50
+                5
         );
     }
 
@@ -247,6 +247,14 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
     public void updateView() {
         ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3);
+        this.viewPager.setCurrentItem(0, false);
+        new Handler().postDelayed(
+                () -> this.progressBar.drawProgressBar(
+                        this.progressBarPadding,
+                        this.progressBarBottom - this.progressBarHeightPx
+                ),
+                5
+        );
     }
 
     private final ViewPager2.OnPageChangeCallback changeButtonColor = new ViewPager2.OnPageChangeCallback() {
@@ -275,7 +283,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void onPageScrolled(int pos, float posOffset, int posOffsetPx) {
-            this.drawRect(pos, posOffset);
+            this.drawProgressBar(pos, posOffset);
         }
 
         @Override
@@ -289,7 +297,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
                 }
             }
             this.storeDimension(pos);
-            this.drawRect(pos, 0);
+            this.drawProgressBar(pos, 0);
         }
 
 
@@ -311,7 +319,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
             progressBar.setDimension(BAR_TO_BUTTON_RATIO * buttonWidth, progressBarHeightPx);
         }
 
-        private void drawRect(int pos, float posOffset) {
+        private void drawProgressBar(int pos, float posOffset) {
             // Calculate corner points of MyRectF to pass to MyProgressBar
             float left = this.getButtonAtPos(pos).getX() + progressBarPadding + buttonWidth * posOffset;
             float top = progressBarBottom - progressBarHeightPx;
