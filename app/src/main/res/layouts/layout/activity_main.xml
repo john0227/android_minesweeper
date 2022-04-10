@@ -20,6 +20,8 @@
         android:layout_height="60dp"
         android:background="#9D7AEA"
         app:backgroundTint="#9D7AEA"
+        app:itemIconTint="@color/bottomnavview_icon_text_color"
+        app:itemTextColor="@color/bottomnavview_icon_text_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
