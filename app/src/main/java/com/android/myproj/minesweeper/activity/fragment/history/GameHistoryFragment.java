@@ -17,20 +17,23 @@ import com.android.myproj.minesweeper.game.logic.Level;
 public class GameHistoryFragment extends Fragment {
 
     private final Activity activity;
+    private final View.OnClickListener listener;
     private final Level level;
 
     private View rootLayout;
     private RecyclerView gameHistoryRecView;
     private GameHistoryAdapter gameHistoryAdapter;
 
-    public GameHistoryFragment(Activity activity, Level level) {
+    public GameHistoryFragment(Activity activity, View.OnClickListener listener, Level level) {
         this.activity = activity;
+        this.listener = listener;
         this.level = level;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
         this.rootLayout = inflater.inflate(R.layout.history_layout, container, false);
+        this.rootLayout.findViewById(R.id.btn_reset_history).setOnClickListener(this.listener);
         this.setting();
         return this.rootLayout;
     }

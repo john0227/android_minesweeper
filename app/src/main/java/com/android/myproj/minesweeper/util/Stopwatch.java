@@ -88,6 +88,7 @@ public class Stopwatch {
         this.isRunning = false;
         this.isPaused = true;
         this.endTime = System.currentTimeMillis();
+        stopwatchView.setText(formatTime(this.getTimeMinutes(), this.getTimeSeconds()));
         this.stopwatchHandler.removeCallbacks(run_timer);
     }
 
@@ -97,7 +98,15 @@ public class Stopwatch {
 
     private String formatTime() {
         if (timeMinutes > 0) {
-            return String.format("%d:%02d", timeMinutes, timeSeconds);
+            return String.format("%d:%02d", this.timeMinutes, this.timeSeconds);
+        } else {
+            return "" + timeSeconds;
+        }
+    }
+
+    private String formatTime(int minute, int second) {
+        if (timeMinutes > 0) {
+            return String.format("%d:%02d", minute, second);
         } else {
             return "" + timeSeconds;
         }

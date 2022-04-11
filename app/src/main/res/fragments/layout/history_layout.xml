@@ -20,5 +20,7 @@
 
     </androidx.cardview.widget.CardView>
 
+    <include layout="@layout/button_reset_history" />
+
 </LinearLayout>
 

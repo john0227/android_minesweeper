@@ -13,6 +13,18 @@ import java.io.IOException;
 
 public class HistoryUtil {
 
+    public static boolean isResettable(Level level) {
+        // Retrieve GameHistoryList instance
+        GameHistoryList singleton = GameHistoryList.getInstance();
+        return singleton.size(level) > 0;
+    }
+
+    public static void resetHistory(Level level) {
+        // Retrieve GameHistoryList instance
+        GameHistoryList singleton = GameHistoryList.getInstance();
+        singleton.resetGameHistory(level);
+    }
+
     public static void saveGameHistory(Activity activity, Level level, Stopwatch stopwatch) throws JSONException, IOException {
         // Retrieve GameHistoryList instance
         GameHistoryList singleton = GameHistoryList.getInstance();

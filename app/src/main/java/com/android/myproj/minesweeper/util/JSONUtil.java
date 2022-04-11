@@ -96,10 +96,10 @@ public class JSONUtil {
     }
 
     public static void createDefaultStatIfNone(ContextWrapper contextWrapper, String keySavedStat) throws JSONException, IOException {
-        // Create default statistics JSONObject
-        JSONObject defaultStat = readJSONFile(contextWrapper);
         // Create default stat for given level if there is none
         if (!existsSavedStat(contextWrapper, keySavedStat)) {
+            // Create default statistics JSONObject
+            JSONObject defaultStat = readJSONFile(contextWrapper);
             defaultStat.put(keySavedStat, true);
             for (String key : getAllKeysForLevel(keySavedStat)) {
                 defaultStat.put(key, 0);
@@ -108,7 +108,8 @@ public class JSONUtil {
         }
     }
 
-    public static void createDefaultStat(ContextWrapper contextWrapper, String keySavedStat) throws JSONException, IOException {
+    public static void createDefaultStat(ContextWrapper contextWrapper, String keySavedStat)
+            throws JSONException, IOException {
         // Create default statistics JSONObject
         JSONObject defaultStat = readJSONFile(contextWrapper);
         // Create default stat for given level
@@ -172,6 +173,15 @@ public class JSONUtil {
             writeToJSONFile(contextWrapper, defaultStat);
         }
     }
+    public static void createDefaultHistory(ContextWrapper contextWrapper, String keySavedHistory)
+            throws JSONException, IOException {
+        // Create default history for given level
+        JSONObject defaultStat = readJSONFile(contextWrapper);
+        defaultStat.put(keySavedHistory, true);
+        defaultStat.put(getSavedHistoryArrayKey(keySavedHistory), new JSONArray());
+        writeToJSONFile(contextWrapper, defaultStat);
+    }
+
 
     private static String getSavedHistoryArrayKey(String keySavedHistory) {
         return switch (keySavedHistory) {

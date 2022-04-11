@@ -52,6 +52,10 @@ public class GameHistoryList {
         return gameHistoryList.size() - 1;
     }
 
+    public void resetGameHistory(Level level) {
+        this.getLevelHistoryList(level).clear();
+    }
+
     private List<GameHistoryVo> getLevelHistoryList(Level level) {
         return switch (level) {
             case EASY -> this.easyHistoryList;

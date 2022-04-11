@@ -5,11 +5,11 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -20,19 +20,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.activity.adapter.GameHistoryAdapter;
 import com.android.myproj.minesweeper.activity.fragment.history.GameHistoryFragment;
+import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.shape.MyProgressBar;
 import com.android.myproj.minesweeper.util.ConvertUnitUtil;
+import com.android.myproj.minesweeper.util.HistoryUtil;
+import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements View.OnClickListener {
 
     private final static int NUM_PAGES = 3;
 
@@ -47,8 +53,6 @@ public class HistoryFragment extends Fragment {
     private float progressBarPadding;  // startPos = button.getX + progressBarPadding
     private float progressBarBottom;
 
-    private RecyclerView gameHistoryRecView;
-    private GameHistoryAdapter gameHistoryAdapter;
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
     private FrameLayout scrollbarContainer;
@@ -81,6 +85,15 @@ public class HistoryFragment extends Fragment {
         return this.rootLayout;
     }
 
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.btn_reset_history) {
+            this.onResetButtonClick();
+        } else if (this.isLevelBtnId(view.getId())) {
+            this.onLevelButtonClick(view);
+        }
+    }
+
     private void setting() {
         this.scrollbarContainer = this.rootLayout.findViewById(R.id.frame_scrollbar_container);
         this.btnContainer = this.rootLayout.findViewById(R.id.linearL_button_container_history);
@@ -90,9 +103,9 @@ public class HistoryFragment extends Fragment {
         this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_easy_history));
         this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_intermediate_history));
         this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_expert_history));
-//        for (Button button : this.levelButtons) {
-//            button.setOnClickListener(this);
-//        }
+        for (Button button : this.levelButtons) {
+            button.setOnClickListener(this);
+        }
 
         // Set ViewPager2 Object
         this.viewPager = this.rootLayout.findViewById(R.id.vp2_history);
@@ -112,6 +125,42 @@ public class HistoryFragment extends Fragment {
                 ),
                 5
         );
+    }
+
+    private boolean isLevelBtnId(@IdRes int viewId) {
+        for (Button button : this.levelButtons) {
+            if (button.getId() == viewId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void onLevelButtonClick(View view) {
+        for (int i = 0; i < NUM_PAGES; i++) {
+            if (view.getId() == this.levelButtons.get(i).getId()) {
+                this.viewPager.setCurrentItem(i);
+                return;
+            }
+        }
+    }
+
+    private void onResetButtonClick() {
+        int index = viewPager.getCurrentItem();
+
+        try {
+            if (HistoryUtil.isResettable(Level.getLevelFromCode(index + 1))) {
+                // Reset the history of viewed level if applicable
+                JSONUtil.createDefaultHistory(this.activity, JSONKey.KEYS_SAVED_HISTORY[index]);
+                HistoryUtil.resetHistory(Level.getLevelFromCode(index + 1));
+                ((HistoryFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
+                Toast.makeText(activity, "Reset history", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(activity, "Nothing to reset", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException | IOException e) {
+            LogService.error(this.activity, "Error while resetting history", e);
+        }
     }
 
     public void updateView() {
@@ -186,7 +235,7 @@ public class HistoryFragment extends Fragment {
         @Override
         public Fragment createFragment(int pos) {
             GameHistoryFragment fragment = switch (pos) {
-                case 0, 1, 2 -> new GameHistoryFragment(activity, Level.getLevelFromCode(pos + 1));
+                case 0, 1, 2 -> new GameHistoryFragment(activity, HistoryFragment.this, Level.getLevelFromCode(pos + 1));
                 default -> throw new RuntimeException("Invalid Level received");
             };
             this.fragments[pos] = fragment;
