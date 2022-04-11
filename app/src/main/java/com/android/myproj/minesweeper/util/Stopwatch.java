@@ -10,35 +10,40 @@ public class Stopwatch {
     private final Handler stopwatchHandler;
     private int timeSeconds;
     private int timeMinutes;
-    private int timeMillis;
+    private long startTime;
+    private long endTime;
     private boolean isRunning;
     private boolean isPaused;
 
     public Stopwatch(TextView stopwatchView) {
-        this(stopwatchView, 0, 0, 0);
+        this(stopwatchView, 0, 0, System.currentTimeMillis());
     }
 
-    public Stopwatch(TextView stopwatchView, int timeMinutes, int timeSeconds, int timeMillis) {
+    public Stopwatch(TextView stopwatchView, int timeMinutes, int timeSeconds, long startTime) {
         this.stopwatchView = stopwatchView;
         this.stopwatchHandler = new Handler(Looper.getMainLooper());
         this.timeMinutes = timeMinutes;
         this.timeSeconds = timeSeconds;
-        this.timeMillis = timeMillis;
+        this.startTime = startTime;
         this.stopwatchView.setText(formatTime());
         this.isRunning = false;
         this.isPaused = false;
     }
 
+    public long getStartTime() {
+        return this.startTime;
+    }
+
     public int getTimeMillis() {
-        return this.timeMillis;
+        return (int) (this.getTotalTimeInMillis() % 1000);
     }
 
     public int getTimeSeconds() {
-        return this.timeSeconds;
+        return this.getTotalTimeInSeconds() % 60;
     }
 
     public int getTimeMinutes() {
-        return this.timeMinutes;
+        return this.getTotalTimeInSeconds() / 60;
     }
 
     public int getTotalTimeInSeconds() {
@@ -48,7 +53,14 @@ public class Stopwatch {
         // which means player must have been playing for 2,000,000,000 / 60 (approx 33,333,333) minutes
         // which means player must have been playing for 33,333,333 / 60 (approx 555,555) hours
         // which means player must have been playing for 555,555 / 24 (approx 23,148) days (which I deemed highly unlikely)
-        return this.timeMinutes * 60 + this.timeSeconds;
+        return (int) (this.getTotalTimeInMillis() - this.getTimeMillis()) / 1000;
+    }
+
+    public long getTotalTimeInMillis() {
+        if (this.endTime == 0) {
+            return 0;
+        }
+        return this.endTime - this.startTime;
     }
 
     public void startTimer() {
@@ -75,6 +87,7 @@ public class Stopwatch {
         }
         this.isRunning = false;
         this.isPaused = true;
+        this.endTime = System.currentTimeMillis();
         this.stopwatchHandler.removeCallbacks(run_timer);
     }
 
@@ -96,19 +109,15 @@ public class Stopwatch {
             // Set the text view text.
             stopwatchView.setText(formatTime());
 
-            timeMillis += 100;
+            timeSeconds++;
 
-            if (timeMillis >= 1000) {
-                timeMillis -= 1000;
-                timeSeconds++;
-            }
             if (timeSeconds >= 60) {
                 timeSeconds -= 60;
                 timeMinutes++;
             }
             // Post the code again
             // with a delay of 1 second.
-            stopwatchHandler.postDelayed(this, 100);
+            stopwatchHandler.postDelayed(this, 1000);
         }
     };
 

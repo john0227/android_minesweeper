@@ -16,7 +16,7 @@ public class JSONKey {
     public static final String KEY_LEVEL = "game_level";
     public static final String KEY_MINUTES = "minutes";
     public static final String KEY_SECONDS = "seconds";
-    public static final String KEY_MILLIS = "millis";
+    public static final String KEY_START_MILLIS = "millis";
     // Saved Game JSON Keys (End)
 
     // Saved Statistics JSON Keys (Start)

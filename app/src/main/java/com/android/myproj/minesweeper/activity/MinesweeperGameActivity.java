@@ -32,8 +32,6 @@ import android.widget.ToggleButton;
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.config.JSONKey;
-import com.android.myproj.minesweeper.game.history.GameHistoryList;
-import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Game;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.game.logic.Tile;
@@ -320,7 +318,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             savedGameState.put(JSONKey.KEY_LEVEL, level.getCode());
             savedGameState.put(JSONKey.KEY_SECONDS, this.stopwatch.getTimeSeconds());
             savedGameState.put(JSONKey.KEY_MINUTES, this.stopwatch.getTimeMinutes());
-            savedGameState.put(JSONKey.KEY_MILLIS, this.stopwatch.getTimeMillis());
+            savedGameState.put(JSONKey.KEY_START_MILLIS, this.stopwatch.getStartTime());
             JSONUtil.writeToJSONFile(MinesweeperGameActivity.this, savedGameState);
         } catch (JSONException | IOException e) {
             LogService.error(this, e.getMessage(), e);
@@ -345,7 +343,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                     findViewById(R.id.tv_time),
                     savedState.getInt(JSONKey.KEY_MINUTES),
                     savedState.getInt(JSONKey.KEY_SECONDS),
-                    savedState.getInt(JSONKey.KEY_MILLIS)
+                    savedState.getLong(JSONKey.KEY_START_MILLIS)
             );
             this.stopwatch.startTimer();
             // Restore leftover mine count
