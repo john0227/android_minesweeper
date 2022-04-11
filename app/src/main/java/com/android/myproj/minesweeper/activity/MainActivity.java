@@ -1,13 +1,13 @@
 package com.android.myproj.minesweeper.activity;
 
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
-import android.os.Bundle;
-import android.view.MenuItem;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.fragment.nav.HistoryFragment;

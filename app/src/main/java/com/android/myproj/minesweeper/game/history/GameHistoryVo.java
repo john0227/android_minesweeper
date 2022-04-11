@@ -1,7 +1,5 @@
 package com.android.myproj.minesweeper.game.history;
 
-import com.android.myproj.minesweeper.game.logic.Level;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 

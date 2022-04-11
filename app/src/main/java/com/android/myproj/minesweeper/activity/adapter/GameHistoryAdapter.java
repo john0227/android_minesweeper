@@ -11,11 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.activity.MainActivity;
-import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
+import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.util.LogService;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

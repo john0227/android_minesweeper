@@ -1,7 +1,6 @@
 package com.android.myproj.minesweeper.game.history;
 
 import com.android.myproj.minesweeper.config.JSONKey;
-import com.android.myproj.minesweeper.game.logic.Game;
 import com.android.myproj.minesweeper.game.logic.Level;
 
 import org.json.JSONArray;

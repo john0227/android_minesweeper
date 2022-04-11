@@ -1,16 +1,5 @@
 package com.android.myproj.minesweeper.activity;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.res.ResourcesCompat;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -29,9 +18,21 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
+
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.config.Key;
+import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.game.logic.Game;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.game.logic.Tile;
@@ -39,7 +40,6 @@ import com.android.myproj.minesweeper.game.logic.TileValue;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
 import com.android.myproj.minesweeper.util.HistoryUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
-import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MusicPlayer;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
