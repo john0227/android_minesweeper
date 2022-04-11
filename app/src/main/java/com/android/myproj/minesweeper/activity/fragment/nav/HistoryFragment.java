@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
@@ -25,10 +24,6 @@ import android.widget.LinearLayout;
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.adapter.GameHistoryAdapter;
 import com.android.myproj.minesweeper.activity.fragment.history.GameHistoryFragment;
-import com.android.myproj.minesweeper.activity.fragment.statistics.LevelStatisticsFragment;
-import com.android.myproj.minesweeper.activity.fragment.statistics.OverallStatisticsFragment;
-import com.android.myproj.minesweeper.activity.fragment.statistics.StatisticsFragment;
-import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.shape.MyProgressBar;
 import com.android.myproj.minesweeper.util.ConvertUnitUtil;
@@ -120,7 +115,7 @@ public class HistoryFragment extends Fragment {
     }
 
     public void updateView() {
-        ((HistoryFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3);
+        ((HistoryFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(0, 1, 2);
         this.viewPager.setCurrentItem(0, false);
         new Handler().postDelayed(
                 () -> this.progressBar.drawProgressBar(
@@ -132,28 +127,6 @@ public class HistoryFragment extends Fragment {
     }
 
     private final ViewPager2.OnPageChangeCallback changeButtonColor = new ViewPager2.OnPageChangeCallback() {
-
-        // private int direction = 1;
-        // private int prevPos = 0;
-
-        /*
-        @Override
-        public void onPageScrollStateChanged (int state) {
-            if (state == ViewPager2.SCROLL_STATE_IDLE) {
-                this.prevPos = viewPager.getCurrentItem();
-            }
-        }
-        */
-
-        /*
-        private void updateDirection(int pos) {
-            if (pos < prevPos) {
-                this.direction = -1;
-            } else {
-                this.direction = 1;
-            }
-        }
-        */
 
         @Override
         public void onPageScrolled(int pos, float posOffset, int posOffsetPx) {
@@ -225,22 +198,15 @@ public class HistoryFragment extends Fragment {
             return NUM_PAGES;
         }
 
-        public void notifyItemChangedAt(int position) {
-            if (position == 0) {
-                this.updateFragment(0, 1, 2, 3);
-            } else {
-                this.updateFragment(0, position);
-            }
-        }
-
-        private void updateFragment(int... positions) {
+        public void notifyItemChangedAt(int... positions) {
             for (int position : positions) {
                 GameHistoryFragment fragment = fragments[position];
                 if (fragment != null) {
                     try {
+                        fragment.notifyAdapter();
                         this.notifyItemChanged(position);
                     } catch (Exception e) {
-                        LogService.error(activity, "Error while resetting Stat at page: " + position, e);
+                        LogService.error(activity, "Error while updating History at page: " + position, e);
                     }
                 }
             }

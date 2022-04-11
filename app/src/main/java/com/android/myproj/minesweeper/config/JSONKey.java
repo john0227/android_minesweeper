@@ -6,6 +6,7 @@ public class JSONKey {
 
     public static final String FILE_SAVED_DATA = "storage.json";
 
+    // Saved Game JSON Keys (Start)
     public static final String KEY_EXISTS_SAVED_GAME = "exists_saved_game";
     public static final String KEY_ARRAY_IS_COVERED = "isCovered";
     public static final String KEY_ARRAY_IS_FLAGGED = "isFlagged";
@@ -15,7 +16,10 @@ public class JSONKey {
     public static final String KEY_LEVEL = "game_level";
     public static final String KEY_MINUTES = "minutes";
     public static final String KEY_SECONDS = "seconds";
+    public static final String KEY_MILLIS = "millis";
+    // Saved Game JSON Keys (End)
 
+    // Saved Statistics JSON Keys (Start)
     public static final String KEY_EXISTS_SAVED_EASY_STAT = "exists_saved_easy_stat";
     public static final String KEY_EXISTS_SAVED_INTERMEDIATE_STAT = "exists_saved_intermediate_stat";
     public static final String KEY_EXISTS_SAVED_EXPERT_STAT = "exists_saved_expert_stat";
@@ -89,8 +93,30 @@ public class JSONKey {
         KEYS_EXPERT_STAT
     };
 
-    public static String getStatKeyByLevel(int keyIndex, Level level) {
+    public static String getStatKey(int keyIndex, Level level) {
         return ALL_KEYS_BY_LEVEL[level.getCode() - 1][keyIndex];
     }
+    // Saved Statistics JSON Keys (End)
+
+    // Saved History JSON Keys (Start)
+    public static final String KEY_EXISTS_EASY_SAVED_HISTORY = "exists_easy_saved_history";
+    public static final String KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY = "exists_intermediate_saved_history";
+    public static final String KEY_EXISTS_EXPERT_SAVED_HISTORY = "exists_expert_saved_history";
+    public static final String KEY_EASY_SAVED_HISTORY_ARRAY = "easy_saved_history_array";
+    public static final String KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY = "intermediate_saved_history_array";
+    public static final String KEY_EXPERT_SAVED_HISTORY_ARRAY = "expert_saved_history_array";
+    public static final String[] KEYS_SAVED_HISTORY = new String[] {
+            KEY_EXISTS_EASY_SAVED_HISTORY,
+            KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY,
+            KEY_EXISTS_EXPERT_SAVED_HISTORY
+    };
+    public static String getHistoryKey(Level level) {
+        return switch (level) {
+            case EASY -> KEY_EASY_SAVED_HISTORY_ARRAY;
+            case INTERMEDIATE -> KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY;
+            case EXPERT -> KEY_EXPERT_SAVED_HISTORY_ARRAY;
+        };
+    }
+    // Saved History JSON Keys (End)
 
 }

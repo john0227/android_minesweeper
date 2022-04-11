@@ -47,4 +47,8 @@ public class GameHistoryFragment extends Fragment {
         this.gameHistoryRecView.setAdapter(this.gameHistoryAdapter);
     }
 
+    public void notifyAdapter() {
+        this.gameHistoryAdapter.notifyDataSetChanged();
+    }
+
 }

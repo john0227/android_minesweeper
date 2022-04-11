@@ -8,6 +8,7 @@ import android.content.ContextWrapper;
 import com.android.myproj.minesweeper.config.JSONKey;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -103,8 +104,8 @@ public class JSONUtil {
             for (String key : getAllKeysForLevel(keySavedStat)) {
                 defaultStat.put(key, 0);
             }
+            writeToJSONFile(contextWrapper, defaultStat);
         }
-        writeToJSONFile(contextWrapper, defaultStat);
     }
 
     public static void createDefaultStat(ContextWrapper contextWrapper, String keySavedStat) throws JSONException, IOException {
@@ -136,9 +137,53 @@ public class JSONUtil {
         };
     }
 
+    public static boolean existsSavedHistory(ContextWrapper contextWrapper) {
+        boolean existsSavedHistory = true;
+        for (String keySavedHistory : JSONKey.KEYS_SAVED_HISTORY) {
+            existsSavedHistory = existsSavedHistory && existsSavedHistory(contextWrapper, keySavedHistory);
+        }
+        return existsSavedHistory;
+    }
+
+    public static boolean existsSavedHistory(ContextWrapper contextWrapper, String keySavedHistory) {
+        try {
+            JSONObject jsonObject = readJSONFile(contextWrapper);
+            return jsonObject.getBoolean(keySavedHistory);
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
+    public static void createDefaultHistoryIfNone(ContextWrapper contextWrapper) throws JSONException, IOException {
+        // Create default history for each level if there is none
+        for (String keySavedHistory : JSONKey.KEYS_SAVED_HISTORY) {
+            createDefaultHistoryIfNone(contextWrapper, keySavedHistory);
+        }
+    }
+
+    public static void createDefaultHistoryIfNone(ContextWrapper contextWrapper, String keySavedHistory)
+            throws JSONException, IOException {
+        // Create default history for given level if there is none
+        if (!existsSavedHistory(contextWrapper, keySavedHistory)) {
+            // Create default statistics JSONObject
+            JSONObject defaultStat = readJSONFile(contextWrapper);
+            defaultStat.put(keySavedHistory, true);
+            defaultStat.put(getSavedHistoryArrayKey(keySavedHistory), new JSONArray());
+            writeToJSONFile(contextWrapper, defaultStat);
+        }
+    }
+
+    private static String getSavedHistoryArrayKey(String keySavedHistory) {
+        return switch (keySavedHistory) {
+            case JSONKey.KEY_EXISTS_EASY_SAVED_HISTORY -> JSONKey.KEY_EASY_SAVED_HISTORY_ARRAY;
+            case JSONKey.KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY -> JSONKey.KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY;
+            case JSONKey.KEY_EXISTS_EXPERT_SAVED_HISTORY -> JSONKey.KEY_EXPERT_SAVED_HISTORY_ARRAY;
+            default -> throw new RuntimeException("Invalid JSONKey for saved history");
+        };
+    }
+
     private static File getFileSavedData(ContextWrapper contextWrapper) {
         return new File(contextWrapper.getDir(contextWrapper.getFilesDir().getName(), Context.MODE_PRIVATE), FILE_SAVED_DATA);
     }
-
 
 }

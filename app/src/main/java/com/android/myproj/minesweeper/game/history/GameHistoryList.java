@@ -1,8 +1,14 @@
 package com.android.myproj.minesweeper.game.history;
 
+import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Game;
 import com.android.myproj.minesweeper.game.logic.Level;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +39,9 @@ public class GameHistoryList {
     public int addGameHistory(GameHistoryVo gameHistory, Level level) {
         List<GameHistoryVo> gameHistoryList = this.getLevelHistoryList(level);
 
-        // Add in front of the first instance where list item is greater than given gameHistory
+        // Add in front of the first instance where list item is less than given gameHistory
         for (int i = 0; i < gameHistoryList.size(); i++) {
-            if (gameHistory.compareTo(gameHistoryList.get(i)) > 0) {
+            if (gameHistory.compareTo(gameHistoryList.get(i)) < 0) {
                 gameHistoryList.add(i, gameHistory);
                 return i;
             }
@@ -52,6 +58,35 @@ public class GameHistoryList {
             case INTERMEDIATE -> this.intermediateHistoryList;
             case EXPERT -> this.expertHistoryList;
         };
+    }
+
+    public void saveHistoryList(JSONObject savedHistory) throws JSONException {
+        for (int levelCode = 1; levelCode <= 3; levelCode++) {
+            Level level = Level.getLevelFromCode(levelCode);
+            List<GameHistoryVo> historyList = this.getLevelHistoryList(level);
+            JSONArray savedLevelHistory = new JSONArray();
+            for (int index = 0; index < historyList.size(); index++) {
+                savedLevelHistory.put(historyList.get(index).saveGameHistory());
+            }
+            savedHistory.put(JSONKey.getHistoryKey(level), savedLevelHistory);
+        }
+    }
+
+    public static void restoreSavedHistory(JSONObject savedHistory) throws ParseException, JSONException {
+        // Do not restore data if an instance of GameHistoryList exists
+        if (gameHistoryListInstance != null) {
+            return;
+        }
+
+        GameHistoryList singleton = getInstance();  // always called when gameHistoryListInstance == null
+        for (int levelCode = 1; levelCode <= 3; levelCode++) {
+            Level level = Level.getLevelFromCode(levelCode);
+            List<GameHistoryVo> historyList = singleton.getLevelHistoryList(level);  // therefore, always empty
+            JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(level));
+            for (int index = 0; index < savedLevelHistory.length(); index++) {
+                historyList.add(GameHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
+            }
+        }
     }
 
     public static GameHistoryList getInstance() {

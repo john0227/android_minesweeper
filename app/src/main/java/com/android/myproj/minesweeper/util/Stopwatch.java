@@ -10,21 +10,27 @@ public class Stopwatch {
     private final Handler stopwatchHandler;
     private int timeSeconds;
     private int timeMinutes;
+    private int timeMillis;
     private boolean isRunning;
     private boolean isPaused;
 
     public Stopwatch(TextView stopwatchView) {
-        this(stopwatchView, 0, 0);
+        this(stopwatchView, 0, 0, 0);
     }
 
-    public Stopwatch(TextView stopwatchView, int timeMinutes, int timeSeconds) {
+    public Stopwatch(TextView stopwatchView, int timeMinutes, int timeSeconds, int timeMillis) {
         this.stopwatchView = stopwatchView;
         this.stopwatchHandler = new Handler(Looper.getMainLooper());
         this.timeMinutes = timeMinutes;
         this.timeSeconds = timeSeconds;
+        this.timeMillis = timeMillis;
         this.stopwatchView.setText(formatTime());
         this.isRunning = false;
         this.isPaused = false;
+    }
+
+    public int getTimeMillis() {
+        return this.timeMillis;
     }
 
     public int getTimeSeconds() {
@@ -64,16 +70,16 @@ public class Stopwatch {
     }
 
     public void pauseTimer() {
-        this.destroyTimer();
-    }
-
-    public void destroyTimer() {
         if (!this.isRunning) {
             return;
         }
         this.isRunning = false;
         this.isPaused = true;
         this.stopwatchHandler.removeCallbacks(run_timer);
+    }
+
+    public void destroyTimer() {
+        this.pauseTimer();
     }
 
     private String formatTime() {
@@ -87,19 +93,22 @@ public class Stopwatch {
     private final Runnable run_timer = new Runnable() {
         @Override
         public void run() {
+            // Set the text view text.
+            stopwatchView.setText(formatTime());
+
+            timeMillis += 100;
+
+            if (timeMillis >= 1000) {
+                timeMillis -= 1000;
+                timeSeconds++;
+            }
             if (timeSeconds >= 60) {
                 timeSeconds -= 60;
                 timeMinutes++;
             }
-
-            // Set the text view text.
-            stopwatchView.setText(formatTime());
-
-            timeSeconds++;
-
             // Post the code again
             // with a delay of 1 second.
-            stopwatchHandler.postDelayed(this, 1000);
+            stopwatchHandler.postDelayed(this, 100);
         }
     };
 

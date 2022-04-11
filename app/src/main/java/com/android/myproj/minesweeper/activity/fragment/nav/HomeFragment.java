@@ -101,14 +101,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void setting() throws JSONException {
-        // Create saved data for statistics if there are none
-        try {
-            LogService.info(this.activity, "Creating saved data if necessary...");
-            JSONUtil.createDefaultStatIfNone(this.activity);
-        } catch (JSONException | IOException e) {
-            LogService.error(this.activity, "Was unable to create default saved data for statistics", e);
-        }
-
         // Add listener to level buttons
         this.rootLayout.findViewById(R.id.btn_easy).setOnClickListener(onButtonClick);
         this.rootLayout.findViewById(R.id.btn_intermediate).setOnClickListener(onButtonClick);

@@ -32,11 +32,14 @@ import android.widget.ToggleButton;
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.game.history.GameHistoryList;
+import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Game;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.game.logic.Tile;
 import com.android.myproj.minesweeper.game.logic.TileValue;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
+import com.android.myproj.minesweeper.util.HistoryUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.util.LogService;
@@ -317,6 +320,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             savedGameState.put(JSONKey.KEY_LEVEL, level.getCode());
             savedGameState.put(JSONKey.KEY_SECONDS, this.stopwatch.getTimeSeconds());
             savedGameState.put(JSONKey.KEY_MINUTES, this.stopwatch.getTimeMinutes());
+            savedGameState.put(JSONKey.KEY_MILLIS, this.stopwatch.getTimeMillis());
             JSONUtil.writeToJSONFile(MinesweeperGameActivity.this, savedGameState);
         } catch (JSONException | IOException e) {
             LogService.error(this, e.getMessage(), e);
@@ -340,7 +344,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             this.stopwatch = new Stopwatch(
                     findViewById(R.id.tv_time),
                     savedState.getInt(JSONKey.KEY_MINUTES),
-                    savedState.getInt(JSONKey.KEY_SECONDS)
+                    savedState.getInt(JSONKey.KEY_SECONDS),
+                    savedState.getInt(JSONKey.KEY_MILLIS)
             );
             this.stopwatch.startTimer();
             // Restore leftover mine count
@@ -470,8 +475,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             stopwatch.pauseTimer();
             tv_mine_count.setText("YOU WON :)");
             try {
-                // Update all statistics
+                // Update all statistics and history
                 StatUtil.updateAllStat(this, this.level, this.stopwatch.getTotalTimeInSeconds(), this.noHint);
+                HistoryUtil.saveGameHistory(this, this.level, this.stopwatch);
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Could not save statistics", e);
             }
