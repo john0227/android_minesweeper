@@ -38,6 +38,7 @@ import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.game.logic.Tile;
 import com.android.myproj.minesweeper.game.logic.TileValue;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
+import com.android.myproj.minesweeper.util.ConvertUnitUtil;
 import com.android.myproj.minesweeper.util.HistoryUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
@@ -89,12 +90,13 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         try {
             this.retrieveLevel();
 
-            switch (this.level) {
-                case EASY -> setContentView(R.layout.activity_easy_level);
-                case INTERMEDIATE -> setContentView(R.layout.activity_intermediate_level);
-                case EXPERT -> setContentView(R.layout.activity_expert_level);
-                default -> throw new RuntimeException("Invalid level: " + this.level);
-            }
+//            switch (this.level) {
+//                case EASY -> setContentView(R.layout.activity_easy_level);
+//                case INTERMEDIATE -> setContentView(R.layout.activity_intermediate_level);
+//                case EXPERT -> setContentView(R.layout.activity_expert_level);
+//                default -> throw new RuntimeException("Invalid level: " + this.level);
+//            }
+            setContentView(R.layout.activity_game);
 
             LogService.info(this, JSONUtil.readJSONFile(this).toString());
             init();
@@ -199,8 +201,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private void setting() {
-        int tileNum = 0;
-
         // Initialize the MINE_COUNT TextView
         this.tv_mine_count.setText("" + level.getMines());
 
@@ -209,6 +209,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // Add Listener to Hint ImageButton
         this.ibtn_hint.setOnClickListener(onHintClick);
+
+        // Change TextView to show appropriate level
+        ((TextView) findViewById(R.id.tv_level)).setText(this.level.toString());
 
         ConstraintLayout parent = findViewById(R.id.layout_parent);
         // Retrieve flag setting (toggle by default)
@@ -231,12 +234,26 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Add this.musicPlayer to list to destroy later
         this.playersToDestroy.add(this.musicPlayer);
 
+        this.generateMinesweeperBoard();
+    }
+
+    private void generateMinesweeperBoard() {
+        int tileNum = 0;
+        int tileDim = 30;  // in DP
+        int padding = 50;  // in DP (start and end)
+
+        LinearLayout container = findViewById(R.id.linearL_mine_container);
+        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
+                (int) ConvertUnitUtil.convertPxToDP(this, tileDim * this.level.getCol()) + 2 * padding,
+                (int) ConvertUnitUtil.convertPxToDP(this, tileDim)
+        );
+        LinearLayout.LayoutParams tileParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1);
         // Add minesweeper tiles (as ImageButtons) to the layout
-        String PREFIX_LAYOUT_ID = "linearLayout";
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1);
         for (int r = 0; r < level.getRow(); r++) {
-            int resID = getResources().getIdentifier(PREFIX_LAYOUT_ID + r, "id", getPackageName());
-            LinearLayout layout_parent = findViewById(resID);
+            LinearLayout rowContainer = new LinearLayout(this);
+            rowContainer.setPadding(padding, 0, padding, 0);
+            rowContainer.setLayoutParams(childLayoutParams);
+            container.addView(rowContainer);
             for (int c = 0; c < level.getCol(); c++) {
                 // Create Tiles as ImageButton
                 ImageButton tile = new ImageButton(this);
@@ -250,8 +267,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 tile.setOnClickListener(onTileClick);
 
                 // Add to activity_easy_level
-                tile.setLayoutParams(lp);
-                layout_parent.addView(tile);
+                tile.setLayoutParams(tileParams);
+                rowContainer.addView(tile);
                 imageButtons[tileNum++] = tile;
             }
         }
