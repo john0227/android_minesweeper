@@ -44,20 +44,8 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     private Activity activity;
     private View rootLayout;
 
-    // To be used when drawing rectangle
-    private final float PROGRESS_BAR_HEIGHT_DP = 5;
-    private final float BAR_TO_BUTTON_RATIO = 0.7f;  // i.e. progressBarLength = 0.7 * buttonWidth
-    private float progressBarHeightPx;
-    private float buttonWidth;
-    private float progressBarPadding;  // startPos = button.getX + progressBarPadding
-    private float progressBarBottom;
-
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
-    private FrameLayout scrollbarContainer;
-    private HorizontalScrollView btnContainer;
-    private List<Button> levelButtons;
-    private MyProgressBar progressBar;
 
     private boolean isAttached;
 
@@ -86,16 +74,10 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.btn_reset_stat) {
-            this.onResetButtonClick();
-        } else if (this.isLevelBtnId(view.getId())) {
-            this.onLevelButtonClick(view);
-        }
+        this.onResetButtonClick();
     }
 
     private void setting() {
-        this.scrollbarContainer = this.rootLayout.findViewById(R.id.frame_scrollbar_container);
-
         // Set ViewPager2 Object
         this.viewPager = this.rootLayout.findViewById(R.id.vp2_stat);
         this.pagerAdapter = new StatFragment.ScreenSlidePagerAdapter((FragmentActivity) this.activity);
@@ -110,24 +92,6 @@ public class StatFragment extends Fragment implements View.OnClickListener {
                 tab.setText(Level.getLevelFromCode(position).toString());
             }
         }).attach();
-    }
-
-    private boolean isLevelBtnId(@IdRes int viewId) {
-        for (Button button : this.levelButtons) {
-            if (button.getId() == viewId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void onLevelButtonClick(View view) {
-        for (int i = 0; i < NUM_PAGES; i++) {
-            if (view.getId() == this.levelButtons.get(i).getId()) {
-                this.viewPager.setCurrentItem(i);
-                return;
-            }
-        }
     }
 
     private void onResetButtonClick() {

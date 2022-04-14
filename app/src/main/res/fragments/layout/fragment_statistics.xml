@@ -32,31 +32,26 @@
             app:tabMode="scrollable">
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_overall_stat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Overall" />
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_easy_stat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Easy" />
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_intermediate_stat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Intermediate" />
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_expert_stat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Expert" />
 
             <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_jumbo_stat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Jumbo" />
