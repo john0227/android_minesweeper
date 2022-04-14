@@ -4,8 +4,8 @@ public enum Level {
 
     EASY(10, 10, 10, 75, 1),
     INTERMEDIATE(12, 14, 25, 50, 2),
-    EXPERT(14, 22, 55, 40, 3),
-    JUMBO(16, 30, 99, 30, 4);
+    EXPERT(14, 22, 55, 20, 3),
+    JUMBO(16, 30, 99, 10, 4);
 
     private final int col;
     private final int row;

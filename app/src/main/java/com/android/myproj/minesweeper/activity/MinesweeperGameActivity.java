@@ -39,6 +39,7 @@ import com.android.myproj.minesweeper.game.logic.Tile;
 import com.android.myproj.minesweeper.game.logic.TileValue;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
 import com.android.myproj.minesweeper.util.ConvertUnitUtil;
+import com.android.myproj.minesweeper.util.DelayUtil;
 import com.android.myproj.minesweeper.util.HistoryUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
@@ -67,7 +68,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
     // Dependent Objects
     private ActivityResultLauncher<Intent> resultLauncher;
-    private MusicPlayer musicPlayer;
+    private MusicPlayer[] musicPlayers;
     private JSONObject savedState;
 
     // Project Objects
@@ -76,7 +77,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private Level level;
 
     // Java-Provided Objects/Variables
-    private List<MusicPlayer> playersToDestroy;
     private boolean isFlag;
     private boolean hasStarted;
     private boolean isGameOver;
@@ -127,7 +127,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Pause timer
         this.stopwatch.pauseTimer();
         // Release any active MusicPlayer
-        for (MusicPlayer musicPlayer : this.playersToDestroy) {
+        for (MusicPlayer musicPlayer : this.musicPlayers) {
             musicPlayer.destroyPlayer();
         }
 
@@ -180,12 +180,11 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.tv_mine_count = findViewById(R.id.tv_mine_count);
         this.tbtn_sel_flag = findViewById(R.id.tbtn_sel_flag);
 
-        this.musicPlayer = new MusicPlayer();
+        this.musicPlayers = new MusicPlayer[10];
 
         this.game = new Game(this.level);
         this.stopwatch = new Stopwatch(findViewById(R.id.tv_time));
 
-        this.playersToDestroy = new ArrayList<>();
         this.isFlag = false;
         this.hasStarted = false;
         this.isGameOver = false;
@@ -232,8 +231,10 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             LogService.info(this, "Removed togglebutton");
         }
 
-        // Add this.musicPlayer to list to destroy later
-        this.playersToDestroy.add(this.musicPlayer);
+        // Initialize MusicPlayers
+        for (int i = 0; i < this.musicPlayers.length; i++) {
+            this.musicPlayers[i] = new MusicPlayer();
+        }
 
         this.generateMinesweeperBoard();
     }
@@ -400,7 +401,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Disallow restarting during animation
         isClickable = false;
 
-        musicPlayer.playMusic(this, R.raw.explosion, playSound);
+        musicPlayers[9].playMusic(this, R.raw.explosion, playSound);
 
         // 1. Explode the selected MINE cell and reveal all other MINE cells
         List<Integer> indices = this.game.getMineIndices();
@@ -410,7 +411,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         setImage(this.imageButtons[index], TileValue.MINE_EXPLODE);
 
         // 2. Explode the rest of MINE cells
-        final long delay = level.getAnimationDelay();
+        long delay;
+        if (playSound) {
+            delay = level.getAnimationDelay();
+        } else {
+            delay = 60;
+        }
         new CountDownTimer(500, 500) {
             public void onFinish() {
                 Handler setImageHandler = new Handler(Looper.getMainLooper());
@@ -423,6 +429,11 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
                         if (i < indices.size()) {
                             setImageHandler.postDelayed(this, delay);
+                        } else {
+                            DelayUtil.delayTask(() -> {
+                                isClickable = true;
+                                buildGameoverAlert("GAME OVER :(").show();
+                            }, 500);
                         }
                     }
                 });
@@ -430,18 +441,19 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 if (playSound) {
                     Handler musicHandler = new Handler(Looper.getMainLooper());
                     musicHandler.post(new Runnable() {
-                        int i = 0;
+                        int loop = 0, index = 0;
+                        final int interval = (int) Math.ceil(Math.log10(indices.size()));
+                        final int loopCount = indices.size() / interval;
 
                         @Override
                         public void run() {
-                            if (level == Level.EASY || i % 2 == 0) {
-                                MusicPlayer tempPlayer = new MusicPlayer();
-                                tempPlayer.playMusic(MinesweeperGameActivity.this, R.raw.explosion, playSound);
-                                playersToDestroy.add(tempPlayer);
+                            if (loop % interval == 0) {
+                                musicPlayers[index % 10].playMusic(MinesweeperGameActivity.this, R.raw.explosion, playSound);
+                                index++;
                             }
-                            i++;
+                            loop++;
 
-                            if (i < indices.size()) {
+                            if (index < loopCount) {
                                 musicHandler.postDelayed(this, delay);
                             }
                         }
@@ -450,22 +462,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             }
             public void onTick(long millisUntilFinished) {}
         }.start();
-
-        Runnable run = () -> {
-            isClickable = true;
-            buildGameoverAlert("GAME OVER :(").show();
-        };
-        if (playSound) {
-            new Handler(Looper.getMainLooper()).postDelayed(run, 2000 + delay * level.getMines());
-        } else {
-            new Handler(Looper.getMainLooper()).postDelayed(run, 1000 + delay * level.getMines());
-        }
     }
 
     private void cleanup() {
         // Destroy stopwatch and existing MusicPlayers
         stopwatch.destroyTimer();
-        for (MusicPlayer player : this.playersToDestroy) {
+        for (MusicPlayer player : this.musicPlayers) {
             player.destroyPlayer();
         }
     }
@@ -493,7 +495,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private void gameOverAction(boolean hasWon, int indexLastSelected) {
         this.isGameOver = true;
         if (hasWon) {
-            musicPlayer.playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
+            musicPlayers[0].playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
             stopwatch.pauseTimer();
             tv_mine_count.setText("YOU WON :)");
             try {
@@ -624,7 +626,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         if (isFlag) {
             List<Tile> flaggedTiles = this.game.flagTile(index);
             if (flaggedTiles.size() > 0) {
-                musicPlayer.playMusic(this, R.raw.click, playSound);
+                musicPlayers[0].playMusic(this, R.raw.click, playSound);
             }
             tv_mine_count.setText("" + this.game.getLeftoverMine());
             for (Tile ft : flaggedTiles) {
@@ -650,7 +652,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
 
         // Uncover selected tiles
-        musicPlayer.playMusic(this, R.raw.click, playSound);
+        musicPlayers[0].playMusic(this, R.raw.click, playSound);
         for (Tile t : tiles) {
             setImage(this.imageButtons[game.getTileIndex(t)], game.getTileValue(t));
         }
