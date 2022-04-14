@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 public class SettingActivity extends AppCompatActivity {
 
     private CheckedTextView check_sound;
+    private CheckedTextView check_format_time;
     private ImageView iv_toggle_flag;
     private ImageView iv_radio_flag;
     private RadioButton rbtn_toggle_flag;
@@ -43,6 +44,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private void init() {
         this.check_sound = findViewById(R.id.check_sound);
+        this.check_format_time = findViewById(R.id.check_format_time);
         this.iv_toggle_flag = findViewById(R.id.iv_toggle_flag);
         this.iv_radio_flag = findViewById(R.id.iv_radio_flag);
         this.rbtn_toggle_flag = findViewById(R.id.rbtn_toggle_flag);
@@ -55,6 +57,11 @@ public class SettingActivity extends AppCompatActivity {
         SharedPreferences myPref = getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
         this.check_sound.setChecked(myPref.getBoolean(Key.PREFERENCES_SOUND, true));
         this.check_sound.setOnClickListener(onSoundClick);
+
+        // Retrieve time format setting from previously saved SharedPreferences (false by default)
+        this.check_format_time.setChecked(myPref.getBoolean(Key.PREFERENCES_FORMAT_TIME, false));
+        this.setFormatTimeText();
+        this.check_format_time.setOnClickListener(onFormatTimeClick);
 
         // Bind ImageViews to GIFs using Glide
         Glide.with(this)
@@ -89,6 +96,14 @@ public class SettingActivity extends AppCompatActivity {
         setResult(this.resCode);
     }
 
+    private void setFormatTimeText() {
+        if (this.check_format_time.isChecked()) {
+            this.check_format_time.setText(R.string.time24_format_setting);
+        } else {
+            this.check_format_time.setText(R.string.time_format_setting);
+        }
+    }
+
     private final View.OnClickListener onSoundClick = view -> {
         // Toggle checkbox
         ((CheckedTextView) view).toggle();
@@ -97,6 +112,22 @@ public class SettingActivity extends AppCompatActivity {
         MySharedPreferencesUtil.putBoolean(
                 SettingActivity.this,
                 Key.PREFERENCES_SOUND,
+                ((CheckedTextView) view).isChecked()
+        );
+
+        // Set result code
+        setResultCode(ResCode.SETTING_SOUND_CHANGED);
+    };
+
+    private final View.OnClickListener onFormatTimeClick = view -> {
+        // Toggle checkbox
+        ((CheckedTextView) view).toggle();
+        this.setFormatTimeText();
+
+        // Update SharedPreferences
+        MySharedPreferencesUtil.putBoolean(
+                SettingActivity.this,
+                Key.PREFERENCES_FORMAT_TIME,
                 ((CheckedTextView) view).isChecked()
         );
 
