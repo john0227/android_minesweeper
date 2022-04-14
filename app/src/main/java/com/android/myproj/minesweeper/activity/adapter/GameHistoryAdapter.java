@@ -14,6 +14,7 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
+import com.android.myproj.minesweeper.util.TimeFormatUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -50,11 +51,12 @@ public class GameHistoryAdapter extends RecyclerView.Adapter<GameHistoryAdapter.
 
         GameHistoryVo gameHistory = this.gameHistoryList.getGameHistory(position, this.level);
         // Set date TextView
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM d, yyyy h:mm a", Locale.US);
         holder.textViewDate.setText(simpleDateFormat.format(gameHistory.getDate()));
         // Set time TextView
-        holder.textViewTime.setText(String.format(Locale.US, "%d:%02d:%03d",
-                gameHistory.getMinute(), gameHistory.getSecond(), gameHistory.getMillis()));
+        holder.textViewTime.setText(TimeFormatUtil.formatTime(
+                gameHistory.getMinute(), gameHistory.getSecond(), gameHistory.getMillis())
+        );
     }
 
     @Override

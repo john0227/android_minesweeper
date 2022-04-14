@@ -4,34 +4,44 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.android.myproj.minesweeper.config.JSONKey;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class Stopwatch {
 
     private final TextView stopwatchView;
     private final Handler stopwatchHandler;
-    private int timeSeconds;
-    private int timeMinutes;
     private long startTime;
     private long endTime;
+    private long storedTime;
     private boolean isRunning;
     private boolean isPaused;
 
     public Stopwatch(TextView stopwatchView) {
-        this(stopwatchView, 0, 0, System.currentTimeMillis());
-    }
-
-    public Stopwatch(TextView stopwatchView, int timeMinutes, int timeSeconds, long startTime) {
         this.stopwatchView = stopwatchView;
         this.stopwatchHandler = new Handler(Looper.getMainLooper());
-        this.timeMinutes = timeMinutes;
-        this.timeSeconds = timeSeconds;
-        this.startTime = startTime;
+        this.startTime = System.currentTimeMillis();
+        this.endTime = System.currentTimeMillis();
+        this.storedTime = 0;
         this.stopwatchView.setText(formatTime());
         this.isRunning = false;
         this.isPaused = false;
     }
 
-    public long getStartTime() {
-        return this.startTime;
+    public void saveStopwatch(JSONObject savedData) throws JSONException {
+        savedData.put(JSONKey.KEY_TIME_STORED_MILLIS, this.getTotalTimeInMillis());
+    }
+
+    public void restoreStopwatch(JSONObject savedData) throws JSONException {
+        this.storedTime = savedData.getLong(JSONKey.KEY_TIME_STORED_MILLIS);
+        this.stopwatchView.setText(formatTime());
     }
 
     public int getTimeMillis() {
@@ -60,7 +70,7 @@ public class Stopwatch {
         if (this.endTime == 0) {
             return 0;
         }
-        return this.endTime - this.startTime;
+        return this.endTime - this.startTime + this.storedTime;
     }
 
     public void startTimer() {
@@ -69,6 +79,7 @@ public class Stopwatch {
         }
         this.isRunning = true;
         this.isPaused = false;
+        this.startTime = System.currentTimeMillis();
         this.stopwatchHandler.post(run_timer);
     }
 
@@ -78,6 +89,7 @@ public class Stopwatch {
         }
         this.isRunning = true;
         this.isPaused = false;
+        this.startTime = System.currentTimeMillis();
         this.stopwatchHandler.post(run_timer);
     }
 
@@ -88,7 +100,6 @@ public class Stopwatch {
         this.isRunning = false;
         this.isPaused = true;
         this.endTime = System.currentTimeMillis();
-        stopwatchView.setText(formatTime(this.getTimeMinutes(), this.getTimeSeconds()));
         this.stopwatchHandler.removeCallbacks(run_timer);
     }
 
@@ -96,19 +107,17 @@ public class Stopwatch {
         this.pauseTimer();
     }
 
-    private String formatTime() {
-        if (timeMinutes > 0) {
-            return String.format("%d:%02d", this.timeMinutes, this.timeSeconds);
-        } else {
-            return "" + timeSeconds;
-        }
+    @NonNull
+    @Override
+    public String toString() {
+        return TimeFormatUtil.formatTime(this.getTimeMinutes(), this.getTimeSeconds(), this.getTimeMillis());
     }
 
-    private String formatTime(int minute, int second) {
-        if (timeMinutes > 0) {
-            return String.format("%d:%02d", minute, second);
+    private String formatTime() {
+        if (this.getTimeMinutes() > 0) {
+            return TimeFormatUtil.formatTime(this.getTimeMinutes(), this.getTimeSeconds());
         } else {
-            return "" + timeSeconds;
+            return "" + this.getTimeSeconds();
         }
     }
 
@@ -116,14 +125,9 @@ public class Stopwatch {
         @Override
         public void run() {
             // Set the text view text.
+            endTime = System.currentTimeMillis();
             stopwatchView.setText(formatTime());
 
-            timeSeconds++;
-
-            if (timeSeconds >= 60) {
-                timeSeconds -= 60;
-                timeMinutes++;
-            }
             // Post the code again
             // with a delay of 1 second.
             stopwatchHandler.postDelayed(this, 1000);

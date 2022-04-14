@@ -47,6 +47,7 @@ import com.android.myproj.minesweeper.util.MusicPlayer;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.StatUtil;
 import com.android.myproj.minesweeper.util.Stopwatch;
+import com.android.myproj.minesweeper.util.TimeFormatUtil;
 import com.otaliastudios.zoom.ZoomLayout;
 
 import org.json.JSONException;
@@ -316,7 +317,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
-    private AlertDialog.Builder buildGameoverAlert(String message) {
+    private AlertDialog.Builder buildGameoverAlert(boolean hasWon) {
         DialogInterface.OnClickListener posAction = (dialogInterface, i) -> {
             cleanup();
             createNewGame(true);
@@ -326,7 +327,16 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             finish();
         };
 
-        return AlertDialogBuilderUtil.buildAlertDialog(this, message, "Try again?",
+        String title, message;
+        if (hasWon) {
+            title = "YOU WON :) Your time was " + this.stopwatch.toString();
+            message = "Congratulations! Play again?";
+        } else {
+            title = "GAME OVER :(";
+            message = "Good luck next time. Try again?";
+        }
+
+        return AlertDialogBuilderUtil.buildAlertDialog(this, title, message,
                 "New Game", "Main Menu", posAction, negAction, false);
     }
 
@@ -339,11 +349,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         try {
             JSONObject savedGameState = JSONUtil.readJSONFile(this);
             this.game.save(savedGameState);
+            this.stopwatch.saveStopwatch(savedGameState);
 
             savedGameState.put(JSONKey.KEY_LEVEL, level.getCode());
-            savedGameState.put(JSONKey.KEY_SECONDS, this.stopwatch.getTimeSeconds());
-            savedGameState.put(JSONKey.KEY_MINUTES, this.stopwatch.getTimeMinutes());
-            savedGameState.put(JSONKey.KEY_START_MILLIS, this.stopwatch.getStartTime());
             JSONUtil.writeToJSONFile(MinesweeperGameActivity.this, savedGameState);
         } catch (JSONException | IOException e) {
             LogService.error(this, e.getMessage(), e);
@@ -364,12 +372,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 setImage(this.imageButtons[game.getTileIndex(t)], TileValue.FLAGGED);
             }
             // Restore stopwatch
-            this.stopwatch = new Stopwatch(
-                    findViewById(R.id.tv_time),
-                    savedState.getInt(JSONKey.KEY_MINUTES),
-                    savedState.getInt(JSONKey.KEY_SECONDS),
-                    savedState.getLong(JSONKey.KEY_START_MILLIS)
-            );
+            this.stopwatch.restoreStopwatch(savedState);
             this.stopwatch.startTimer();
             // Restore leftover mine count
             this.tv_mine_count.setText("" + this.game.getLeftoverMine());
@@ -432,7 +435,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                         } else {
                             DelayUtil.delayTask(() -> {
                                 isClickable = true;
-                                buildGameoverAlert("GAME OVER :(").show();
+                                buildGameoverAlert(false).show();
                             }, 500);
                         }
                     }
@@ -505,7 +508,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Could not save statistics", e);
             }
-            buildGameoverAlert("YOU WON :)").show();
+            buildGameoverAlert(true).show();
         } else {
             // Update win rate and current win streak
             JSONObject savedStat = JSONUtil.readJSONFile(this);

@@ -10,7 +10,7 @@ import java.util.Locale;
 
 public class GameHistoryVo implements Comparable<GameHistoryVo> {
 
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
 
     private final Date date;
     private final int minute;
