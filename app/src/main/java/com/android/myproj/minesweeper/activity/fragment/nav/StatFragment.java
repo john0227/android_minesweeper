@@ -7,12 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Supplier;
@@ -27,15 +23,12 @@ import com.android.myproj.minesweeper.activity.fragment.statistics.OverallStatis
 import com.android.myproj.minesweeper.activity.fragment.statistics.StatisticsFragment;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.shape.MyProgressBar;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.StatUtil;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.util.List;
 
 public class StatFragment extends Fragment implements View.OnClickListener {
 

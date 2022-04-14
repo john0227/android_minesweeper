@@ -2,20 +2,13 @@ package com.android.myproj.minesweeper.activity.fragment.nav;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -25,8 +18,6 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.fragment.history.GameHistoryFragment;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.shape.MyProgressBar;
-import com.android.myproj.minesweeper.util.ConvertUnitUtil;
 import com.android.myproj.minesweeper.util.HistoryUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
@@ -36,8 +27,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HistoryFragment extends Fragment implements View.OnClickListener {
 
@@ -87,9 +76,9 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
 
         // Attach TabLayout to ViewPager2 using TabLayoutMediator
         TabLayout tabLayout = this.rootLayout.findViewById(R.id.tabLayout_history);
-        new TabLayoutMediator(tabLayout, this.viewPager, (tab, position) -> {
-            tab.setText(Level.getLevelFromCode(position + 1).toString());
-        }).attach();
+        new TabLayoutMediator(tabLayout, this.viewPager,
+                (tab, position) -> tab.setText(Level.getLevelFromCode(position + 1).toString())
+        ).attach();
     }
 
     private void onResetButtonClick() {
