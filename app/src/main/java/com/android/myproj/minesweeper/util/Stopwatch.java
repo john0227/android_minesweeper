@@ -11,9 +11,6 @@ import com.android.myproj.minesweeper.config.JSONKey;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 public class Stopwatch {
 
     private final TextView stopwatchView;

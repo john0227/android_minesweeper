@@ -47,14 +47,12 @@ import com.android.myproj.minesweeper.util.MusicPlayer;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.StatUtil;
 import com.android.myproj.minesweeper.util.Stopwatch;
-import com.android.myproj.minesweeper.util.TimeFormatUtil;
 import com.otaliastudios.zoom.ZoomLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MinesweeperGameActivity extends AppCompatActivity {
