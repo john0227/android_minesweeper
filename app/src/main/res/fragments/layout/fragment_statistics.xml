@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,59 +22,45 @@
             android:textSize="25dp"
             android:textStyle="bold" />
 
-        <HorizontalScrollView
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout_stat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none">
+            android:background="@android:color/transparent"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:tabMode="scrollable">
 
-            <LinearLayout
-                android:id="@+id/linearL_button_container_stat"
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_overall_stat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="Overall" />
 
-                <Button
-                    android:id="@+id/btn_overall_stat"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:text="Overall" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_easy_stat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Easy" />
 
-                <Button
-                    android:id="@+id/btn_easy_stat"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:text="Easy" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_intermediate_stat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Intermediate" />
 
-                <Button
-                    android:id="@+id/btn_intermediate_stat"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:text="Intermediate" />
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_expert_stat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expert" />
 
-                <Button
-                    android:id="@+id/btn_expert_stat"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:text="Expert" />
-
-                <Button
-                    android:id="@+id/btn_jumbo_stat"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Jumbo" />
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_jumbo_stat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jumbo" />
+        </com.google.android.material.tabs.TabLayout>
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vp2_stat"

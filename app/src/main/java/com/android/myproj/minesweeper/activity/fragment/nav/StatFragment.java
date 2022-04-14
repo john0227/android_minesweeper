@@ -3,21 +3,18 @@ package com.android.myproj.minesweeper.activity.fragment.nav;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Supplier;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -32,17 +29,17 @@ import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.shape.MyProgressBar;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
-import com.android.myproj.minesweeper.util.ConvertUnitUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.StatUtil;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class StatFragment extends Fragment implements View.OnClickListener {
 
-    private static final int NUM_PAGES = 4;
+    private static final int NUM_PAGES = 5;
     
     private Activity activity;
     private View rootLayout;
@@ -58,7 +55,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
     private FrameLayout scrollbarContainer;
-    private LinearLayout btnContainer;
+    private HorizontalScrollView btnContainer;
     private List<Button> levelButtons;
     private MyProgressBar progressBar;
 
@@ -88,24 +85,6 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        viewPager.unregisterOnPageChangeCallback(changeButtonColor);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        viewPager.registerOnPageChangeCallback(changeButtonColor);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        viewPager.unregisterOnPageChangeCallback(changeButtonColor);
-    }
-
-    @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn_reset_stat) {
             this.onResetButtonClick();
@@ -116,36 +95,21 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
     private void setting() {
         this.scrollbarContainer = this.rootLayout.findViewById(R.id.frame_scrollbar_container);
-        this.btnContainer = this.rootLayout.findViewById(R.id.linearL_button_container_stat);
-
-        // Add Level buttons to buttonList
-        this.levelButtons = new ArrayList<>();
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_overall_stat));
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_easy_stat));
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_intermediate_stat));
-        this.levelButtons.add(this.rootLayout.findViewById(R.id.btn_expert_stat));
-        for (Button button : this.levelButtons) {
-            button.setOnClickListener(this);
-        }
 
         // Set ViewPager2 Object
         this.viewPager = this.rootLayout.findViewById(R.id.vp2_stat);
         this.pagerAdapter = new StatFragment.ScreenSlidePagerAdapter((FragmentActivity) this.activity);
         this.viewPager.setAdapter(this.pagerAdapter);
-        this.viewPager.registerOnPageChangeCallback(changeButtonColor);
 
-        // Create MyProgressBar object
-        this.progressBar = new MyProgressBar(this.activity, this.scrollbarContainer);
-        // Store necessary dimension
-        this.progressBarHeightPx = ConvertUnitUtil.convertDpToPx(this.activity, this.PROGRESS_BAR_HEIGHT_DP);
-        // Prepare to draw progress bar
-        new Handler().postDelayed(
-                () -> this.progressBar.drawProgressBar(
-                        this.progressBarPadding,
-                        this.progressBarBottom - this.progressBarHeightPx
-                ),
-                5
-        );
+        // Attach TabLayout to ViewPager2 using TabLayoutMediator
+        TabLayout tabLayout = this.rootLayout.findViewById(R.id.tabLayout_stat);
+        new TabLayoutMediator(tabLayout, this.viewPager, (tab, position) -> {
+            if (position == 0) {
+                tab.setText("OVERALL");
+            } else {
+                tab.setText(Level.getLevelFromCode(position).toString());
+            }
+        }).attach();
     }
 
     private boolean isLevelBtnId(@IdRes int viewId) {
@@ -246,87 +210,9 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     }
 
     public void updateView() {
-        ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3);
+        ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3, 4);
         this.viewPager.setCurrentItem(0, false);
-        new Handler().postDelayed(
-                () -> this.progressBar.drawProgressBar(
-                        this.progressBarPadding,
-                        this.progressBarBottom - this.progressBarHeightPx
-                ),
-                5
-        );
     }
-
-    private final ViewPager2.OnPageChangeCallback changeButtonColor = new ViewPager2.OnPageChangeCallback() {
-
-        // private int direction = 1;
-        // private int prevPos = 0;
-
-        /*
-        @Override
-        public void onPageScrollStateChanged (int state) {
-            if (state == ViewPager2.SCROLL_STATE_IDLE) {
-                this.prevPos = viewPager.getCurrentItem();
-            }
-        }
-        */
-
-        /*
-        private void updateDirection(int pos) {
-            if (pos < prevPos) {
-                this.direction = -1;
-            } else {
-                this.direction = 1;
-            }
-        }
-        */
-
-        @Override
-        public void onPageScrolled(int pos, float posOffset, int posOffsetPx) {
-            this.drawProgressBar(pos, posOffset);
-        }
-
-        @Override
-        public void onPageSelected(int pos) {
-            super.onPageSelected(pos);
-            for (int i = 0; i < levelButtons.size(); i++) {
-                if (i == pos) {
-                    levelButtons.get(i).setTextColor(ContextCompat.getColor(activity, R.color.purple_700));
-                } else {
-                    levelButtons.get(i).setTextColor(Color.WHITE);
-                }
-            }
-            this.storeDimension(pos);
-            this.drawProgressBar(pos, 0);
-        }
-
-
-        private Button getButtonAtPos(int pos) {
-            return switch (pos) {
-                case 0 -> rootLayout.findViewById(R.id.btn_overall_stat);
-                case 1 -> rootLayout.findViewById(R.id.btn_easy_stat);
-                case 2 -> rootLayout.findViewById(R.id.btn_intermediate_stat);
-                case 3 -> rootLayout.findViewById(R.id.btn_expert_stat);
-                default -> throw new RuntimeException("Invalid ViewPager2 position");
-            };
-        }
-
-        private void storeDimension(int pos) {
-            // Store necessary dimension
-            buttonWidth = getButtonAtPos(pos).getWidth();
-            progressBarPadding = (1 - BAR_TO_BUTTON_RATIO) / 2 * buttonWidth;
-            progressBarBottom = btnContainer.getBottom();
-            progressBar.setDimension(BAR_TO_BUTTON_RATIO * buttonWidth, progressBarHeightPx);
-        }
-
-        private void drawProgressBar(int pos, float posOffset) {
-            // Calculate corner points of MyRectF to pass to MyProgressBar
-            float left = this.getButtonAtPos(pos).getX() + progressBarPadding + buttonWidth * posOffset;
-            float top = progressBarBottom - progressBarHeightPx;
-            progressBar.drawProgressBar(left, top);
-        }
-
-    };
 
     public class ScreenSlidePagerAdapter extends FragmentStateAdapter {
 
@@ -341,7 +227,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
         public Fragment createFragment(int pos) {
             StatisticsFragment fragment = switch (pos) {
                 case 0 -> new OverallStatisticsFragment(activity, StatFragment.this);
-                case 1, 2, 3 -> new LevelStatisticsFragment(activity, Level.getLevelFromCode(pos), StatFragment.this);
+                case 1, 2, 3, 4 -> new LevelStatisticsFragment(activity, Level.getLevelFromCode(pos), StatFragment.this);
                 default -> throw new RuntimeException("Invalid Level received");
             };
             this.fragments[pos] = fragment;
@@ -355,7 +241,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
         public void notifyItemChangedAt(int position) {
             if (position == 0) {
-                this.updateFragment(0, 1, 2, 3);
+                this.updateFragment(0, 1, 2, 3, 4);
             } else {
                 this.updateFragment(0, position);
             }
