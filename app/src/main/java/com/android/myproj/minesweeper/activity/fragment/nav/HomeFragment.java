@@ -105,6 +105,7 @@ public class HomeFragment extends Fragment {
         this.rootLayout.findViewById(R.id.btn_easy).setOnClickListener(onButtonClick);
         this.rootLayout.findViewById(R.id.btn_intermediate).setOnClickListener(onButtonClick);
         this.rootLayout.findViewById(R.id.btn_expert).setOnClickListener(onButtonClick);
+        this.rootLayout.findViewById(R.id.btn_jumbo).setOnClickListener(onButtonClick);
         this.rootLayout.findViewById(R.id.btn_resume).setOnClickListener(onButtonClick);
 
         // Bind PopupMenu to ImageButton
@@ -161,6 +162,7 @@ public class HomeFragment extends Fragment {
             case EASY -> resumeButton.setText(R.string.btn_resume_easy);
             case INTERMEDIATE -> resumeButton.setText(R.string.btn_resume_intermediate);
             case EXPERT -> resumeButton.setText(R.string.btn_resume_expert);
+            case JUMBO -> resumeButton.setText(R.string.btn_resume_jumbo);
         }
         resumeButton.setEnabled(true);
 
@@ -228,6 +230,7 @@ public class HomeFragment extends Fragment {
             case "EASY" -> code = Level.EASY.getCode();
             case "INTERMEDIATE" ->  code = Level.INTERMEDIATE.getCode();
             case "EXPERT" -> code = Level.EXPERT.getCode();
+            case "JUMBO" -> code = Level.JUMBO.getCode();
             default -> throw new RuntimeException();
         }
 

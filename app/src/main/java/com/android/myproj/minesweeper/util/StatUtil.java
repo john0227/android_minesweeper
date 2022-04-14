@@ -130,6 +130,7 @@ public class StatUtil {
             case EASY -> JSONKey.KEY_EXISTS_SAVED_EASY_STAT;
             case INTERMEDIATE -> JSONKey.KEY_EXISTS_SAVED_INTERMEDIATE_STAT;
             case EXPERT -> JSONKey.KEY_EXISTS_SAVED_EXPERT_STAT;
+            case JUMBO -> JSONKey.KEY_EXISTS_SAVED_JUMBO_STAT;
         };
     }
 
@@ -138,6 +139,7 @@ public class StatUtil {
             case EASY -> JSONKey.KEYS_EASY_STAT;
             case INTERMEDIATE -> JSONKey.KEYS_INTERMEDIATE_STAT;
             case EXPERT -> JSONKey.KEYS_EXPERT_STAT;
+            case JUMBO -> JSONKey.KEYS_JUMBO_STAT;
         };
     }
 
@@ -201,6 +203,7 @@ public class StatUtil {
             case EASY -> JSONKey.KEY_STAT_EASY_CURR_STREAK;
             case INTERMEDIATE -> JSONKey.KEY_STAT_INTERMEDIATE_CURR_STREAK;
             case EXPERT -> JSONKey.KEY_STAT_EXPERT_CURR_STREAK;
+            case JUMBO -> JSONKey.KEY_STAT_JUMBO_CURR_STREAK;
         };
         savedStat.put(key, 0);
     }

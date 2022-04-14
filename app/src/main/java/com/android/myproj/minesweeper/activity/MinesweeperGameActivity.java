@@ -46,6 +46,7 @@ import com.android.myproj.minesweeper.util.MusicPlayer;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.StatUtil;
 import com.android.myproj.minesweeper.util.Stopwatch;
+import com.otaliastudios.zoom.ZoomLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -240,7 +241,13 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private void generateMinesweeperBoard() {
         int tileNum = 0;
         int tileDim = 30;  // in DP
-        int padding = 50;  // in DP (start and end)
+        int padding = 0;  // in DP (start and end)
+
+        ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
+        if (this.level == Level.JUMBO) {
+            zoomLayout.setZoomEnabled(true);
+            padding = 50;
+        }
 
         LinearLayout container = findViewById(R.id.linearL_mine_container);
         LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(

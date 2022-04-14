@@ -134,6 +134,7 @@ public class JSONUtil {
             case JSONKey.KEY_EXISTS_SAVED_EASY_STAT -> JSONKey.KEYS_EASY_STAT;
             case JSONKey.KEY_EXISTS_SAVED_INTERMEDIATE_STAT ->  JSONKey.KEYS_INTERMEDIATE_STAT;
             case JSONKey.KEY_EXISTS_SAVED_EXPERT_STAT -> JSONKey.KEYS_EXPERT_STAT;
+            case JSONKey.KEY_EXISTS_SAVED_JUMBO_STAT -> JSONKey.KEYS_JUMBO_STAT;
             default -> throw new RuntimeException("Invalid Saved Stat key");
         };
     }
@@ -188,6 +189,7 @@ public class JSONUtil {
             case JSONKey.KEY_EXISTS_EASY_SAVED_HISTORY -> JSONKey.KEY_EASY_SAVED_HISTORY_ARRAY;
             case JSONKey.KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY -> JSONKey.KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY;
             case JSONKey.KEY_EXISTS_EXPERT_SAVED_HISTORY -> JSONKey.KEY_EXPERT_SAVED_HISTORY_ARRAY;
+            case JSONKey.KEY_EXISTS_JUMBO_SAVED_HISTORY -> JSONKey.KEY_JUMBO_SAVED_HISTORY_ARRAY;
             default -> throw new RuntimeException("Invalid JSONKey for saved history");
         };
     }

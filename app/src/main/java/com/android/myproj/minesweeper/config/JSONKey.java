@@ -23,6 +23,7 @@ public class JSONKey {
     public static final String KEY_EXISTS_SAVED_EASY_STAT = "exists_saved_easy_stat";
     public static final String KEY_EXISTS_SAVED_INTERMEDIATE_STAT = "exists_saved_intermediate_stat";
     public static final String KEY_EXISTS_SAVED_EXPERT_STAT = "exists_saved_expert_stat";
+    public static final String KEY_EXISTS_SAVED_JUMBO_STAT = "exists_saved_jumbo_stat";
     // EASY Level Stats
     public static final String KEY_STAT_EASY_GAMES_STARTED = "easy_games_started";     // int
     public static final String KEY_STAT_EASY_GAMES_WON = "easy_games_won";             // int
@@ -50,11 +51,21 @@ public class JSONKey {
     public static final String KEY_STAT_EXPERT_BEST_STREAK = "expert_best_win_streak";
     public static final String KEY_STAT_EXPERT_CURR_STREAK = "expert_current_win_streak";
     public static final String KEY_STAT_EXPERT_NO_HINT_WINS = "expert_wins_with_no_hint";
+    // JUMBO Level Stats
+    public static final String KEY_STAT_JUMBO_GAMES_STARTED = "jumbo_games_started";
+    public static final String KEY_STAT_JUMBO_GAMES_WON = "jumbo_games_won";
+    public static final String KEY_STAT_JUMBO_WIN_RATE = "jumbo_win_rate";
+    public static final String KEY_STAT_JUMBO_BEST_TIME = "jumbo_best_time";
+    public static final String KEY_STAT_JUMBO_AVERAGE_TIME = "jumbo_average_time";
+    public static final String KEY_STAT_JUMBO_BEST_STREAK = "jumbo_best_win_streak";
+    public static final String KEY_STAT_JUMBO_CURR_STREAK = "jumbo_current_win_streak";
+    public static final String KEY_STAT_JUMBO_NO_HINT_WINS = "jumbo_wins_with_no_hint";
     // All Stat Keys
     public static final String[] KEYS_SAVED_STAT = new String[] {
             KEY_EXISTS_SAVED_EASY_STAT,
             KEY_EXISTS_SAVED_INTERMEDIATE_STAT,
-            KEY_EXISTS_SAVED_EXPERT_STAT
+            KEY_EXISTS_SAVED_EXPERT_STAT,
+            KEY_EXISTS_SAVED_JUMBO_STAT
     };
     public static final String[] KEYS_EASY_STAT = new String[] {
             KEY_STAT_EASY_GAMES_STARTED,
@@ -86,11 +97,22 @@ public class JSONKey {
             KEY_STAT_EXPERT_CURR_STREAK,
             KEY_STAT_EXPERT_NO_HINT_WINS
     };
+    public static final String[] KEYS_JUMBO_STAT = new String[] {
+            KEY_STAT_JUMBO_GAMES_STARTED,
+            KEY_STAT_JUMBO_GAMES_WON,
+            KEY_STAT_JUMBO_WIN_RATE,
+            KEY_STAT_JUMBO_BEST_TIME,
+            KEY_STAT_JUMBO_AVERAGE_TIME,
+            KEY_STAT_JUMBO_BEST_STREAK,
+            KEY_STAT_JUMBO_CURR_STREAK,
+            KEY_STAT_JUMBO_NO_HINT_WINS
+    };
 
     private static final String[][] ALL_KEYS_BY_LEVEL = new String[][] {
-        KEYS_EASY_STAT,
-        KEYS_INTERMEDIATE_STAT,
-        KEYS_EXPERT_STAT
+            KEYS_EASY_STAT,
+            KEYS_INTERMEDIATE_STAT,
+            KEYS_EXPERT_STAT,
+            KEYS_JUMBO_STAT
     };
 
     public static String getStatKey(int keyIndex, Level level) {
@@ -102,19 +124,23 @@ public class JSONKey {
     public static final String KEY_EXISTS_EASY_SAVED_HISTORY = "exists_easy_saved_history";
     public static final String KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY = "exists_intermediate_saved_history";
     public static final String KEY_EXISTS_EXPERT_SAVED_HISTORY = "exists_expert_saved_history";
+    public static final String KEY_EXISTS_JUMBO_SAVED_HISTORY = "exists_jumbo_saved_history";
     public static final String KEY_EASY_SAVED_HISTORY_ARRAY = "easy_saved_history_array";
     public static final String KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY = "intermediate_saved_history_array";
     public static final String KEY_EXPERT_SAVED_HISTORY_ARRAY = "expert_saved_history_array";
+    public static final String KEY_JUMBO_SAVED_HISTORY_ARRAY = "jumbo_saved_history_array";
     public static final String[] KEYS_SAVED_HISTORY = new String[] {
             KEY_EXISTS_EASY_SAVED_HISTORY,
             KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY,
-            KEY_EXISTS_EXPERT_SAVED_HISTORY
+            KEY_EXISTS_EXPERT_SAVED_HISTORY,
+            KEY_EXISTS_JUMBO_SAVED_HISTORY
     };
     public static String getHistoryKey(Level level) {
         return switch (level) {
             case EASY -> KEY_EASY_SAVED_HISTORY_ARRAY;
             case INTERMEDIATE -> KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY;
             case EXPERT -> KEY_EXPERT_SAVED_HISTORY_ARRAY;
+            case JUMBO -> KEY_JUMBO_SAVED_HISTORY_ARRAY;
         };
     }
     // Saved History JSON Keys (End)

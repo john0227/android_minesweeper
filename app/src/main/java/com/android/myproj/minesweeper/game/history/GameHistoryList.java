@@ -19,11 +19,13 @@ public class GameHistoryList {
     private final List<GameHistoryVo> easyHistoryList;
     private final List<GameHistoryVo> intermediateHistoryList;
     private final List<GameHistoryVo> expertHistoryList;
+    private final List<GameHistoryVo> jumboHistoryList;
 
     private GameHistoryList() {
         this.easyHistoryList = new ArrayList<>();
         this.intermediateHistoryList = new ArrayList<>();
         this.expertHistoryList = new ArrayList<>();
+        this.jumboHistoryList = new ArrayList<>();
     }
 
     public GameHistoryVo getGameHistory(int index, Level level) {
@@ -60,6 +62,7 @@ public class GameHistoryList {
             case EASY -> this.easyHistoryList;
             case INTERMEDIATE -> this.intermediateHistoryList;
             case EXPERT -> this.expertHistoryList;
+            case JUMBO -> this.jumboHistoryList;
         };
     }
 
