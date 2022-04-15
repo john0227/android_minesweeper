@@ -13,9 +13,11 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.fragment.nav.HistoryFragment;
 import com.android.myproj.minesweeper.activity.fragment.nav.HomeFragment;
 import com.android.myproj.minesweeper.activity.fragment.nav.StatFragment;
+import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
+import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -112,6 +114,10 @@ public class MainActivity extends FragmentActivity {
             new NavigationBarView.OnItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            if (!MySharedPreferencesUtil.getBoolean(MainActivity.this, Key.PREFERENCES_ENABLE, true)) {
+                return false;
+            }
+
             if (item.getItemId() == R.id.homeFragment) {
                 viewPager2.setCurrentItem(0);
             } else if (item.getItemId() == R.id.historyFragment) {

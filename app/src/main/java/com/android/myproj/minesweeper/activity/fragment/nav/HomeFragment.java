@@ -48,7 +48,7 @@ import java.io.IOException;
 public class HomeFragment extends Fragment {
 
     private Activity activity;
-    private View rootLayout;
+    private ViewGroup rootLayout;
     
     private ActivityResultLauncher<Intent> resultLauncherGame;
     private ActivityResultLauncher<Intent> resultLauncherSetting;
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
         }
         
         try {
-            this.rootLayout = inflater.inflate(R.layout.fragment_home, container, false);
+            this.rootLayout = (ViewGroup) inflater.inflate(R.layout.fragment_home, container, false);
 
             init();
             setting();
@@ -102,11 +102,12 @@ public class HomeFragment extends Fragment {
 
     private void setting() throws JSONException {
         // Add listener to level buttons
-        this.rootLayout.findViewById(R.id.btn_easy).setOnClickListener(onButtonClick);
-        this.rootLayout.findViewById(R.id.btn_intermediate).setOnClickListener(onButtonClick);
-        this.rootLayout.findViewById(R.id.btn_expert).setOnClickListener(onButtonClick);
-        this.rootLayout.findViewById(R.id.btn_jumbo).setOnClickListener(onButtonClick);
-        this.rootLayout.findViewById(R.id.btn_resume).setOnClickListener(onButtonClick);
+        this.rootLayout.findViewById(R.id.btn_easy).setOnClickListener(onLevelButtonClick);
+        this.rootLayout.findViewById(R.id.btn_intermediate).setOnClickListener(onLevelButtonClick);
+        this.rootLayout.findViewById(R.id.btn_expert).setOnClickListener(onLevelButtonClick);
+        this.rootLayout.findViewById(R.id.btn_jumbo).setOnClickListener(onLevelButtonClick);
+        this.rootLayout.findViewById(R.id.btn_custom).setOnClickListener(onLevelButtonClick);
+        this.rootLayout.findViewById(R.id.btn_resume).setOnClickListener(onLevelButtonClick);
 
         // Bind PopupMenu to ImageButton
         this.btn_setting.setOnClickListener(onSettingClick);
@@ -211,7 +212,11 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public View.OnClickListener onButtonClick = view -> {
+    public View.OnClickListener onLevelButtonClick = view -> {
+        if (!MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_ENABLE, true)) {
+            return;
+        }
+
         // Save width and height to SharedPreferences
         if (MySharedPreferencesUtil.contains(this.activity, Key.PREFERENCES_WIDTH)) {
             MySharedPreferencesUtil.putFloat(this.activity, Key.PREFERENCES_WIDTH,
@@ -231,6 +236,10 @@ public class HomeFragment extends Fragment {
             case "INTERMEDIATE" ->  code = Level.INTERMEDIATE.getCode();
             case "EXPERT" -> code = Level.EXPERT.getCode();
             case "JUMBO" -> code = Level.JUMBO.getCode();
+            case "CUSTOM" -> {
+                this.showCustomLevelDialog();
+                return;
+            }
             default -> throw new RuntimeException();
         }
 
@@ -247,6 +256,18 @@ public class HomeFragment extends Fragment {
             launchGame.run();
         }
     };
+
+    private void showCustomLevelDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this.activity);
+        View view = inflater.inflate(R.layout.custom_level_dialog, this.rootLayout, true);
+
+        // Prevent player from pressing any buttons
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, false);
+
+        // Set listeners for OK and CANCEL buttons
+        view.findViewById(R.id.btn_custom_pos).setOnClickListener(onPositiveCustomLevelDialogClick);
+        view.findViewById(R.id.btn_custom_neg).setOnClickListener(onNegativeCustomLevelDialogClick);
+    }
 
     private void showAlertDialog(Runnable toRun) {
         String title = "Resume Game?";
@@ -315,6 +336,10 @@ public class HomeFragment extends Fragment {
     };
 
     private final View.OnClickListener onSettingClick = view -> {
+        if (!MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_ENABLE, true)) {
+            return;
+        }
+
         // Initializing the popup menu and giving the reference as current context
         PopupMenu popupMenu = new PopupMenu(this.activity, btn_setting);
 
@@ -325,6 +350,25 @@ public class HomeFragment extends Fragment {
 
         // Showing the popup menu
         popupMenu.show();
+    };
+
+    private final View.OnClickListener onPositiveCustomLevelDialogClick = view -> {
+        this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+
+        // If numbers entered by players are all valid, launch game
+
+        // Else, create an non-cancelable alertdialog prompting player to re-enter values
+        // else if (rows, cols, mines is negative) prompt message = enter positive values
+        // else if (rows < 10 or rows > 100) prompt message = enter row value in between 10 and 100
+        // else if (cols < 10 or cols > 100) prompt message = enter col value in between 10 and 100
+        // else if (mines > rows * cols * 0.7) prompt message = enter less mines
+    };
+
+    private final View.OnClickListener onNegativeCustomLevelDialogClick = view -> {
+        this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+
+        // Allow player to press buttons
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
     };
 
     private final ActivityResultCallback<ActivityResult> gameResultCallback = result -> {
