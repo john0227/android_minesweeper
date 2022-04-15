@@ -90,12 +90,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         try {
             this.retrieveLevel();
 
-//            switch (this.level) {
-//                case EASY -> setContentView(R.layout.activity_easy_level);
-//                case INTERMEDIATE -> setContentView(R.layout.activity_intermediate_level);
-//                case EXPERT -> setContentView(R.layout.activity_expert_level);
-//                default -> throw new RuntimeException("Invalid level: " + this.level);
-//            }
             setContentView(R.layout.activity_game);
 
             LogService.info(this, JSONUtil.readJSONFile(this).toString());
@@ -244,9 +238,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         int padding = 0;  // in DP (start and end)
 
         ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
-        if (this.level == Level.JUMBO) {
+        if (this.level.getRow() > 25 || this.level.getCol() > 15) {
             zoomLayout.setZoomEnabled(true);
-            padding = 50;
+            padding = (int) ConvertUnitUtil.convertPxToDP(this, 50);
         }
 
         LinearLayout container = findViewById(R.id.linearL_mine_container);
@@ -254,12 +248,24 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 (int) ConvertUnitUtil.convertPxToDP(this, tileDim * this.level.getCol()) + 2 * padding,
                 (int) ConvertUnitUtil.convertPxToDP(this, tileDim)
         );
+        LinearLayout.LayoutParams topBottomChildLayoutParams = new LinearLayout.LayoutParams(
+                (int) ConvertUnitUtil.convertPxToDP(this, tileDim * this.level.getCol()) + 2 * padding,
+                (int) ConvertUnitUtil.convertPxToDP(this, tileDim) + padding
+        );
         LinearLayout.LayoutParams tileParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1);
         // Add minesweeper tiles (as ImageButtons) to the layout
-        for (int r = 0; r < level.getRow(); r++) {
+        for (int r = 0; r < this.level.getRow(); r++) {
             LinearLayout rowContainer = new LinearLayout(this);
-            rowContainer.setPadding(padding, 0, padding, 0);
-            rowContainer.setLayoutParams(childLayoutParams);
+            if (r == 0) {
+                rowContainer.setPadding(padding, padding, padding, 0);
+                rowContainer.setLayoutParams(topBottomChildLayoutParams);
+            } else if (r == this.level.getRow() - 1) {
+                rowContainer.setPadding(padding, 0, padding, padding);
+                rowContainer.setLayoutParams(topBottomChildLayoutParams);
+            } else {
+                rowContainer.setPadding(padding, 0, padding, 0);
+                rowContainer.setLayoutParams(childLayoutParams);
+            }
             container.addView(rowContainer);
             for (int c = 0; c < level.getCol(); c++) {
                 // Create Tiles as ImageButton
@@ -308,7 +314,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         try {
             LogService.info(this, "Updating games started");
             JSONObject savedData = JSONUtil.readJSONFile(this);
-            StatUtil.updateGameStarted(savedData, this.level);
+            if (this.level != Level.CUSTOM) {
+                StatUtil.updateGameStarted(savedData, this.level);
+            }
             JSONUtil.writeToJSONFile(this, savedData);
         } catch (JSONException | IOException e) {
             LogService.error(this, "Could not update Games Started", e);
@@ -500,9 +508,11 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             stopwatch.pauseTimer();
             tv_mine_count.setText("YOU WON :)");
             try {
-                // Update all statistics and history
-                StatUtil.updateAllStat(this, this.level, this.stopwatch.getTotalTimeInSeconds(), this.noHint);
-                HistoryUtil.saveGameHistory(this, this.level, this.stopwatch);
+                if (this.level != Level.CUSTOM) {
+                    // Update all statistics and history
+                    StatUtil.updateAllStat(this, this.level, this.stopwatch.getTotalTimeInSeconds(), this.noHint);
+                    HistoryUtil.saveGameHistory(this, this.level, this.stopwatch);
+                }
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Could not save statistics", e);
             }
@@ -511,9 +521,11 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             // Update win rate and current win streak
             JSONObject savedStat = JSONUtil.readJSONFile(this);
             try {
-                StatUtil.updateWinRate(savedStat, this.level);
-                StatUtil.resetCurrStreak(savedStat, this.level);
-                JSONUtil.writeToJSONFile(this, savedStat);
+                if (this.level != Level.CUSTOM) {
+                    StatUtil.updateWinRate(savedStat, this.level);
+                    StatUtil.resetCurrStreak(savedStat, this.level);
+                    JSONUtil.writeToJSONFile(this, savedStat);
+                }
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Was unable to update win rate and current win streak", e);
             }

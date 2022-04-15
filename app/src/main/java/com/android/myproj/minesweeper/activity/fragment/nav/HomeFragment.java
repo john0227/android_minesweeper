@@ -169,6 +169,7 @@ public class HomeFragment extends Fragment {
             case INTERMEDIATE -> resumeButton.setText(R.string.btn_resume_intermediate);
             case EXPERT -> resumeButton.setText(R.string.btn_resume_expert);
             case JUMBO -> resumeButton.setText(R.string.btn_resume_jumbo);
+            case CUSTOM -> resumeButton.setText(R.string.btn_resume_custom);
         }
         resumeButton.setEnabled(true);
 
@@ -390,16 +391,14 @@ public class HomeFragment extends Fragment {
         }
 
         boolean areAllPositive = rows > 0 && cols > 0 && mines > 0;
-        boolean isValidRow = rows >= 10 && rows <= 100;
-        boolean isValidCol = cols >= 10 && cols <= 100;
+        boolean isValidRow = rows >= 10 && rows <= 50;
+        boolean isValidCol = cols >= 10 && cols <= 50;
         // Only allow mines up to 70% of the total numbers of tiles
         boolean isValidMine = mines <= rows * cols * 0.7;
 
         if (areAllPositive && isValidRow && isValidCol && isValidMine) {
             // Remove Custom Level dialog
             this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
-
-            Toast.makeText(activity, "Valid values!!", Toast.LENGTH_SHORT).show();
 
             // Allow player to press buttons
             MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
@@ -408,6 +407,23 @@ public class HomeFragment extends Fragment {
             this.hideKeyboard();
 
             // Set Custom Level dimensions and launch game activity
+            long animationDelay = mines <= 30 ? 50 : 20;
+            Level.CUSTOM.setValues(rows, cols, mines, animationDelay);
+
+            // Launch game activity
+            Intent intent = new Intent(this.activity, MinesweeperGameActivity.class);
+            Runnable launchGame = () -> {
+                // Pass Level code
+                intent.putExtra(Key.LEVEL_KEY, Level.CUSTOM.getCode());
+                resultLauncherGame.launch(intent);
+            };
+
+            // If there is saved data, alert the player
+            if (this.existsSavedData) {
+                this.showResumeAlertDialog(launchGame);
+            } else {
+                launchGame.run();
+            }
         } else {
             if (!areAllPositive) {
                 this.hideKeyboard();
@@ -423,7 +439,7 @@ public class HomeFragment extends Fragment {
                 AlertDialogBuilderUtil.buildNonCancelableAlertDialog(
                         this.activity,
                         "Invalid number of rows",
-                        "Please enter a number between 10 and 100",
+                        "Please enter a number between 10 and 50",
                         "OK",
                         reshowCustomDialog
                 ).show();
@@ -432,7 +448,7 @@ public class HomeFragment extends Fragment {
                 AlertDialogBuilderUtil.buildNonCancelableAlertDialog(
                         this.activity,
                         "Invalid number of columns",
-                        "Please enter a number between 10 and 100",
+                        "Please enter a number between 10 and 50",
                         "OK",
                         reshowCustomDialog
                 ).show();

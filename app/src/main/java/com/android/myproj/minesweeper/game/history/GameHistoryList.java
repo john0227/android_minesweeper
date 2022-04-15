@@ -63,6 +63,7 @@ public class GameHistoryList {
             case INTERMEDIATE -> this.intermediateHistoryList;
             case EXPERT -> this.expertHistoryList;
             case JUMBO -> this.jumboHistoryList;
+            default -> throw new RuntimeException();
         };
     }
 

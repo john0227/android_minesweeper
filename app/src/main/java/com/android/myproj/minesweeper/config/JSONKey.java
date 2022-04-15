@@ -139,6 +139,7 @@ public class JSONKey {
             case INTERMEDIATE -> KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY;
             case EXPERT -> KEY_EXPERT_SAVED_HISTORY_ARRAY;
             case JUMBO -> KEY_JUMBO_SAVED_HISTORY_ARRAY;
+            default -> throw new RuntimeException();
         };
     }
     // Saved History JSON Keys (End)
