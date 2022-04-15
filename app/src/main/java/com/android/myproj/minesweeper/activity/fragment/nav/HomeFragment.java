@@ -135,8 +135,8 @@ public class HomeFragment extends Fragment {
             resumeButton.setText("");
             resumeButton.setEnabled(false);
 
-            // Set vertical bias to 0.50 for INTERMEDIATE button
-            lp.verticalBias = 0.45f;
+            // Set vertical bias to 0.40 for INTERMEDIATE button
+            lp.verticalBias = 0.37f;
             intermediateButton.setLayoutParams(lp);
 
             // Remove progress bar
@@ -173,7 +173,7 @@ public class HomeFragment extends Fragment {
         this.drawProgressBar((int) (100.0 * uncoveredTiles / totalNonMineTiles));
 
         // Set vertical bias for INTERMEDIATE button
-        lp.verticalBias = 0.50f;
+        lp.verticalBias = 0.43f;
         intermediateButton.setLayoutParams(lp);
     }
 
