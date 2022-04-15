@@ -503,6 +503,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     
     private void gameOverAction(boolean hasWon, int indexLastSelected) {
         this.isGameOver = true;
+
+        // Reset zoom
+        ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
+        zoomLayout.zoomBy(1 / zoomLayout.getZoom(), true);
+        zoomLayout.setZoomEnabled(false);
+
         if (hasWon) {
             musicPlayers[0].playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
             stopwatch.pauseTimer();
