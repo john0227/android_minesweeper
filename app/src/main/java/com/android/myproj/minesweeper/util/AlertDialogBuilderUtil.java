@@ -46,4 +46,19 @@ public class AlertDialogBuilderUtil {
         return builder;
     }
 
+    public static AlertDialog.Builder buildNonCancelableAlertDialog(Activity activity, String title, String message,
+                String negButtonText, DialogInterface.OnClickListener negAction) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.MyDialogTheme);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        builder.setNegativeButton(negButtonText, negAction);
+
+        builder.setCancelable(false);
+
+        return builder;
+    }
+
 }

@@ -11,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -101,6 +104,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void setting() throws JSONException {
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
+
         // Add listener to level buttons
         this.rootLayout.findViewById(R.id.btn_easy).setOnClickListener(onLevelButtonClick);
         this.rootLayout.findViewById(R.id.btn_intermediate).setOnClickListener(onLevelButtonClick);
@@ -251,7 +256,7 @@ public class HomeFragment extends Fragment {
 
         // If there is saved data, but player did not choose resume, alert the player
         if (this.existsSavedData && code != Key.RETRIEVE_LEVEL_CODE) {
-            this.showAlertDialog(launchGame);
+            this.showResumeAlertDialog(launchGame);
         } else {
             launchGame.run();
         }
@@ -269,7 +274,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.btn_custom_neg).setOnClickListener(onNegativeCustomLevelDialogClick);
     }
 
-    private void showAlertDialog(Runnable toRun) {
+    private void showResumeAlertDialog(Runnable toRun) {
         String title = "Resume Game?";
         String message = "You have an ongoing game. Are you sure you want to start a new game?";
         String posText = "Continue";
@@ -304,6 +309,15 @@ public class HomeFragment extends Fragment {
 
     private void updateSoundSetting() {
         MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_SOUND, this.playSound);
+    }
+
+    private void hideKeyboard() {
+        // Check if no view has focus:
+        View view = this.activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) this.activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private final PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
@@ -353,15 +367,86 @@ public class HomeFragment extends Fragment {
     };
 
     private final View.OnClickListener onPositiveCustomLevelDialogClick = view -> {
-        this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+        DialogInterface.OnClickListener reshowCustomDialog = (dialogInterface, i) -> {
+            this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+            this.showCustomLevelDialog();
+        };
 
-        // If numbers entered by players are all valid, launch game
+        int rows, cols, mines;
+        try {
+            rows = Integer.parseInt(((EditText) this.rootLayout.findViewById(R.id.et_row_custom)).getText().toString());
+            cols = Integer.parseInt(((EditText) this.rootLayout.findViewById(R.id.et_column_custom)).getText().toString());
+            mines = Integer.parseInt(((EditText) this.rootLayout.findViewById(R.id.et_mines_custom)).getText().toString());
+        } catch (NumberFormatException nfe) {
+            this.hideKeyboard();
+            AlertDialogBuilderUtil.buildNonCancelableAlertDialog(
+                    this.activity,
+                    "Invalid number",
+                    "Please enter valid numbers",
+                    "OK",
+                    reshowCustomDialog
+            ).show();
+            return;
+        }
 
-        // Else, create an non-cancelable alertdialog prompting player to re-enter values
-        // else if (rows, cols, mines is negative) prompt message = enter positive values
-        // else if (rows < 10 or rows > 100) prompt message = enter row value in between 10 and 100
-        // else if (cols < 10 or cols > 100) prompt message = enter col value in between 10 and 100
-        // else if (mines > rows * cols * 0.7) prompt message = enter less mines
+        boolean areAllPositive = rows > 0 && cols > 0 && mines > 0;
+        boolean isValidRow = rows >= 10 && rows <= 100;
+        boolean isValidCol = cols >= 10 && cols <= 100;
+        // Only allow mines up to 70% of the total numbers of tiles
+        boolean isValidMine = mines <= rows * cols * 0.7;
+
+        if (areAllPositive && isValidRow && isValidCol && isValidMine) {
+            // Remove Custom Level dialog
+            this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+
+            Toast.makeText(activity, "Valid values!!", Toast.LENGTH_SHORT).show();
+
+            // Allow player to press buttons
+            MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
+
+            // Hide keyboard
+            this.hideKeyboard();
+
+            // Set Custom Level dimensions and launch game activity
+        } else {
+            if (!areAllPositive) {
+                this.hideKeyboard();
+                AlertDialogBuilderUtil.buildNonCancelableAlertDialog(
+                        this.activity,
+                        "Values must be positive",
+                        "Please enter positive numbers only",
+                        "OK",
+                        reshowCustomDialog
+                ).show();
+            } else if (!isValidRow) {
+                this.hideKeyboard();
+                AlertDialogBuilderUtil.buildNonCancelableAlertDialog(
+                        this.activity,
+                        "Invalid number of rows",
+                        "Please enter a number between 10 and 100",
+                        "OK",
+                        reshowCustomDialog
+                ).show();
+            } else if (!isValidCol) {
+                this.hideKeyboard();
+                AlertDialogBuilderUtil.buildNonCancelableAlertDialog(
+                        this.activity,
+                        "Invalid number of columns",
+                        "Please enter a number between 10 and 100",
+                        "OK",
+                        reshowCustomDialog
+                ).show();
+            } else {  // same as else if (!isValidMine)
+                this.hideKeyboard();
+                AlertDialogBuilderUtil.buildNonCancelableAlertDialog(
+                        this.activity,
+                        "Large number of mines",
+                        "Please enter a smaller number",
+                        "OK",
+                        reshowCustomDialog
+                ).show();
+            }
+        }
     };
 
     private final View.OnClickListener onNegativeCustomLevelDialogClick = view -> {
