@@ -14,6 +14,10 @@ public class JSONKey {
     public static final String KEY_COVERED_TILES = "covered_tiles";
     public static final String KEY_LEFTOVER_MINES = "leftover_mines";
     public static final String KEY_LEVEL = "game_level";
+    public static final String KEY_LEVEL_ROW = "game_level_row";
+    public static final String KEY_LEVEL_COL = "game_level_col";
+    public static final String KEY_LEVEL_MINES = "game_level_mines";
+    public static final String KEY_LEVEL_DELAY = "game_level_delay";
     public static final String KEY_TIME_STORED_MILLIS = "stored_millis";
     // Saved Game JSON Keys (End)
 

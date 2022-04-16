@@ -157,8 +157,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // If player pressed RESUME button in MainActivity
         this.savedState = JSONUtil.readJSONFile(this);
-        levelCode = this.savedState.getInt(JSONKey.KEY_LEVEL);
-        this.level = Level.getLevelFromCode(levelCode);
+        this.level = Level.restoreLevel(savedState);
 
         // Update level code in this intent
         intent.removeExtra(Key.LEVEL_KEY);
@@ -356,8 +355,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             JSONObject savedGameState = JSONUtil.readJSONFile(this);
             this.game.save(savedGameState);
             this.stopwatch.saveStopwatch(savedGameState);
-
-            savedGameState.put(JSONKey.KEY_LEVEL, level.getCode());
+            this.level.saveLevel(savedGameState);
             JSONUtil.writeToJSONFile(MinesweeperGameActivity.this, savedGameState);
         } catch (JSONException | IOException e) {
             LogService.error(this, e.getMessage(), e);

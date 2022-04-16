@@ -1,5 +1,12 @@
 package com.android.myproj.minesweeper.game.logic;
 
+import com.android.myproj.minesweeper.activity.MainActivity;
+import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.util.LogService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public enum Level {
 
     EASY(10, 10, 10, 75, 1),
@@ -50,6 +57,34 @@ public enum Level {
         this.row = row;
         this.mines = mines;
         this.animationDelay = animationDelay;
+    }
+
+    public void saveLevel(JSONObject savedData) throws JSONException {
+        savedData.put(JSONKey.KEY_LEVEL, this.code);
+
+        if (this != CUSTOM) {
+            return;
+        }
+
+        // If this level is CUSTOM
+        savedData.put(JSONKey.KEY_LEVEL_COL, this.col);
+        savedData.put(JSONKey.KEY_LEVEL_ROW, this.row);
+        savedData.put(JSONKey.KEY_LEVEL_MINES, this.mines);
+        savedData.put(JSONKey.KEY_LEVEL_DELAY, this.animationDelay);
+    }
+
+    public static Level restoreLevel(JSONObject savedData) throws JSONException {
+        Level level = Level.getLevelFromCode(savedData.getInt(JSONKey.KEY_LEVEL));
+        if (level != CUSTOM) {
+            return level;
+        }
+        level.setValues(
+                savedData.getInt(JSONKey.KEY_LEVEL_COL),
+                savedData.getInt(JSONKey.KEY_LEVEL_ROW),
+                savedData.getInt(JSONKey.KEY_LEVEL_MINES),
+                savedData.getInt(JSONKey.KEY_LEVEL_DELAY)
+        );
+        return level;
     }
 
     public static Level getLevelFromCode(int code) {

@@ -160,7 +160,7 @@ public class HomeFragment extends Fragment {
         // =================================================================
         LogService.info(this.activity, "====== SavedData exists =====");
         this.existsSavedData = true;
-        Level level = Level.getLevelFromCode(savedState.getInt(JSONKey.KEY_LEVEL));
+        Level level = Level.restoreLevel(savedState);
 
         // If there is data to restore, make RESUME button visible
         resumeButton.setBackgroundColor(ContextCompat.getColor(this.activity, R.color.purple_level_1));
@@ -300,9 +300,11 @@ public class HomeFragment extends Fragment {
             // Updates the Win Rate and Current Win Streak statistics of the game level not resumed by player
             JSONObject savedData = JSONUtil.readJSONFile(this.activity);
             Level savedLevel = Level.getLevelFromCode(savedData.getInt(JSONKey.KEY_LEVEL));
-            StatUtil.updateWinRate(savedData, savedLevel);
-            StatUtil.resetCurrStreak(savedData, savedLevel);
-            JSONUtil.writeToJSONFile(this.activity, savedData);
+            if (savedLevel != Level.CUSTOM) {
+                StatUtil.updateWinRate(savedData, savedLevel);
+                StatUtil.resetCurrStreak(savedData, savedLevel);
+                JSONUtil.writeToJSONFile(this.activity, savedData);
+            }
         } catch (JSONException | IOException e) {
             LogService.error(this.activity, e.getMessage(), e);
         }
@@ -408,7 +410,7 @@ public class HomeFragment extends Fragment {
 
             // Set Custom Level dimensions and launch game activity
             long animationDelay = mines <= 30 ? 50 : 20;
-            Level.CUSTOM.setValues(rows, cols, mines, animationDelay);
+            Level.CUSTOM.setValues(cols, rows, mines, animationDelay);
 
             // Launch game activity
             Intent intent = new Intent(this.activity, MinesweeperGameActivity.class);
@@ -470,6 +472,9 @@ public class HomeFragment extends Fragment {
 
         // Allow player to press buttons
         MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
+
+        // Hide keyboard
+        this.hideKeyboard();
     };
 
     private final ActivityResultCallback<ActivityResult> gameResultCallback = result -> {
