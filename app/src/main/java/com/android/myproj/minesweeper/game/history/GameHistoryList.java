@@ -102,13 +102,25 @@ public class GameHistoryList {
         }
 
         GameHistoryList singleton = getInstance();  // always called when gameHistoryListInstance == null
-        for (int levelCode = 1; levelCode <= 3; levelCode++) {
-            Level level = Level.getLevelFromCode(levelCode);
+        for (Level level : Level.values()) {
+            if (level == Level.CUSTOM) {
+                restoreSavedHistoryCustom(savedHistory, singleton);
+                continue;
+            }
+
             List<GameHistoryVo> historyList = singleton.getLevelHistoryList(level);  // therefore, always empty
             JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(level));
             for (int index = 0; index < savedLevelHistory.length(); index++) {
                 historyList.add(GameHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
             }
+        }
+    }
+
+    private static void restoreSavedHistoryCustom(JSONObject savedHistory, GameHistoryList singleton)
+            throws ParseException, JSONException {
+        JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(Level.CUSTOM));
+        for (int index = 0; index < savedLevelHistory.length(); index++) {
+            singleton.customHistoryList.add(CustomHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
         }
     }
 

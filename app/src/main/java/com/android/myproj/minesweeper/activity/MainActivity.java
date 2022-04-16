@@ -84,14 +84,11 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void manageHistory() {
-        if (JSONUtil.existsSavedHistory(this)) {
-            try {
-                this.restoreHistory();
-            } catch (ParseException | JSONException e) {
-                LogService.error(this, "Was unable to restore history", e);
-            }
-        } else {
-            this.createDefaultHistory();
+        this.createDefaultHistoryIfNone();
+        try {
+            this.restoreHistory();
+        } catch (ParseException | JSONException e) {
+            LogService.error(this, "Was unable to restore history", e);
         }
     }
 
@@ -100,7 +97,7 @@ public class MainActivity extends FragmentActivity {
         GameHistoryList.restoreSavedHistory(savedData);
     }
 
-    private void createDefaultHistory() {
+    private void createDefaultHistoryIfNone() {
         // Create saved data for history if there are none
         try {
             LogService.info(this, "Creating default history if necessary...");
