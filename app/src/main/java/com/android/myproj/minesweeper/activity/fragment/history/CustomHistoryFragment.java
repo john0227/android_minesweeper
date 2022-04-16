@@ -7,11 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.adapter.CustomHistoryAdapter;
-import com.android.myproj.minesweeper.activity.adapter.GameHistoryAdapter;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.LogService;
 

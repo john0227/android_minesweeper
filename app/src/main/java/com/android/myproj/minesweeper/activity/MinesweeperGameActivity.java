@@ -30,7 +30,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.game.logic.Game;

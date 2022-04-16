@@ -13,7 +13,6 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.game.history.CustomHistoryVo;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
-import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.TimeFormatUtil;
