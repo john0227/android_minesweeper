@@ -308,7 +308,7 @@ public class HomeFragment extends Fragment {
             StatUtil.updateWinRate(savedData, savedLevel);
             StatUtil.resetCurrStreak(savedData, savedLevel);
             // Update history
-            HistoryUtil.saveGameHistory(this.activity, savedLevel, GameHistoryVo.GAME_NOT_RESUMED, savedData);
+            HistoryUtil.saveGameHistory(savedData, savedLevel, GameHistoryVo.GAME_NOT_RESUMED);
             JSONUtil.writeToJSONFile(this.activity, savedData);
         } catch (JSONException | IOException e) {
             LogService.error(this.activity, e.getMessage(), e);

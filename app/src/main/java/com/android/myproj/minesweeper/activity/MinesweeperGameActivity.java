@@ -523,7 +523,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             try {
                 StatUtil.updateWinRate(savedData, this.level);
                 StatUtil.resetCurrStreak(savedData, this.level);
-                HistoryUtil.saveGameHistory(this, this.level, GameHistoryVo.GAME_LOST, savedData);
+                HistoryUtil.saveGameHistory(savedData, this.level, GameHistoryVo.GAME_LOST);
                 JSONUtil.writeToJSONFile(this, savedData);
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Was unable to update win rate and current win streak", e);

@@ -52,7 +52,7 @@ public class HistoryUtil {
         JSONUtil.writeToJSONFile(activity, savedData);
     }
 
-    public static void saveGameHistory(Activity activity, Level level, int gameCode, JSONObject savedData)
+    public static void saveGameHistory(JSONObject savedData, Level level, int gameCode)
             throws JSONException, IOException {
         assert gameCode == GameHistoryVo.GAME_LOST || gameCode == GameHistoryVo.GAME_NOT_RESUMED;
 
