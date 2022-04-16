@@ -97,6 +97,7 @@ public class Stopwatch {
         this.isRunning = false;
         this.isPaused = true;
         this.endTime = System.currentTimeMillis();
+        stopwatchView.setText(formatTime());
         this.stopwatchHandler.removeCallbacks(run_timer);
     }
 
@@ -125,9 +126,8 @@ public class Stopwatch {
             endTime = System.currentTimeMillis();
             stopwatchView.setText(formatTime());
 
-            // Post the code again
-            // with a delay of 1 second.
-            stopwatchHandler.postDelayed(this, 1000);
+            // Post the code again with a delay of 300 ms
+            stopwatchHandler.postDelayed(this, 300);
         }
     };
 
