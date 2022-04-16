@@ -13,6 +13,7 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.game.history.CustomHistoryVo;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
+import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.TimeFormatUtil;
@@ -58,9 +59,16 @@ public class CustomHistoryAdapter extends RecyclerView.Adapter<CustomHistoryAdap
         holder.textViewDim.setText(String.format(Locale.US, DIM_FORMAT,
                 gameHistory.getRows(), gameHistory.getCols(), gameHistory.getMines()));
         // Set time TextView
-        holder.textViewTime.setText(TimeFormatUtil.formatTime(
-                gameHistory.getMinute(), gameHistory.getSecond(), gameHistory.getMillis())
-        );
+        // Set time TextView
+        if (gameHistory.getMinute() == GameHistoryVo.GAME_NOT_RESUMED) {
+            holder.textViewTime.setText("INCOMPLETE");
+        } else if (gameHistory.getMinute() == GameHistoryVo.GAME_LOST) {
+            holder.textViewTime.setText("GAME LOST");
+        } else {
+            holder.textViewTime.setText(TimeFormatUtil.formatTime(
+                    gameHistory.getMinute(), gameHistory.getSecond(), gameHistory.getMillis())
+            );
+        }
     }
 
     @Override

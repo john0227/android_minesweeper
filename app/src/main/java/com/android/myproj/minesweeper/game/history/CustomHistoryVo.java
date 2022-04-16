@@ -14,12 +14,14 @@ public class CustomHistoryVo extends GameHistoryVo {
     private final int cols;
     private final int mines;
 
-    public CustomHistoryVo(int minute, int second, int millis) {
-        this(new Date(), minute, second, millis);
+    public CustomHistoryVo(int resultCode) {
+        this(new Date(), resultCode, resultCode, resultCode);
+        // Should only be called if game was lost
+        assert resultCode == GAME_LOST || resultCode == GAME_NOT_RESUMED;
     }
 
-    public CustomHistoryVo(int minute, int second, int millis, Level level) {
-        this(new Date(), minute, second, millis, level.getRow(), level.getCol(), level.getMines());
+    public CustomHistoryVo(int minute, int second, int millis) {
+        this(new Date(), minute, second, millis, Level.CUSTOM.getRow(), Level.CUSTOM.getCol(), Level.CUSTOM.getMines());
     }
 
     public CustomHistoryVo(Date date, int minute, int second, int millis) {

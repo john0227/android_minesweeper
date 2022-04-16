@@ -10,12 +10,20 @@ import java.util.Locale;
 
 public class GameHistoryVo implements Comparable<GameHistoryVo> {
 
+    public static final int GAME_NOT_RESUMED = Integer.MAX_VALUE - 1;
+    public static final int GAME_LOST = Integer.MAX_VALUE;
     protected static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
 
     protected final Date date;
     protected final int minute;
     protected final int second;
     protected final int millis;
+
+    public GameHistoryVo(int resultCode) {
+        this(new Date(), resultCode, resultCode, resultCode);
+        // Should only be called if game was lost or not resumed
+        assert resultCode == GAME_NOT_RESUMED || resultCode == GAME_LOST;
+    }
 
     public GameHistoryVo(int minute, int second, int millis) {
         this(new Date(), minute, second, millis);
@@ -42,6 +50,10 @@ public class GameHistoryVo implements Comparable<GameHistoryVo> {
 
     public int getMillis() {
         return millis;
+    }
+
+    public boolean wasWon() {
+        return this.minute != GAME_LOST && this.minute != GAME_NOT_RESUMED;
     }
 
     public JSONArray saveGameHistory() {

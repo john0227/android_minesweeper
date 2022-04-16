@@ -43,15 +43,16 @@ public class GameHistoryAdapter extends RecyclerView.Adapter<GameHistoryAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull GameHistoryHolder holder, int position) {
+        GameHistoryVo gameHistory = this.gameHistoryList.getGameHistory(position, this.level);
+
         // Set image if first ranked GameHistory
-        if (position == 0) {
+        if (position == 0 && gameHistory.wasWon()) {
             holder.image.setImageResource(R.drawable.games_won);
         }
 
         // Set rank TextView
         holder.textViewRank.setText("" + (position + 1));
 
-        GameHistoryVo gameHistory = this.gameHistoryList.getGameHistory(position, this.level);
         // Set date TextView
         SimpleDateFormat simpleDateFormat;
         if (MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_FORMAT_TIME, false)) {
@@ -61,9 +62,15 @@ public class GameHistoryAdapter extends RecyclerView.Adapter<GameHistoryAdapter.
         }
         holder.textViewDate.setText(simpleDateFormat.format(gameHistory.getDate()));
         // Set time TextView
-        holder.textViewTime.setText(TimeFormatUtil.formatTime(
-                gameHistory.getMinute(), gameHistory.getSecond(), gameHistory.getMillis())
-        );
+        if (gameHistory.getMinute() == GameHistoryVo.GAME_NOT_RESUMED) {
+            holder.textViewTime.setText("INCOMPLETE");
+        } else if (gameHistory.getMinute() == GameHistoryVo.GAME_LOST) {
+            holder.textViewTime.setText("GAME LOST");
+        } else {
+            holder.textViewTime.setText(TimeFormatUtil.formatTime(
+                    gameHistory.getMinute(), gameHistory.getSecond(), gameHistory.getMillis())
+            );
+        }
     }
 
     @Override

@@ -34,10 +34,12 @@ import com.android.myproj.minesweeper.activity.SettingActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.config.ResCode;
+import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.shape.MyArc;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
 import com.android.myproj.minesweeper.util.AnimationUtil;
+import com.android.myproj.minesweeper.util.HistoryUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
@@ -302,9 +304,11 @@ public class HomeFragment extends Fragment {
             JSONUtil.clearSavedGame(this.activity);
             // Updates the Win Rate and Current Win Streak statistics of the game level not resumed by player
             JSONObject savedData = JSONUtil.readJSONFile(this.activity);
-            Level savedLevel = Level.getLevelFromCode(savedData.getInt(JSONKey.KEY_LEVEL));
+            Level savedLevel = Level.restoreLevel(savedData);
             StatUtil.updateWinRate(savedData, savedLevel);
             StatUtil.resetCurrStreak(savedData, savedLevel);
+            // Update history
+            HistoryUtil.saveGameHistory(this.activity, savedLevel, GameHistoryVo.GAME_NOT_RESUMED, savedData);
             JSONUtil.writeToJSONFile(this.activity, savedData);
         } catch (JSONException | IOException e) {
             LogService.error(this.activity, e.getMessage(), e);
@@ -409,13 +413,12 @@ public class HomeFragment extends Fragment {
             // Hide keyboard
             this.hideKeyboard();
 
-            // Set Custom Level dimensions and launch game activity
-            long animationDelay = mines <= 30 ? 50 : 20;
-            Level.CUSTOM.setValues(cols, rows, mines, animationDelay);
-
             // Launch game activity
             Intent intent = new Intent(this.activity, MinesweeperGameActivity.class);
             Runnable launchGame = () -> {
+                // Set Custom Level dimensions and launch game activity
+                long animationDelay = mines <= 30 ? 50 : 20;
+                Level.CUSTOM.setValues(cols, rows, mines, animationDelay);
                 // Pass Level code
                 intent.putExtra(Key.LEVEL_KEY, Level.CUSTOM.getCode());
                 resultLauncherGame.launch(intent);

@@ -2,6 +2,7 @@ package com.android.myproj.minesweeper.util;
 
 import android.app.Activity;
 
+import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
 import com.android.myproj.minesweeper.game.history.CustomHistoryVo;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.history.GameHistoryVo;
@@ -35,8 +36,7 @@ public class HistoryUtil {
             gameHistoryVo = new CustomHistoryVo(
                     stopwatch.getTimeMinutes(),
                     stopwatch.getTimeSeconds(),
-                    stopwatch.getTimeMillis(),
-                    level
+                    stopwatch.getTimeMillis()
             );
         } else {
             gameHistoryVo = new GameHistoryVo(
@@ -50,6 +50,24 @@ public class HistoryUtil {
         JSONObject savedData = JSONUtil.readJSONFile(activity);
         singleton.saveHistoryList(savedData);
         JSONUtil.writeToJSONFile(activity, savedData);
+    }
+
+    public static void saveGameHistory(Activity activity, Level level, int gameCode, JSONObject savedData)
+            throws JSONException, IOException {
+        assert gameCode == GameHistoryVo.GAME_LOST || gameCode == GameHistoryVo.GAME_NOT_RESUMED;
+
+        // Retrieve GameHistoryList instance
+        GameHistoryList singleton = GameHistoryList.getInstance();
+        // Update GameHistoryList
+        GameHistoryVo gameHistoryVo;
+        if (level == Level.CUSTOM) {
+            gameHistoryVo = new CustomHistoryVo(gameCode);
+        } else {
+            gameHistoryVo = new GameHistoryVo(gameCode);
+        }
+        singleton.addGameHistory(gameHistoryVo, level);
+        // Save GameHistoryList to JSON
+        singleton.saveHistoryList(savedData);
     }
 
 }

@@ -1,7 +1,9 @@
 package com.android.myproj.minesweeper.game.history;
 
+import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
+import com.android.myproj.minesweeper.util.LogService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,7 +97,7 @@ public class GameHistoryList {
         }
     }
 
-    public static void restoreSavedHistory(JSONObject savedHistory) throws ParseException, JSONException {
+    public static void restoreSavedHistory(JSONObject savedHistory) throws JSONException {
         // Do not restore data if an instance of GameHistoryList exists
         if (gameHistoryListInstance != null) {
             return;
@@ -111,16 +113,24 @@ public class GameHistoryList {
             List<GameHistoryVo> historyList = singleton.getLevelHistoryList(level);  // therefore, always empty
             JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(level));
             for (int index = 0; index < savedLevelHistory.length(); index++) {
-                historyList.add(GameHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
+                try {
+                    historyList.add(GameHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
+                } catch (ParseException | JSONException e) {
+                    continue;
+                }
             }
         }
     }
 
     private static void restoreSavedHistoryCustom(JSONObject savedHistory, GameHistoryList singleton)
-            throws ParseException, JSONException {
+            throws JSONException {
         JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(Level.CUSTOM));
         for (int index = 0; index < savedLevelHistory.length(); index++) {
-            singleton.customHistoryList.add(CustomHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
+            try {
+                singleton.customHistoryList.add(CustomHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
+            } catch (ParseException | JSONException e) {
+                continue;
+            }
         }
     }
 

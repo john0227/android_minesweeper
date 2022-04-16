@@ -32,6 +32,7 @@ import androidx.core.content.res.ResourcesCompat;
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.config.ResCode;
+import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Game;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.game.logic.Tile;
@@ -517,12 +518,13 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             }
             buildGameoverAlert(true).show();
         } else {
-            // Update win rate and current win streak
-            JSONObject savedStat = JSONUtil.readJSONFile(this);
+            // Update win rate and current win streak and history
+            JSONObject savedData = JSONUtil.readJSONFile(this);
             try {
-                StatUtil.updateWinRate(savedStat, this.level);
-                StatUtil.resetCurrStreak(savedStat, this.level);
-                JSONUtil.writeToJSONFile(this, savedStat);
+                StatUtil.updateWinRate(savedData, this.level);
+                StatUtil.resetCurrStreak(savedData, this.level);
+                HistoryUtil.saveGameHistory(this, this.level, GameHistoryVo.GAME_LOST, savedData);
+                JSONUtil.writeToJSONFile(this, savedData);
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Was unable to update win rate and current win streak", e);
             }
