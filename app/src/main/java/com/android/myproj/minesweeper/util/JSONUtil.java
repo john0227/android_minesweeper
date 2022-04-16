@@ -135,6 +135,7 @@ public class JSONUtil {
             case JSONKey.KEY_EXISTS_SAVED_INTERMEDIATE_STAT ->  JSONKey.KEYS_INTERMEDIATE_STAT;
             case JSONKey.KEY_EXISTS_SAVED_EXPERT_STAT -> JSONKey.KEYS_EXPERT_STAT;
             case JSONKey.KEY_EXISTS_SAVED_JUMBO_STAT -> JSONKey.KEYS_JUMBO_STAT;
+            case JSONKey.KEY_EXISTS_SAVED_CUSTOM_STAT -> JSONKey.KEYS_CUSTOM_STAT;
             default -> throw new RuntimeException("Invalid Saved Stat key");
         };
     }

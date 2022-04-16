@@ -26,6 +26,7 @@ public class JSONKey {
     public static final String KEY_EXISTS_SAVED_INTERMEDIATE_STAT = "exists_saved_intermediate_stat";
     public static final String KEY_EXISTS_SAVED_EXPERT_STAT = "exists_saved_expert_stat";
     public static final String KEY_EXISTS_SAVED_JUMBO_STAT = "exists_saved_jumbo_stat";
+    public static final String KEY_EXISTS_SAVED_CUSTOM_STAT = "exists_saved_custom_stat";
     // EASY Level Stats
     public static final String KEY_STAT_EASY_GAMES_STARTED = "easy_games_started";     // int
     public static final String KEY_STAT_EASY_GAMES_WON = "easy_games_won";             // int
@@ -62,12 +63,22 @@ public class JSONKey {
     public static final String KEY_STAT_JUMBO_BEST_STREAK = "jumbo_best_win_streak";
     public static final String KEY_STAT_JUMBO_CURR_STREAK = "jumbo_current_win_streak";
     public static final String KEY_STAT_JUMBO_NO_HINT_WINS = "jumbo_wins_with_no_hint";
+    // CUSTOM Level Stats
+    public static final String KEY_STAT_CUSTOM_GAMES_STARTED = "custom_games_started";
+    public static final String KEY_STAT_CUSTOM_GAMES_WON = "custom_games_won";
+    public static final String KEY_STAT_CUSTOM_WIN_RATE = "custom_win_rate";
+    public static final String KEY_STAT_CUSTOM_BEST_TIME = "custom_best_time";
+    public static final String KEY_STAT_CUSTOM_AVERAGE_TIME = "custom_average_time";
+    public static final String KEY_STAT_CUSTOM_BEST_STREAK = "custom_best_win_streak";
+    public static final String KEY_STAT_CUSTOM_CURR_STREAK = "custom_current_win_streak";
+    public static final String KEY_STAT_CUSTOM_NO_HINT_WINS = "custom_wins_with_no_hint";
     // All Stat Keys
     public static final String[] KEYS_SAVED_STAT = new String[] {
             KEY_EXISTS_SAVED_EASY_STAT,
             KEY_EXISTS_SAVED_INTERMEDIATE_STAT,
             KEY_EXISTS_SAVED_EXPERT_STAT,
-            KEY_EXISTS_SAVED_JUMBO_STAT
+            KEY_EXISTS_SAVED_JUMBO_STAT,
+            KEY_EXISTS_SAVED_CUSTOM_STAT
     };
     public static final String[] KEYS_EASY_STAT = new String[] {
             KEY_STAT_EASY_GAMES_STARTED,
@@ -109,12 +120,23 @@ public class JSONKey {
             KEY_STAT_JUMBO_CURR_STREAK,
             KEY_STAT_JUMBO_NO_HINT_WINS
     };
+    public static final String[] KEYS_CUSTOM_STAT = new String[] {
+            KEY_STAT_CUSTOM_GAMES_STARTED,
+            KEY_STAT_CUSTOM_GAMES_WON,
+            KEY_STAT_CUSTOM_WIN_RATE,
+            KEY_STAT_CUSTOM_BEST_TIME,
+            KEY_STAT_CUSTOM_AVERAGE_TIME,
+            KEY_STAT_CUSTOM_BEST_STREAK,
+            KEY_STAT_CUSTOM_CURR_STREAK,
+            KEY_STAT_CUSTOM_NO_HINT_WINS
+    };
 
     private static final String[][] ALL_KEYS_BY_LEVEL = new String[][] {
             KEYS_EASY_STAT,
             KEYS_INTERMEDIATE_STAT,
             KEYS_EXPERT_STAT,
-            KEYS_JUMBO_STAT
+            KEYS_JUMBO_STAT,
+            KEYS_CUSTOM_STAT
     };
 
     public static String getStatKey(int keyIndex, Level level) {

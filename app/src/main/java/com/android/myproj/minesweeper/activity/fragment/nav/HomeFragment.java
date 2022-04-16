@@ -300,11 +300,9 @@ public class HomeFragment extends Fragment {
             // Updates the Win Rate and Current Win Streak statistics of the game level not resumed by player
             JSONObject savedData = JSONUtil.readJSONFile(this.activity);
             Level savedLevel = Level.getLevelFromCode(savedData.getInt(JSONKey.KEY_LEVEL));
-            if (savedLevel != Level.CUSTOM) {
-                StatUtil.updateWinRate(savedData, savedLevel);
-                StatUtil.resetCurrStreak(savedData, savedLevel);
-                JSONUtil.writeToJSONFile(this.activity, savedData);
-            }
+            StatUtil.updateWinRate(savedData, savedLevel);
+            StatUtil.resetCurrStreak(savedData, savedLevel);
+            JSONUtil.writeToJSONFile(this.activity, savedData);
         } catch (JSONException | IOException e) {
             LogService.error(this.activity, e.getMessage(), e);
         }

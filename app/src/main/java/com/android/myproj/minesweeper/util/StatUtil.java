@@ -114,10 +114,24 @@ public class StatUtil {
                 JSONKey.KEY_STAT_EXPERT_GAMES_WON,
                 JSONKey.KEY_STAT_EXPERT_WIN_RATE
         );
+        List<Object> jumboOverallStat = JSONUtil.readKeysFromFile(
+                activity,
+                JSONKey.KEY_STAT_JUMBO_GAMES_STARTED,
+                JSONKey.KEY_STAT_JUMBO_GAMES_WON,
+                JSONKey.KEY_STAT_JUMBO_WIN_RATE
+        );
+        List<Object> customOverallStat = JSONUtil.readKeysFromFile(
+                activity,
+                JSONKey.KEY_STAT_CUSTOM_GAMES_STARTED,
+                JSONKey.KEY_STAT_CUSTOM_GAMES_WON,
+                JSONKey.KEY_STAT_CUSTOM_WIN_RATE
+        );
 
         List<Integer> overallStat = new ArrayList<>();
-        overallStat.add((Integer) easyOverallStat.get(0) + (Integer) intermediateOverallStat.get(0) + (Integer) expertOverallStat.get(0));
-        overallStat.add((Integer) easyOverallStat.get(1) + (Integer) intermediateOverallStat.get(1) + (Integer) expertOverallStat.get(1));
+        overallStat.add((Integer) easyOverallStat.get(0) + (Integer) intermediateOverallStat.get(0) + (Integer) expertOverallStat.get(0)
+                + (Integer) jumboOverallStat.get(0) + (Integer) customOverallStat.get(0));
+        overallStat.add((Integer) easyOverallStat.get(1) + (Integer) intermediateOverallStat.get(1) + (Integer) expertOverallStat.get(1)
+                + (Integer) jumboOverallStat.get(1) + (Integer) customOverallStat.get(1));
         int totalGames = overallStat.get(0);
         int gamesWon = overallStat.get(1);
         int winRate = (int) (((double) gamesWon / totalGames) * 10000);
@@ -131,7 +145,7 @@ public class StatUtil {
             case INTERMEDIATE -> JSONKey.KEY_EXISTS_SAVED_INTERMEDIATE_STAT;
             case EXPERT -> JSONKey.KEY_EXISTS_SAVED_EXPERT_STAT;
             case JUMBO -> JSONKey.KEY_EXISTS_SAVED_JUMBO_STAT;
-            default -> throw new RuntimeException();
+            case CUSTOM -> JSONKey.KEY_EXISTS_SAVED_CUSTOM_STAT;
         };
     }
 
@@ -141,7 +155,7 @@ public class StatUtil {
             case INTERMEDIATE -> JSONKey.KEYS_INTERMEDIATE_STAT;
             case EXPERT -> JSONKey.KEYS_EXPERT_STAT;
             case JUMBO -> JSONKey.KEYS_JUMBO_STAT;
-            default -> throw new RuntimeException();
+            case CUSTOM -> JSONKey.KEYS_CUSTOM_STAT;
         };
     }
 
@@ -206,7 +220,7 @@ public class StatUtil {
             case INTERMEDIATE -> JSONKey.KEY_STAT_INTERMEDIATE_CURR_STREAK;
             case EXPERT -> JSONKey.KEY_STAT_EXPERT_CURR_STREAK;
             case JUMBO -> JSONKey.KEY_STAT_JUMBO_CURR_STREAK;
-            default -> throw new RuntimeException();
+            case CUSTOM -> JSONKey.KEY_STAT_CUSTOM_CURR_STREAK;
         };
         savedStat.put(key, 0);
     }

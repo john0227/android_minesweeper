@@ -313,9 +313,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         try {
             LogService.info(this, "Updating games started");
             JSONObject savedData = JSONUtil.readJSONFile(this);
-            if (this.level != Level.CUSTOM) {
-                StatUtil.updateGameStarted(savedData, this.level);
-            }
+            StatUtil.updateGameStarted(savedData, this.level);
             JSONUtil.writeToJSONFile(this, savedData);
         } catch (JSONException | IOException e) {
             LogService.error(this, "Could not update Games Started", e);
@@ -512,10 +510,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             stopwatch.pauseTimer();
             tv_mine_count.setText("YOU WON :)");
             try {
-                if (this.level != Level.CUSTOM) {
-                    // Update all statistics and history
-                    StatUtil.updateAllStat(this, this.level, this.stopwatch.getTotalTimeInSeconds(), this.noHint);
-                }
+                // Update all statistics and history
+                StatUtil.updateAllStat(this, this.level, this.stopwatch.getTotalTimeInSeconds(), this.noHint);
                 HistoryUtil.saveGameHistory(this, this.level, this.stopwatch);
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Could not save statistics", e);
@@ -525,11 +521,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             // Update win rate and current win streak
             JSONObject savedStat = JSONUtil.readJSONFile(this);
             try {
-                if (this.level != Level.CUSTOM) {
-                    StatUtil.updateWinRate(savedStat, this.level);
-                    StatUtil.resetCurrStreak(savedStat, this.level);
-                    JSONUtil.writeToJSONFile(this, savedStat);
-                }
+                StatUtil.updateWinRate(savedStat, this.level);
+                StatUtil.resetCurrStreak(savedStat, this.level);
+                JSONUtil.writeToJSONFile(this, savedStat);
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Was unable to update win rate and current win streak", e);
             }

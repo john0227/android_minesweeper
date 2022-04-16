@@ -32,7 +32,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 public class StatFragment extends Fragment implements View.OnClickListener {
 
-    private static final int NUM_PAGES = 5;
+    private static final int NUM_PAGES = 6;
     
     private Activity activity;
     private View rootLayout;
@@ -167,7 +167,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     }
 
     public void updateView() {
-        ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3, 4);
+        ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3, 4, 5);
         this.viewPager.setCurrentItem(0, false);
     }
 
@@ -184,7 +184,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
         public Fragment createFragment(int pos) {
             StatisticsFragment fragment = switch (pos) {
                 case 0 -> new OverallStatisticsFragment(activity, StatFragment.this);
-                case 1, 2, 3, 4 -> new LevelStatisticsFragment(activity, Level.getLevelFromCode(pos), StatFragment.this);
+                case 1, 2, 3, 4, 5 -> new LevelStatisticsFragment(activity, Level.getLevelFromCode(pos), StatFragment.this);
                 default -> throw new RuntimeException("Invalid Level received");
             };
             this.fragments[pos] = fragment;
@@ -198,7 +198,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
         public void notifyItemChangedAt(int position) {
             if (position == 0) {
-                this.updateFragment(0, 1, 2, 3, 4);
+                this.updateFragment(0, 1, 2, 3, 4, 5);
             } else {
                 this.updateFragment(0, position);
             }
