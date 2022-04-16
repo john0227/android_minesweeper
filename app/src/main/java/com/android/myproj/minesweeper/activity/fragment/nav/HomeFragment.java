@@ -38,6 +38,7 @@ import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.shape.MyArc;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
+import com.android.myproj.minesweeper.util.AnimationUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
@@ -243,7 +244,7 @@ public class HomeFragment extends Fragment {
             case "EXPERT" -> code = Level.EXPERT.getCode();
             case "JUMBO" -> code = Level.JUMBO.getCode();
             case "CUSTOM" -> {
-                this.showCustomLevelDialog();
+                this.showCustomLevelDialog(true);
                 return;
             }
             default -> throw new RuntimeException();
@@ -263,9 +264,12 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    private void showCustomLevelDialog() {
+    private void showCustomLevelDialog(boolean animate) {
         LayoutInflater inflater = LayoutInflater.from(this.activity);
         View view = inflater.inflate(R.layout.custom_level_dialog, this.rootLayout, true);
+        if (animate) {
+            AnimationUtil.fadeIn(view.findViewById(R.id.rootLayout_custom_dialog), 180);
+        }
 
         // Prevent player from pressing any buttons
         MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, false);
@@ -370,7 +374,7 @@ public class HomeFragment extends Fragment {
     private final View.OnClickListener onPositiveCustomLevelDialogClick = view -> {
         DialogInterface.OnClickListener reshowCustomDialog = (dialogInterface, i) -> {
             this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
-            this.showCustomLevelDialog();
+            this.showCustomLevelDialog(false);
         };
 
         int rows, cols, mines;
@@ -466,7 +470,7 @@ public class HomeFragment extends Fragment {
     };
 
     private final View.OnClickListener onNegativeCustomLevelDialogClick = view -> {
-        this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+        AnimationUtil.fadeOut(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog), this.rootLayout, 130);
 
         // Allow player to press buttons
         MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
