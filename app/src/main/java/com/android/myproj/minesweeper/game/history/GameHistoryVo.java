@@ -10,12 +10,12 @@ import java.util.Locale;
 
 public class GameHistoryVo implements Comparable<GameHistoryVo> {
 
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
+    protected static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
 
-    private final Date date;
-    private final int minute;
-    private final int second;
-    private final int millis;
+    protected final Date date;
+    protected final int minute;
+    protected final int second;
+    protected final int millis;
 
     public GameHistoryVo(int minute, int second, int millis) {
         this(new Date(), minute, second, millis);

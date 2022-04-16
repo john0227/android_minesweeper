@@ -5,32 +5,22 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.myproj.minesweeper.R;
+import com.android.myproj.minesweeper.activity.adapter.CustomHistoryAdapter;
 import com.android.myproj.minesweeper.activity.adapter.GameHistoryAdapter;
-import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.LogService;
 
-public class GameHistoryFragment extends Fragment {
+public class CustomHistoryFragment extends GameHistoryFragment {
 
-    protected final Activity activity;
-    protected final View.OnClickListener listener;
-    protected final Level level;
+    private CustomHistoryAdapter gameHistoryAdapter;
 
-    protected View rootLayout;
-    protected RecyclerView gameHistoryRecView;
-    private GameHistoryAdapter gameHistoryAdapter;
-
-    public GameHistoryFragment(Activity activity, View.OnClickListener listener, Level level) {
-        this.activity = activity;
-        this.listener = listener;
-        this.level = level;
+    public CustomHistoryFragment(Activity activity, View.OnClickListener listener) {
+        super(activity, listener, Level.CUSTOM);
     }
 
     @Override
@@ -49,30 +39,19 @@ public class GameHistoryFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         this.gameHistoryRecView.setLayoutManager(linearLayoutManager);
         // Set Adapter
-        this.gameHistoryAdapter = new GameHistoryAdapter(this.activity, this.level);
+        this.gameHistoryAdapter = new CustomHistoryAdapter(this.activity);
         this.gameHistoryRecView.setAdapter(this.gameHistoryAdapter);
         // Change text of RESET button based on size of GameHistoryList
         this.setButtonText();
     }
 
+    @Override
     public void notifyAdapter() {
         try {
             this.gameHistoryAdapter.notifyDataSetChanged();
             this.setButtonText();
         } catch (Exception e) {
             LogService.error(this.activity, e.getMessage(), e);
-        }
-    }
-
-    protected void setButtonText() {
-        // Change text of RESET button based on size of GameHistoryList
-        Button button = this.rootLayout.findViewById(R.id.btn_reset_history);
-        if (GameHistoryList.getInstance().size(this.level) == 0) {  // If no history
-            button.setText("No History");
-            button.setEnabled(false);
-        } else {
-            button.setText("Reset History");
-            button.setEnabled(true);
         }
     }
 

@@ -190,6 +190,7 @@ public class JSONUtil {
             case JSONKey.KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY -> JSONKey.KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY;
             case JSONKey.KEY_EXISTS_EXPERT_SAVED_HISTORY -> JSONKey.KEY_EXPERT_SAVED_HISTORY_ARRAY;
             case JSONKey.KEY_EXISTS_JUMBO_SAVED_HISTORY -> JSONKey.KEY_JUMBO_SAVED_HISTORY_ARRAY;
+            case JSONKey.KEY_EXISTS_CUSTOM_SAVED_HISTORY -> JSONKey.KEY_CUSTOM_SAVED_HISTORY_ARRAY;
             default -> throw new RuntimeException("Invalid JSONKey for saved history");
         };
     }

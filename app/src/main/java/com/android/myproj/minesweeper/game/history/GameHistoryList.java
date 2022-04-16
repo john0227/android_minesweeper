@@ -20,41 +20,56 @@ public class GameHistoryList {
     private final List<GameHistoryVo> intermediateHistoryList;
     private final List<GameHistoryVo> expertHistoryList;
     private final List<GameHistoryVo> jumboHistoryList;
+    private final List<CustomHistoryVo> customHistoryList;
 
     private GameHistoryList() {
         this.easyHistoryList = new ArrayList<>();
         this.intermediateHistoryList = new ArrayList<>();
         this.expertHistoryList = new ArrayList<>();
         this.jumboHistoryList = new ArrayList<>();
+        this.customHistoryList = new ArrayList<>();
     }
 
     public GameHistoryVo getGameHistory(int index, Level level) {
-        return this.getLevelHistoryList(level).get(index);
+        return switch (level) {
+            case CUSTOM -> this.customHistoryList.get(index);
+            default -> this.getLevelHistoryList(level).get(index);
+        };
     }
 
     public int size(Level level) {
-        return this.getLevelHistoryList(level).size();
+        return switch (level) {
+            case CUSTOM -> this.customHistoryList.size();
+            default -> this.getLevelHistoryList(level).size();
+        };
     }
 
     // Returns the index of insertion
-    public int addGameHistory(GameHistoryVo gameHistory, Level level) {
-        List<GameHistoryVo> gameHistoryList = this.getLevelHistoryList(level);
+    public void addGameHistory(GameHistoryVo gameHistory, Level level) {
+        // If Custom level, do not sort history
+        if (level == Level.CUSTOM) {
+            this.customHistoryList.add((CustomHistoryVo) gameHistory);
+            return;
+        }
 
+        List<GameHistoryVo> gameHistoryList = this.getLevelHistoryList(level);
         // Add in front of the first instance where list item is less than given gameHistory
         for (int i = 0; i < gameHistoryList.size(); i++) {
             if (gameHistory.compareTo(gameHistoryList.get(i)) < 0) {
                 gameHistoryList.add(i, gameHistory);
-                return i;
+                return;
             }
         }
-
         // If not added, add to end of list
         gameHistoryList.add(gameHistory);
-        return gameHistoryList.size() - 1;
     }
 
     public void resetGameHistory(Level level) {
-        this.getLevelHistoryList(level).clear();
+        if (level == Level.CUSTOM) {
+            this.customHistoryList.clear();
+        } else {
+            this.getLevelHistoryList(level).clear();
+        }
     }
 
     private List<GameHistoryVo> getLevelHistoryList(Level level) {
@@ -68,10 +83,11 @@ public class GameHistoryList {
     }
 
     public void saveHistoryList(JSONObject savedHistory) throws JSONException {
-        for (int levelCode = 1; levelCode <= 3; levelCode++) {
-            Level level = Level.getLevelFromCode(levelCode);
-            List<GameHistoryVo> historyList = this.getLevelHistoryList(level);
+        for (Level level : Level.values()) {
             JSONArray savedLevelHistory = new JSONArray();
+            List<? extends GameHistoryVo> historyList = level == Level.CUSTOM
+                    ? this.customHistoryList
+                    : this.getLevelHistoryList(level);
             for (int index = 0; index < historyList.size(); index++) {
                 savedLevelHistory.put(historyList.get(index).saveGameHistory());
             }

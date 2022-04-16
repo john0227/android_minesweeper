@@ -15,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.myproj.minesweeper.R;
+import com.android.myproj.minesweeper.activity.fragment.history.CustomHistoryFragment;
 import com.android.myproj.minesweeper.activity.fragment.history.GameHistoryFragment;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
@@ -30,7 +31,7 @@ import java.io.IOException;
 
 public class HistoryFragment extends Fragment implements View.OnClickListener {
 
-    private final static int NUM_PAGES = 4;
+    private final static int NUM_PAGES = 5;
 
     private Activity activity;
     private View rootLayout;
@@ -100,7 +101,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     }
 
     public void updateView() {
-        ((HistoryFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(0, 1, 2, 3);
+        ((HistoryFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(0, 1, 2, 3, 4);
         this.viewPager.setCurrentItem(0, false);
     }
 
@@ -117,6 +118,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         public Fragment createFragment(int pos) {
             GameHistoryFragment fragment = switch (pos) {
                 case 0, 1, 2, 3 -> new GameHistoryFragment(activity, HistoryFragment.this, Level.getLevelFromCode(pos + 1));
+                case 4 -> new CustomHistoryFragment(activity, HistoryFragment.this);
                 default -> throw new RuntimeException("Invalid Level received");
             };
             this.fragments[pos] = fragment;
@@ -133,7 +135,11 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
                 GameHistoryFragment fragment = fragments[position];
                 if (fragment != null) {
                     try {
-                        fragment.notifyAdapter();
+                        if (position == NUM_PAGES - 1) {
+                            ((CustomHistoryFragment) fragment).notifyAdapter();
+                        } else {
+                            fragment.notifyAdapter();
+                        }
                         this.notifyItemChanged(position);
                     } catch (Exception e) {
                         LogService.error(activity, "Error while updating History at page: " + position, e);

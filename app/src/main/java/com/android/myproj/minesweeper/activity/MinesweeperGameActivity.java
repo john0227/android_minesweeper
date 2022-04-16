@@ -515,8 +515,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 if (this.level != Level.CUSTOM) {
                     // Update all statistics and history
                     StatUtil.updateAllStat(this, this.level, this.stopwatch.getTotalTimeInSeconds(), this.noHint);
-                    HistoryUtil.saveGameHistory(this, this.level, this.stopwatch);
                 }
+                HistoryUtil.saveGameHistory(this, this.level, this.stopwatch);
             } catch (JSONException | IOException e) {
                 LogService.error(this, "Could not save statistics", e);
             }

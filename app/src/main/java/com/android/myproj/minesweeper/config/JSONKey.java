@@ -127,15 +127,18 @@ public class JSONKey {
     public static final String KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY = "exists_intermediate_saved_history";
     public static final String KEY_EXISTS_EXPERT_SAVED_HISTORY = "exists_expert_saved_history";
     public static final String KEY_EXISTS_JUMBO_SAVED_HISTORY = "exists_jumbo_saved_history";
+    public static final String KEY_EXISTS_CUSTOM_SAVED_HISTORY = "exists_custom_saved_history";
     public static final String KEY_EASY_SAVED_HISTORY_ARRAY = "easy_saved_history_array";
     public static final String KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY = "intermediate_saved_history_array";
     public static final String KEY_EXPERT_SAVED_HISTORY_ARRAY = "expert_saved_history_array";
     public static final String KEY_JUMBO_SAVED_HISTORY_ARRAY = "jumbo_saved_history_array";
+    public static final String KEY_CUSTOM_SAVED_HISTORY_ARRAY = "custom_saved_history_array";
     public static final String[] KEYS_SAVED_HISTORY = new String[] {
             KEY_EXISTS_EASY_SAVED_HISTORY,
             KEY_EXISTS_INTERMEDIATE_SAVED_HISTORY,
             KEY_EXISTS_EXPERT_SAVED_HISTORY,
-            KEY_EXISTS_JUMBO_SAVED_HISTORY
+            KEY_EXISTS_JUMBO_SAVED_HISTORY,
+            KEY_EXISTS_CUSTOM_SAVED_HISTORY
     };
     public static String getHistoryKey(Level level) {
         return switch (level) {
@@ -143,7 +146,7 @@ public class JSONKey {
             case INTERMEDIATE -> KEY_INTERMEDIATE_SAVED_HISTORY_ARRAY;
             case EXPERT -> KEY_EXPERT_SAVED_HISTORY_ARRAY;
             case JUMBO -> KEY_JUMBO_SAVED_HISTORY_ARRAY;
-            default -> throw new RuntimeException();
+            case CUSTOM -> KEY_CUSTOM_SAVED_HISTORY_ARRAY;
         };
     }
     // Saved History JSON Keys (End)
