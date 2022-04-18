@@ -24,6 +24,7 @@ import com.android.myproj.minesweeper.activity.fragment.statistics.StatisticsFra
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
+import com.android.myproj.minesweeper.util.ArrayUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.StatUtil;
@@ -33,12 +34,13 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class StatFragment extends Fragment implements View.OnClickListener {
 
     private static final int NUM_PAGES = 6;
+    private static final int ALL_PAGES = Integer.MAX_VALUE;
     
     private Activity activity;
     private View rootLayout;
 
     private ViewPager2 viewPager;
-    private FragmentStateAdapter pagerAdapter;
+    private ScreenSlidePagerAdapter pagerAdapter;
 
     private boolean isAttached;
 
@@ -130,7 +132,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     private void toastResetResult(int index, int result) {
         if (StatUtil.equalsResCode(result, StatUtil.RES_RESET)) {
             // Notify the adapter that there has been a change
-            ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
+            this.pagerAdapter.notifyItemChangedAt(index);
             // Notify the user that the stats have been reset
             Toast.makeText(this.activity, "Statistics have been reset", Toast.LENGTH_SHORT).show();
         } else if (StatUtil.equalsResCode(result, StatUtil.RES_NO_RESET)) {
@@ -167,7 +169,7 @@ public class StatFragment extends Fragment implements View.OnClickListener {
     }
 
     public void updateView() {
-        ((StatFragment.ScreenSlidePagerAdapter) this.pagerAdapter).updateFragment(0, 1, 2, 3, 4, 5);
+        this.pagerAdapter.updateFragment(ALL_PAGES);
         this.viewPager.setCurrentItem(0, false);
     }
 
@@ -198,13 +200,17 @@ public class StatFragment extends Fragment implements View.OnClickListener {
 
         public void notifyItemChangedAt(int position) {
             if (position == 0) {
-                this.updateFragment(0, 1, 2, 3, 4, 5);
+                this.updateFragment(ALL_PAGES);
             } else {
                 this.updateFragment(0, position);
             }
         }
 
         private void updateFragment(int... positions) {
+            if (positions[0] == ALL_PAGES) {
+                positions = ArrayUtil.range(NUM_PAGES);
+            }
+
             for (int position : positions) {
                 StatisticsFragment fragment = fragments[position];
                 if (fragment != null) {

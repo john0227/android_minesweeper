@@ -19,6 +19,7 @@ import com.android.myproj.minesweeper.activity.fragment.history.CustomHistoryFra
 import com.android.myproj.minesweeper.activity.fragment.history.GameHistoryFragment;
 import com.android.myproj.minesweeper.config.JSONKey;
 import com.android.myproj.minesweeper.game.logic.Level;
+import com.android.myproj.minesweeper.util.ArrayUtil;
 import com.android.myproj.minesweeper.util.HistoryUtil;
 import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
@@ -32,6 +33,7 @@ import java.io.IOException;
 public class HistoryFragment extends Fragment implements View.OnClickListener {
 
     private final static int NUM_PAGES = 5;
+    private final static int ALL_PAGES = Integer.MAX_VALUE;
 
     private Activity activity;
     private View rootLayout;
@@ -114,7 +116,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     }
 
     public void updateView() {
-        this.pagerAdapter.notifyItemChangedAt(0, 1, 2, 3, 4);
+        this.pagerAdapter.notifyItemChangedAt(ALL_PAGES);
         this.viewPager.setCurrentItem(0, false);
         this.pagerAdapter.scrollToTop(0);
     }
@@ -158,6 +160,10 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         }
 
         public void notifyItemChangedAt(int... positions) {
+            if (positions[0] == ALL_PAGES) {
+                positions = ArrayUtil.range(NUM_PAGES);
+            }
+
             for (int position : positions) {
                 GameHistoryFragment fragment = fragments[position];
                 if (fragment != null) {
