@@ -99,10 +99,10 @@ public class StatFragment extends Fragment implements View.OnClickListener {
             int levelCode = (int) JSONUtil.readKeyFromFile(this.activity, JSONKey.KEY_LEVEL);
             if (index == 0) {
                 // Reset Overall Statistics
-                resetAllStatIf(levelCode, reset);
+                this.resetAllStatIf(levelCode, reset);
             } else if (levelCode == index) {
                 // Level trying to reset has an ongoing game
-                resetStatIf(levelCode, reset);
+                this.resetStatIf(levelCode, reset);
             } else {
                 // Level trying to reset does not have an ongoing game
                 this.toastResetResult(index, reset.get());

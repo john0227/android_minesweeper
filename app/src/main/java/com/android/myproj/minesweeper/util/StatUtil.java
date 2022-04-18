@@ -30,9 +30,12 @@ public class StatUtil {
     }
 
     public static boolean isResettable(Activity activity) {
-        return isResettable(activity, Level.EASY)
-                || isResettable(activity, Level.INTERMEDIATE)
-                || isResettable(activity, Level.EXPERT);
+        for (Level level : Level.values()) {
+            if (isResettable(activity, level)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static int resetStat(Activity activity, Level level) {
@@ -50,8 +53,8 @@ public class StatUtil {
 
     public static int resetAllStats(Activity activity) {
         int hasReset = 0;
-        for (int i = 1; i <= 3; i++) {
-            hasReset = resetStat(activity, Level.getLevelFromCode(i)) | hasReset;
+        for (Level level : Level.values()) {
+            hasReset = resetStat(activity, level) | hasReset;
         }
         return (hasReset & RES_RESET) == RES_RESET ? RES_RESET : hasReset;
     }
