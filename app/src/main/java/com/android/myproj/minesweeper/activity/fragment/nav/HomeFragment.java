@@ -417,7 +417,7 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(this.activity, MinesweeperGameActivity.class);
             Runnable launchGame = () -> {
                 // Set Custom Level dimensions and launch game activity
-                long animationDelay = mines <= 30 ? 50 : 20;
+                long animationDelay = mines <= 30 ? 50 : mines <= 100 ? 20 : 10;
                 Level.CUSTOM.setValues(cols, rows, mines, animationDelay);
                 // Pass Level code
                 intent.putExtra(Key.LEVEL_KEY, Level.CUSTOM.getCode());

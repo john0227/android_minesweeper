@@ -69,6 +69,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher;
     private MusicPlayer[] musicPlayers;
     private JSONObject savedState;
+    private Handler setImageHandler;
+    private Handler musicHandler;
 
     // Project Objects
     private Game game;
@@ -119,10 +121,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
         // Pause timer
         this.stopwatch.pauseTimer();
-        // Release any active MusicPlayer
-        for (MusicPlayer musicPlayer : this.musicPlayers) {
-            musicPlayer.destroyPlayer();
-        }
+        // Cleanup additional resources
+        this.cleanupMusicPlayers();
+        this.cleanupHandlers();
 
         // Save game if applicable
         if (this.hasStarted && !this.isGameOver) {
@@ -172,7 +173,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.tv_mine_count = findViewById(R.id.tv_mine_count);
         this.tbtn_sel_flag = findViewById(R.id.tbtn_sel_flag);
 
-        this.musicPlayers = new MusicPlayer[10];
+        this.musicPlayers = new MusicPlayer[this.level.getMines()];
 
         this.game = new Game(this.level);
         this.stopwatch = new Stopwatch(findViewById(R.id.tv_time));
@@ -424,7 +425,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
         new CountDownTimer(500, 500) {
             public void onFinish() {
-                Handler setImageHandler = new Handler(Looper.getMainLooper());
+                setImageHandler = new Handler(Looper.getMainLooper());
                 setImageHandler.post(new Runnable() {
                     int i = 0;
                     @Override
@@ -444,21 +445,24 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 });
 
                 if (playSound) {
-                    Handler musicHandler = new Handler(Looper.getMainLooper());
+                    musicHandler = new Handler(Looper.getMainLooper());
                     musicHandler.post(new Runnable() {
-                        int loop = 0, index = 0;
-                        final int interval = (int) Math.ceil(Math.log10(indices.size()));
-                        final int loopCount = indices.size() / interval;
+                        int index = 0;
+                        final int interval = indices.size() > 50 ? 2 : 1;
 
                         @Override
                         public void run() {
-                            if (loop % interval == 0) {
-                                musicPlayers[index % 10].playMusic(MinesweeperGameActivity.this, R.raw.explosion, playSound);
-                                index++;
+                            if (index % interval == 0) {
+                                musicPlayers[index].playMusic(MinesweeperGameActivity.this, R.raw.explosion, playSound);
+                                LogService.info(MinesweeperGameActivity.this, "======== Playing music: " + index);
                             }
-                            loop++;
+                            index++;
 
-                            if (index < loopCount) {
+                            if (index >= 30) {
+                                musicPlayers[index - 30].destroyPlayer();
+                            }
+
+                            if (index < indices.size()) {
                                 musicHandler.postDelayed(this, delay);
                             }
                         }
@@ -470,10 +474,28 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private void cleanup() {
-        // Destroy stopwatch and existing MusicPlayers
-        stopwatch.destroyTimer();
+        this.cleanupTimer();
+        this.cleanupMusicPlayers();
+        this.cleanupHandlers();
+    }
+
+    private void cleanupTimer() {
+        this.stopwatch.destroyTimer();
+    }
+    private void cleanupMusicPlayers() {
         for (MusicPlayer player : this.musicPlayers) {
             player.destroyPlayer();
+        }
+    }
+    private void cleanupHandlers() {
+        // Remove callbacks to Handlers if exists
+        if (this.isGameOver) {
+            if (this.setImageHandler != null) {
+                this.setImageHandler.removeCallbacksAndMessages(null);
+            }
+            if (this.musicHandler != null) {
+                this.musicHandler.removeCallbacksAndMessages(null);
+            }
         }
     }
 
