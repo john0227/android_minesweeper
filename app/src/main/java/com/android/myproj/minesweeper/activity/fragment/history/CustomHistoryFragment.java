@@ -25,22 +25,17 @@ public class CustomHistoryFragment extends GameHistoryFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
         this.rootLayout = inflater.inflate(R.layout.history_layout, container, false);
         this.rootLayout.findViewById(R.id.btn_reset_history).setOnClickListener(this.listener);
+
         this.setting();
+        this.setAdapter();
+
         return this.rootLayout;
     }
 
-    private void setting() {
-        // Set up RecyclerView
-        this.gameHistoryRecView = this.rootLayout.findViewById(R.id.rv_history);
-        // Set LayoutManager
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.activity);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        this.gameHistoryRecView.setLayoutManager(linearLayoutManager);
-        // Set Adapter
+    @Override
+    protected void setAdapter() {
         this.gameHistoryAdapter = new CustomHistoryAdapter(this.activity);
         this.gameHistoryRecView.setAdapter(this.gameHistoryAdapter);
-        // Change text of RESET button based on size of GameHistoryList
-        this.setButtonText();
     }
 
     @Override

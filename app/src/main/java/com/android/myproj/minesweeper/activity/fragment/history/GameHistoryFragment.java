@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ public class GameHistoryFragment extends Fragment {
     protected final Level level;
 
     protected View rootLayout;
+    protected ScrollView scrollView;
     protected RecyclerView gameHistoryRecView;
     private GameHistoryAdapter gameHistoryAdapter;
 
@@ -37,22 +39,35 @@ public class GameHistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
         this.rootLayout = inflater.inflate(R.layout.history_layout, container, false);
         this.rootLayout.findViewById(R.id.btn_reset_history).setOnClickListener(this.listener);
+
         this.setting();
+        this.setAdapter();
+
         return this.rootLayout;
     }
 
-    private void setting() {
+    protected void setting() {
+        // Initialize ScrollView
+        this.scrollView = this.rootLayout.findViewById(R.id.scrollView_history);
         // Set up RecyclerView
         this.gameHistoryRecView = this.rootLayout.findViewById(R.id.rv_history);
         // Set LayoutManager
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.activity);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.activity) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         this.gameHistoryRecView.setLayoutManager(linearLayoutManager);
+        // Change text of RESET button based on size of GameHistoryList
+        this.setButtonText();
+    }
+
+    protected void setAdapter() {
         // Set Adapter
         this.gameHistoryAdapter = new GameHistoryAdapter(this.activity, this.level);
         this.gameHistoryRecView.setAdapter(this.gameHistoryAdapter);
-        // Change text of RESET button based on size of GameHistoryList
-        this.setButtonText();
     }
 
     public void notifyAdapter() {
@@ -62,6 +77,12 @@ public class GameHistoryFragment extends Fragment {
         } catch (Exception e) {
             LogService.error(this.activity, e.getMessage(), e);
         }
+    }
+
+    public void scrollToTop() {
+        this.gameHistoryRecView.setFocusable(false);
+        this.scrollView.fullScroll(View.FOCUS_UP);
+        this.scrollView.scrollTo(0, 0);
     }
 
     protected void setButtonText() {

@@ -37,7 +37,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     private View rootLayout;
 
     private ViewPager2 viewPager;
-    private FragmentStateAdapter pagerAdapter;
+    private ScreenSlidePagerAdapter pagerAdapter;
 
     private boolean isAttached;
 
@@ -65,6 +65,18 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        this.viewPager.unregisterOnPageChangeCallback(this.onPageChangeCallback);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.viewPager.registerOnPageChangeCallback(this.onPageChangeCallback);
+    }
+
+    @Override
     public void onClick(View view) {
         this.onResetButtonClick();
     }
@@ -74,6 +86,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         this.viewPager = this.rootLayout.findViewById(R.id.vp2_history);
         this.pagerAdapter = new HistoryFragment.ScreenSlidePagerAdapter((FragmentActivity) this.activity);
         this.viewPager.setAdapter(this.pagerAdapter);
+        this.viewPager.registerOnPageChangeCallback(this.onPageChangeCallback);
 
         // Attach TabLayout to ViewPager2 using TabLayoutMediator
         TabLayout tabLayout = this.rootLayout.findViewById(R.id.tabLayout_history);
@@ -90,7 +103,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
                 // Reset the history of viewed level if applicable
                 JSONUtil.createDefaultHistory(this.activity, JSONKey.KEYS_SAVED_HISTORY[index]);
                 HistoryUtil.resetHistory(Level.getLevelFromCode(index + 1));
-                ((HistoryFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(index);
+                this.pagerAdapter.notifyItemChangedAt(index);
                 Toast.makeText(activity, "Reset history", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(activity, "Nothing to reset", Toast.LENGTH_SHORT).show();
@@ -101,9 +114,23 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     }
 
     public void updateView() {
-        ((HistoryFragment.ScreenSlidePagerAdapter) this.pagerAdapter).notifyItemChangedAt(0, 1, 2, 3, 4);
+        this.pagerAdapter.notifyItemChangedAt(0, 1, 2, 3, 4);
         this.viewPager.setCurrentItem(0, false);
+        this.pagerAdapter.scrollToTop(0);
     }
+
+    private final ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            if (position > 1) {
+                pagerAdapter.scrollToTop(position - 2);
+            }
+            if (position < NUM_PAGES - 2) {
+                pagerAdapter.scrollToTop(position + 2);
+            }
+        }
+    };
 
     public class ScreenSlidePagerAdapter extends FragmentStateAdapter {
 
@@ -144,6 +171,17 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
                     } catch (Exception e) {
                         LogService.error(activity, "Error while updating History at page: " + position, e);
                     }
+                }
+            }
+        }
+
+        public void scrollToTop(int pos) {
+            GameHistoryFragment fragment = this.fragments[pos];
+            if (fragment != null) {
+                try {
+                    fragment.scrollToTop();
+                } catch (Exception e) {
+                    LogService.error(activity, e.getMessage(), e);
                 }
             }
         }
