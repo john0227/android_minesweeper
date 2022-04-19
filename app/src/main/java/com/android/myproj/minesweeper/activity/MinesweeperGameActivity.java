@@ -69,8 +69,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher;
     private MusicPlayer[] musicPlayers;
     private JSONObject savedState;
-    private Handler setImageHandler;
-    private Handler musicHandler;
+    private Handler gameHandler;
 
     // Project Objects
     private Game game;
@@ -174,6 +173,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.tbtn_sel_flag = findViewById(R.id.tbtn_sel_flag);
 
         this.musicPlayers = new MusicPlayer[this.level.getMines()];
+        this.gameHandler = new Handler(Looper.getMainLooper());
 
         this.game = new Game(this.level);
         this.stopwatch = new Stopwatch(findViewById(R.id.tv_time));
@@ -425,16 +425,24 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
         new CountDownTimer(500, 500) {
             public void onFinish() {
-                setImageHandler = new Handler(Looper.getMainLooper());
-                setImageHandler.post(new Runnable() {
+                gameHandler.post(new Runnable() {
                     int i = 0;
+                    final int interval = indices.size() > 50 ? 2 : 1;
+
                     @Override
                     public void run() {
                         setImage(MinesweeperGameActivity.this.imageButtons[indices.get(i)], TileValue.MINE_EXPLODE);
+                        if (playSound && i % interval == 0) {
+                            musicPlayers[i].playMusic(MinesweeperGameActivity.this, R.raw.explosion, true);
+                        }
                         i++;
 
+                        if (i >= 30) {
+                            musicPlayers[i - 30].destroyPlayer();
+                        }
+
                         if (i < indices.size()) {
-                            setImageHandler.postDelayed(this, delay);
+                            gameHandler.postDelayed(this, delay);
                         } else {
                             DelayUtil.delayTask(() -> {
                                 isClickable = true;
@@ -443,31 +451,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-                if (playSound) {
-                    musicHandler = new Handler(Looper.getMainLooper());
-                    musicHandler.post(new Runnable() {
-                        int index = 0;
-                        final int interval = indices.size() > 50 ? 2 : 1;
-
-                        @Override
-                        public void run() {
-                            if (index % interval == 0) {
-                                musicPlayers[index].playMusic(MinesweeperGameActivity.this, R.raw.explosion, playSound);
-                                LogService.info(MinesweeperGameActivity.this, "======== Playing music: " + index);
-                            }
-                            index++;
-
-                            if (index >= 30) {
-                                musicPlayers[index - 30].destroyPlayer();
-                            }
-
-                            if (index < indices.size()) {
-                                musicHandler.postDelayed(this, delay);
-                            }
-                        }
-                    });
-                }
             }
             public void onTick(long millisUntilFinished) {}
         }.start();
@@ -478,7 +461,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.cleanupMusicPlayers();
         this.cleanupHandlers();
     }
-
     private void cleanupTimer() {
         this.stopwatch.destroyTimer();
     }
@@ -488,13 +470,10 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
     private void cleanupHandlers() {
-        // Remove callbacks to Handlers if exists
+        // Remove callbacks to Handler if exists
         if (this.isGameOver) {
-            if (this.setImageHandler != null) {
-                this.setImageHandler.removeCallbacksAndMessages(null);
-            }
-            if (this.musicHandler != null) {
-                this.musicHandler.removeCallbacksAndMessages(null);
+            if (this.gameHandler != null) {
+                this.gameHandler.removeCallbacksAndMessages(null);
             }
         }
     }
@@ -512,7 +491,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             } catch (JSONException | IOException e) {
                 LogService.error(MinesweeperGameActivity.this, e.getMessage(), e);
             }
-
         }
         LogService.info(MinesweeperGameActivity.this, "Creating new game...");
         // Recreate Activity
