@@ -1,6 +1,8 @@
 package com.android.myproj.minesweeper.game.history;
 
 import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.game.history.comparator.AbstractHistoryComparator;
+import com.android.myproj.minesweeper.game.history.comparator.HistoryByDateComparator;
 import com.android.myproj.minesweeper.game.history.comparator.HistoryByTimeComparator;
 import com.android.myproj.minesweeper.game.logic.Level;
 
@@ -10,12 +12,29 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // Singleton
 public class GameHistoryList {
 
+    public static final int SORT_BY_TIME     = 0b1000;
+    public static final int SORT_BY_DATE     = 0b0100;
+    public static final int ORDER_ASCENDING  = 0b0010;
+    public static final int ORDER_DESCENDING = 0b0001;
+
+    private static final Map<Integer, Comparator<GameHistoryVo>> COMPARATOR_MAP = new HashMap<>() {{
+        this.put(SORT_BY_TIME|ORDER_ASCENDING, new HistoryByTimeComparator());
+        this.put(SORT_BY_TIME|ORDER_DESCENDING, new HistoryByTimeComparator().myReversed());
+        this.put(SORT_BY_DATE|ORDER_ASCENDING, new HistoryByDateComparator());
+        this.put(SORT_BY_DATE|ORDER_DESCENDING, new HistoryByDateComparator().myReversed());
+    }};
+
     private static GameHistoryList gameHistoryListInstance;
+    private static Comparator<GameHistoryVo> comparator;
 
     private final List<GameHistoryVo> easyHistoryList;
     private final List<GameHistoryVo> intermediateHistoryList;
@@ -32,20 +51,19 @@ public class GameHistoryList {
     }
 
     public GameHistoryVo getGameHistory(int index, Level level) {
-        return switch (level) {
-            case CUSTOM -> this.customHistoryList.get(index);
-            default -> this.getLevelHistoryList(level).get(index);
-        };
+        if (level == Level.CUSTOM) {
+            return this.customHistoryList.get(index);
+        }
+        return this.getLevelHistoryList(level).get(index);
     }
 
     public int size(Level level) {
-        return switch (level) {
-            case CUSTOM -> this.customHistoryList.size();
-            default -> this.getLevelHistoryList(level).size();
-        };
+        if (level == Level.CUSTOM) {
+            return this.customHistoryList.size();
+        }
+        return this.getLevelHistoryList(level).size();
     }
 
-    // Returns the index of insertion
     public void addGameHistory(GameHistoryVo gameHistory, Level level) {
         // If Custom level, do not sort history
         if (level == Level.CUSTOM) {
@@ -56,7 +74,7 @@ public class GameHistoryList {
         List<GameHistoryVo> gameHistoryList = this.getLevelHistoryList(level);
         // Add in front of the first instance where list item is less than given gameHistory
         for (int i = 0; i < gameHistoryList.size(); i++) {
-            if (gameHistory.compareTo(gameHistoryList.get(i)) < 0) {
+            if (comparator.compare(gameHistory, gameHistoryList.get(i)) < 0) {
                 gameHistoryList.add(i, gameHistory);
                 return;
             }
@@ -138,6 +156,26 @@ public class GameHistoryList {
             gameHistoryListInstance = new GameHistoryList();
         }
         return gameHistoryListInstance;
+    }
+
+    public static void setComparator(int codeSort, int codeOrder) {
+        assert codeSort == SORT_BY_TIME || codeSort == SORT_BY_DATE;
+        assert codeOrder == ORDER_ASCENDING || codeOrder == ORDER_DESCENDING;
+
+        comparator = COMPARATOR_MAP.get(codeSort | codeOrder);
+        sortAllLists();
+    }
+
+    private static void sortAllLists() {
+        GameHistoryList singleton = getInstance();
+
+        List<GameHistoryVo> toSort;
+        for (Level level : Level.values()) {
+            if (level != Level.CUSTOM) {
+                toSort = singleton.getLevelHistoryList(level);
+                Collections.sort(toSort, comparator);
+            }
+        }
     }
 
 }

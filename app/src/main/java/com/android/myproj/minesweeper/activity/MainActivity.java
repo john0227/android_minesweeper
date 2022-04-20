@@ -92,11 +92,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    private void restoreHistory() throws ParseException, JSONException {
-        JSONObject savedData = JSONUtil.readJSONFile(this);
-        GameHistoryList.restoreSavedHistory(savedData);
-    }
-
     private void createDefaultHistoryIfNone() {
         // Create saved data for history if there are none
         try {
@@ -105,6 +100,15 @@ public class MainActivity extends FragmentActivity {
         } catch (JSONException | IOException e) {
             LogService.error(this, "Was unable to create default saved data for history", e);
         }
+    }
+
+    private void restoreHistory() throws ParseException, JSONException {
+        JSONObject savedData = JSONUtil.readJSONFile(this);
+        GameHistoryList.restoreSavedHistory(savedData);
+        GameHistoryList.setComparator(
+                MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_SORT_BY, GameHistoryList.SORT_BY_TIME),
+                MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_ORDER, GameHistoryList.ORDER_ASCENDING)
+        );
     }
 
     private final NavigationBarView.OnItemSelectedListener onItemSelectedListener =

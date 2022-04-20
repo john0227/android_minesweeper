@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.config.ResCode;
+import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.bumptech.glide.Glide;
@@ -27,10 +28,10 @@ import java.util.Locale;
 
 public class SettingActivity extends AppCompatActivity {
 
-    public final static String SORT_BY_TIME = "Time";
-    public final static String SORT_BY_DATE = "Date";
-    public final static String ORDER_ASCENDING = "Ascending";
-    public final static String ORDER_DESCENDING = "Descending";
+    private final static String SETTING_SORT_BY_TIME = "Time";
+    private final static String SETTING_SORT_BY_DATE = "Date";
+    private final static String SETTING_ORDER_ASCENDING = "Ascending";
+    private final static String SETTING_ORDER_DESCENDING = "Descending";
 
     private FrameLayout rootLayout;
 
@@ -89,8 +90,8 @@ public class SettingActivity extends AppCompatActivity {
         this.btn_show_spinner.setOnClickListener(onShowSpinnerClick);
         // Set text for show_spinner Button
         this.setSortByText(
-                MySharedPreferencesUtil.getString(this, Key.PREFERENCES_SORT_BY, SORT_BY_TIME),
-                MySharedPreferencesUtil.getString(this, Key.PREFERENCES_ORDER, ORDER_ASCENDING)
+                MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_SORT_BY, GameHistoryList.SORT_BY_TIME),
+                MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_ORDER, GameHistoryList.ORDER_ASCENDING)
         );
 
         // Bind ImageViews to GIFs using Glide
@@ -134,8 +135,13 @@ public class SettingActivity extends AppCompatActivity {
         }
     }
 
-    private void setSortByText(String sortBy, String order) {
-        this.tv_sort_by.setText(String.format(Locale.US, "%s (%s)", sortBy, order));
+    private void setSortByText(int sortBy, int order) {
+        assert sortBy == GameHistoryList.SORT_BY_TIME || sortBy == GameHistoryList.SORT_BY_DATE;
+        assert order == GameHistoryList.ORDER_ASCENDING || order == GameHistoryList.ORDER_DESCENDING;
+
+        String sSortBy = sortBy == GameHistoryList.SORT_BY_TIME ? SETTING_SORT_BY_TIME : SETTING_SORT_BY_DATE;
+        String sOrder = order == GameHistoryList.ORDER_ASCENDING ? SETTING_ORDER_ASCENDING : SETTING_ORDER_DESCENDING;
+        this.tv_sort_by.setText(String.format(Locale.US, "%s (%s)", sSortBy, sOrder));
     }
 
     private void setEnabledForAllViews(boolean enabled) {
@@ -190,13 +196,15 @@ public class SettingActivity extends AppCompatActivity {
             this.setEnabledForAllViews(true);
         };
 
+        int sortBySaved = MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_SORT_BY, GameHistoryList.SORT_BY_TIME);
+        int orderSaved = MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_ORDER, GameHistoryList.ORDER_ASCENDING);
         ((RadioGroup) menuSort.findViewById(R.id.radioGroup_sort_by)).check(
-                MySharedPreferencesUtil.getString(this, Key.PREFERENCES_SORT_BY, SORT_BY_TIME).equals(SORT_BY_TIME)
+                sortBySaved == GameHistoryList.SORT_BY_TIME
                         ? R.id.rbtn_sort_time
                         : R.id.rbtn_sort_date
         );
         ((RadioGroup) menuSort.findViewById(R.id.radioGroup_order)).check(
-                MySharedPreferencesUtil.getString(this, Key.PREFERENCES_ORDER, ORDER_ASCENDING).equals(ORDER_ASCENDING)
+                orderSaved == GameHistoryList.ORDER_ASCENDING
                         ? R.id.rbtn_order_ascending
                         : R.id.rbtn_order_descending
         );
@@ -205,16 +213,18 @@ public class SettingActivity extends AppCompatActivity {
         menuSort.findViewById(R.id.btn_sort_cancel).setOnClickListener(view1 -> removeView.run());
         // Update SharedPreferences if DONE button is pressed
         menuSort.findViewById(R.id.btn_sort_done).setOnClickListener(view1 -> {
-            String sortBy = SORT_BY_TIME, sortOrder = ORDER_ASCENDING;
+            int sortBy = GameHistoryList.SORT_BY_TIME, sortOrder = GameHistoryList.ORDER_ASCENDING;
             if (((RadioButton) menuSort.findViewById(R.id.rbtn_sort_date)).isChecked()) {
-                sortBy = SORT_BY_DATE;
+                sortBy = GameHistoryList.SORT_BY_DATE;
             }
             if (((RadioButton) menuSort.findViewById(R.id.rbtn_order_descending)).isChecked()) {
-                sortOrder = ORDER_DESCENDING;
+                sortOrder = GameHistoryList.ORDER_DESCENDING;
             }
             // Update SharedPreferences
-            MySharedPreferencesUtil.putString(this, Key.PREFERENCES_SORT_BY, sortBy);
-            MySharedPreferencesUtil.putString(this, Key.PREFERENCES_ORDER, sortOrder);
+            MySharedPreferencesUtil.putInt(this, Key.PREFERENCES_SORT_BY, sortBy);
+            MySharedPreferencesUtil.putInt(this, Key.PREFERENCES_ORDER, sortOrder);
+            // Update Comparator for GameHistoryList
+            GameHistoryList.setComparator(sortBy, sortOrder);
             // Update text for TextView
             this.setSortByText(sortBy, sortOrder);
             removeView.run();

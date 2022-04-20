@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class GameHistoryVo implements Comparable<GameHistoryVo> {
+public class GameHistoryVo {
 
     public static final int GAME_NOT_RESUMED = Integer.MAX_VALUE - 1;
     public static final int GAME_LOST = Integer.MAX_VALUE;
@@ -75,33 +75,4 @@ public class GameHistoryVo implements Comparable<GameHistoryVo> {
         );
     }
 
-    @Override
-    public int compareTo(GameHistoryVo gameHistory) {
-        if (gameHistory == null) {
-            return 1;
-        }
-
-        if (this.minute > gameHistory.minute) {
-            return 1;
-        } else if (this.minute < gameHistory.minute) {
-            return -1;
-        }
-
-        // this.minute == gameHistory.minute
-        if (this.second > gameHistory.second) {
-            return 1;
-        } else if (this.second < gameHistory.second) {
-            return -1;
-        }
-
-        // this.minute == gameHistory.minute && this.second == gameHistory.second
-        if (this.millis > gameHistory.millis) {
-            return 1;
-        } else if (this.millis < gameHistory.millis) {
-            return -1;
-        }
-
-        // this.minute == gameHistory.minute && this.second == gameHistory.second && this.millis == gameHistory.millis
-        return this.date.compareTo(gameHistory.date);
-    }
 }

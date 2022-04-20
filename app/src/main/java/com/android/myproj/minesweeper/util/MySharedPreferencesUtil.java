@@ -38,15 +38,15 @@ public class MySharedPreferencesUtil {
         myPrefEditor.apply();
     }
 
-    public static String getString(Activity activity, String key, String defaultValue) {
+    public static int getInt(Activity activity, String key, int defaultValue) {
         SharedPreferences myPref = activity.getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
-        return myPref.getString(key, defaultValue);
+        return myPref.getInt(key, defaultValue);
     }
 
-    public static void putString(Activity activity, String key, String value) {
+    public static void putInt(Activity activity, String key, int value) {
         SharedPreferences myPref = activity.getSharedPreferences(Key.PREFERENCES_KEY, MODE_PRIVATE);
         SharedPreferences.Editor myPrefEditor = myPref.edit();
-        myPrefEditor.putString(key, value);
+        myPrefEditor.putInt(key, value);
         myPrefEditor.apply();
     }
 
