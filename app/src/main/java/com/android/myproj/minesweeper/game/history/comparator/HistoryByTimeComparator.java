@@ -4,16 +4,61 @@ import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 
 import java.util.Comparator;
 
-public class HistoryByTimeComparator implements Comparator<GameHistoryVo> {
+// Compares GameHistoryVo objects first by time of completion, then by date
+public class HistoryByTimeComparator extends AbstractHistoryComparator {
 
+    // Sort by : Time
+    // Order : Ascending
+    // First, sort by time in ascending order ... #1
+    // Then, sort by date in descending order (which is the default order for date) ... #2
     @Override
     public int compare(GameHistoryVo gameHistoryVo1, GameHistoryVo gameHistoryVo2) {
-        if (gameHistoryVo1 == null) {
-            return -1;
-        } else if (gameHistoryVo2 == null) {
-            return 1;
+        int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
+        if (nullComparison != 0) {
+            return nullComparison;
         }
 
+        // #1
+        int timeComparison = onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);
+        if (timeComparison != 0) {
+            return timeComparison;
+        }
+
+        // #2
+        // gameHistoryVo1.minute == gameHistory2.minute
+        // && gameHistoryVo1.second == gameHistory2.second
+        // && gameHistoryVo1.millis == gameHistory2.millis
+        return -1 * HistoryByDateComparator.compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);
+    }
+
+    // Sort by : Time
+    // Order : Descending
+    // First, sort by time in descending order ... #1
+    // Then, sort by date in descending order (which is the default order for date) ... #2
+    @Override
+    public Comparator<GameHistoryVo> myReversed() {
+        return (gameHistoryVo1, gameHistoryVo2) -> {
+            int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
+            if (nullComparison != 0) {
+                return nullComparison;
+            }
+
+            // #1
+            int timeComparison = -1 * onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);  // by time in descending
+            if (timeComparison != 0) {
+                return timeComparison;
+            }
+
+            // #2
+            // gameHistoryVo1.minute == gameHistory2.minute
+            // && gameHistoryVo1.second == gameHistory2.second
+            // && gameHistoryVo1.millis == gameHistory2.millis
+            return -1 * HistoryByDateComparator.compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);
+        };
+    }
+
+    // Compares two GameHistoryVos only by time in ascending order
+    public static int onlyByTimeComparator(GameHistoryVo gameHistoryVo1, GameHistoryVo gameHistoryVo2) {
         if (gameHistoryVo1.getMinute() < gameHistoryVo2.getMinute()) {
             return -1;
         } else if (gameHistoryVo1.getMinute() > gameHistoryVo2.getMinute()) {
@@ -29,16 +74,8 @@ public class HistoryByTimeComparator implements Comparator<GameHistoryVo> {
 
         // gameHistoryVo1.minute == gameHistory2.minute
         // && gameHistoryVo1.second == gameHistory2.second
-        if (gameHistoryVo1.getMillis() < gameHistoryVo2.getMillis()) {
-            return -1;
-        } else if (gameHistoryVo1.getMillis() > gameHistoryVo2.getMillis()) {
-            return 1;
-        }
-
-        // gameHistoryVo1.minute == gameHistory2.minute
-        // && gameHistoryVo1.second == gameHistory2.second
-        // && gameHistoryVo1.millis == gameHistory2.millis
-        return gameHistoryVo1.getDate().compareTo(gameHistoryVo2.getDate());
+        return gameHistoryVo1.getMillis() - gameHistoryVo2.getMillis();
+        // No overflow issues because getMillis always returns an integer between 0(inclusive) and 1000(exclusive)
     }
 
 }

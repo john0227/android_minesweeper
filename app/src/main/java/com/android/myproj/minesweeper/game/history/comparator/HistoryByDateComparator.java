@@ -4,41 +4,56 @@ import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 
 import java.util.Comparator;
 
-public class HistoryByDateComparator implements Comparator<GameHistoryVo> {
+// Compares GameHistoryVo objects first by date, then by time of completion
+public class HistoryByDateComparator extends AbstractHistoryComparator {
 
+    // Sort by : Date
+    // Order : Ascending
+    // First, sort by date in ascending order ... #1
+    // Then, sort by time in ascending order (which is the default order for sort by time) ... #2
     @Override
     public int compare(GameHistoryVo gameHistoryVo1, GameHistoryVo gameHistoryVo2) {
-        if (gameHistoryVo1 == null) {
-            return -1;
-        } else if (gameHistoryVo2 == null) {
-            return 1;
+        int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
+        if (nullComparison != 0) {
+            return nullComparison;
         }
 
-        int comparison = gameHistoryVo1.getDate().compareTo(gameHistoryVo2.getDate());
-        if (comparison != 0) {
-            return comparison;
+        // #1
+        int dateComparison = compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);
+        if (dateComparison != 0) {
+            return dateComparison;
         }
 
-        // gameHistoryVo1.date equals gameHistoryVo2.date
-        if (gameHistoryVo1.getMinute() < gameHistoryVo2.getMinute()) {
-            return -1;
-        } else if (gameHistoryVo1.getMinute() > gameHistoryVo2.getMinute()) {
-            return 1;
-        }
+        // #2
+        return HistoryByTimeComparator.onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);
+    }
 
-        // gameHistoryVo1.date equals gameHistoryVo2.date
-        // && gameHistoryVo1.minute == gameHistoryVo2.minute
-        if (gameHistoryVo1.getSecond() < gameHistoryVo2.getSecond()) {
-            return -1;
-        } else if (gameHistoryVo1.getSecond() > gameHistoryVo2.getSecond()) {
-            return 1;
-        }
+    // Sort by : Date
+    // Order : Descending
+    // First, sort by date in descending order ... #1
+    // Then, sort by time in ascending order (which is the default order for sort by time) ... #2
+    @Override
+    public Comparator<GameHistoryVo> myReversed() {
+        return (gameHistoryVo1, gameHistoryVo2) -> {
+            int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
+            if (nullComparison != 0) {
+                return -1 * nullComparison;
+            }
 
-        // gameHistoryVo1.date equals gameHistoryVo2.date
-        // && gameHistoryVo1.minute == gameHistoryVo2.minute
-        // && gameHistoryVo1.second == gameHistoryVo2.second
-        return gameHistoryVo1.getMillis() - gameHistoryVo2.getMillis();
-        // No overflow issues because getMillis always returns an integer between 0(inclusive) and 1000(exclusive)
+            // #1
+            int dateComparison = -1 * compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);  // by date in descending
+            if (dateComparison != 0) {
+                return dateComparison;
+            }
+
+            // #2
+            return HistoryByTimeComparator.onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);
+        };
+    }
+
+    // Compares two GameHistoryVos only by date in ascending order
+    public static int compareOnlyByDate(GameHistoryVo gameHistoryVo1, GameHistoryVo gameHistoryVo2) {
+        return gameHistoryVo1.getDate().compareTo(gameHistoryVo2.getDate());
     }
 
 }

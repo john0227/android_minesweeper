@@ -1,9 +1,8 @@
 package com.android.myproj.minesweeper.game.history;
 
-import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.game.history.comparator.HistoryByTimeComparator;
 import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.util.LogService;
 
 import org.json.JSONArray;
 import org.json.JSONException;

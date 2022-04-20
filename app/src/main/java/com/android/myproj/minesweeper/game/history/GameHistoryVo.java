@@ -12,7 +12,7 @@ public class GameHistoryVo implements Comparable<GameHistoryVo> {
 
     public static final int GAME_NOT_RESUMED = Integer.MAX_VALUE - 1;
     public static final int GAME_LOST = Integer.MAX_VALUE;
-    protected static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
+    protected static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss:SSS", Locale.US);
 
     protected final Date date;
     protected final int minute;
