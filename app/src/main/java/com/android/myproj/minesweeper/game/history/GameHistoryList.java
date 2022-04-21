@@ -40,7 +40,7 @@ public class GameHistoryList {
     private final List<GameHistoryVo> intermediateHistoryList;
     private final List<GameHistoryVo> expertHistoryList;
     private final List<GameHistoryVo> jumboHistoryList;
-    private final List<CustomHistoryVo> customHistoryList;
+    private final List<GameHistoryVo> customHistoryList;
 
     private GameHistoryList() {
         this.easyHistoryList = new ArrayList<>();
@@ -66,10 +66,10 @@ public class GameHistoryList {
 
     public void addGameHistory(GameHistoryVo gameHistory, Level level) {
         // If Custom level, do not sort history
-        if (level == Level.CUSTOM) {
-            this.customHistoryList.add((CustomHistoryVo) gameHistory);
-            return;
-        }
+//        if (level == Level.CUSTOM) {
+//            this.customHistoryList.add((CustomHistoryVo) gameHistory);
+//            return;
+//        }
 
         List<GameHistoryVo> gameHistoryList = this.getLevelHistoryList(level);
         // Add in front of the first instance where list item is less than given gameHistory
@@ -84,11 +84,7 @@ public class GameHistoryList {
     }
 
     public void resetGameHistory(Level level) {
-        if (level == Level.CUSTOM) {
-            this.customHistoryList.clear();
-        } else {
-            this.getLevelHistoryList(level).clear();
-        }
+        this.getLevelHistoryList(level).clear();
     }
 
     private List<GameHistoryVo> getLevelHistoryList(Level level) {
@@ -97,7 +93,7 @@ public class GameHistoryList {
             case INTERMEDIATE -> this.intermediateHistoryList;
             case EXPERT -> this.expertHistoryList;
             case JUMBO -> this.jumboHistoryList;
-            default -> throw new RuntimeException();
+            case CUSTOM -> this.customHistoryList;
         };
     }
 
@@ -122,11 +118,6 @@ public class GameHistoryList {
 
         GameHistoryList singleton = getInstance();  // always called when gameHistoryListInstance == null
         for (Level level : Level.values()) {
-            if (level == Level.CUSTOM) {
-                restoreSavedHistoryCustom(savedHistory, singleton);
-                continue;
-            }
-
             List<GameHistoryVo> historyList = singleton.getLevelHistoryList(level);  // therefore, always empty
             JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(level));
             for (int index = 0; index < savedLevelHistory.length(); index++) {
@@ -135,18 +126,6 @@ public class GameHistoryList {
                 } catch (ParseException | JSONException e) {
                     continue;
                 }
-            }
-        }
-    }
-
-    private static void restoreSavedHistoryCustom(JSONObject savedHistory, GameHistoryList singleton)
-            throws JSONException {
-        JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(Level.CUSTOM));
-        for (int index = 0; index < savedLevelHistory.length(); index++) {
-            try {
-                singleton.customHistoryList.add(CustomHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
-            } catch (ParseException | JSONException e) {
-                continue;
             }
         }
     }
@@ -171,10 +150,8 @@ public class GameHistoryList {
 
         List<GameHistoryVo> toSort;
         for (Level level : Level.values()) {
-            if (level != Level.CUSTOM) {
-                toSort = singleton.getLevelHistoryList(level);
-                Collections.sort(toSort, comparator);
-            }
+            toSort = singleton.getLevelHistoryList(level);
+            Collections.sort(toSort, comparator);
         }
     }
 

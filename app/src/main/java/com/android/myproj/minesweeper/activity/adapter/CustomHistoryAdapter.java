@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.Key;
-import com.android.myproj.minesweeper.game.history.CustomHistoryVo;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
@@ -46,7 +45,7 @@ public class CustomHistoryAdapter extends RecyclerView.Adapter<CustomHistoryAdap
         // Set order TextView
         holder.textViewOrder.setText("" + (position + 1));
 
-        CustomHistoryVo gameHistory = (CustomHistoryVo) this.gameHistoryList.getGameHistory(position, Level.CUSTOM);
+        GameHistoryVo gameHistory = this.gameHistoryList.getGameHistory(position, Level.CUSTOM);
         // Set date TextView
         SimpleDateFormat simpleDateFormat;
         if (MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_FORMAT_TIME, false)) {

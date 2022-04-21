@@ -2,8 +2,6 @@ package com.android.myproj.minesweeper.util;
 
 import android.app.Activity;
 
-import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
-import com.android.myproj.minesweeper.game.history.CustomHistoryVo;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
@@ -31,20 +29,12 @@ public class HistoryUtil {
         // Retrieve GameHistoryList instance
         GameHistoryList singleton = GameHistoryList.getInstance();
         // Update GameHistoryList
-        GameHistoryVo gameHistoryVo;
-        if (level == Level.CUSTOM) {
-            gameHistoryVo = new CustomHistoryVo(
-                    stopwatch.getTimeMinutes(),
-                    stopwatch.getTimeSeconds(),
-                    stopwatch.getTimeMillis()
-            );
-        } else {
-            gameHistoryVo = new GameHistoryVo(
-                    stopwatch.getTimeMinutes(),
-                    stopwatch.getTimeSeconds(),
-                    stopwatch.getTimeMillis()
-            );
-        }
+        GameHistoryVo gameHistoryVo = new GameHistoryVo(
+                stopwatch.getTimeMinutes(),
+                stopwatch.getTimeSeconds(),
+                stopwatch.getTimeMillis(),
+                level
+        );
         singleton.addGameHistory(gameHistoryVo, level);
         // Save GameHistoryList to JSON
         JSONObject savedData = JSONUtil.readJSONFile(activity);
@@ -59,12 +49,7 @@ public class HistoryUtil {
         // Retrieve GameHistoryList instance
         GameHistoryList singleton = GameHistoryList.getInstance();
         // Update GameHistoryList
-        GameHistoryVo gameHistoryVo;
-        if (level == Level.CUSTOM) {
-            gameHistoryVo = new CustomHistoryVo(gameCode);
-        } else {
-            gameHistoryVo = new GameHistoryVo(gameCode);
-        }
+        GameHistoryVo gameHistoryVo = new GameHistoryVo(gameCode, level);
         singleton.addGameHistory(gameHistoryVo, level);
         // Save GameHistoryList to JSON
         singleton.saveHistoryList(savedData);
