@@ -10,6 +10,8 @@
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/drawable/text_color_change.xml" value="0.325" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/button_reset_history.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/button_reset_statistics.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/card_view_divider.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/cardview_divider.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/image_button_hint.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/image_button_sel_flag.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/image_button_setting.xml" value="0.38697916666666665" />
@@ -60,6 +62,9 @@
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_statistics.xml" value="0.33" />
       </map>
     </option>
+  </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/app/src/main/res/common/layout/card_view_divider.xml" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_15_PREVIEW" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

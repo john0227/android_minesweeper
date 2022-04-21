@@ -168,11 +168,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
                 GameHistoryFragment fragment = fragments[position];
                 if (fragment != null) {
                     try {
-                        if (position == NUM_PAGES - 1) {
-                            ((CustomHistoryFragment) fragment).notifyAdapter();
-                        } else {
-                            fragment.notifyAdapter();
-                        }
+                        fragment.notifyAdapter();
                         this.notifyItemChanged(position);
                     } catch (Exception e) {
                         LogService.error(activity, "Error while updating History at page: " + position, e);
@@ -187,7 +183,7 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
                 try {
                     fragment.scrollToTop();
                 } catch (Exception e) {
-                    LogService.error(activity, e.getMessage(), e);
+                    LogService.error(activity, "Cannot scroll to top for page " + pos, e);
                 }
             }
         }

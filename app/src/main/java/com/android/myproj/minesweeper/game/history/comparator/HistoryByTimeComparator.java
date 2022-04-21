@@ -13,15 +13,15 @@ public class HistoryByTimeComparator extends AbstractHistoryComparator {
     // Then, sort by date in descending order (which is the default order for date) ... #2
     @Override
     public int compare(GameHistoryVo gameHistoryVo1, GameHistoryVo gameHistoryVo2) {
-        int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
-        if (nullComparison != 0) {
-            return nullComparison;
+        int comparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
+        if (comparison != 0) {
+            return comparison;
         }
 
         // #1
-        int timeComparison = onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);
-        if (timeComparison != 0) {
-            return timeComparison;
+        comparison = onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);
+        if (comparison != 0) {
+            return comparison;
         }
 
         // #2
@@ -38,15 +38,15 @@ public class HistoryByTimeComparator extends AbstractHistoryComparator {
     @Override
     public Comparator<GameHistoryVo> myReversed() {
         return (gameHistoryVo1, gameHistoryVo2) -> {
-            int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
-            if (nullComparison != 0) {
-                return nullComparison;
+            int comparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
+            if (comparison != 0) {
+                return comparison;
             }
 
             // #1
-            int timeComparison = -1 * onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);  // by time in descending
-            if (timeComparison != 0) {
-                return timeComparison;
+            comparison = -1 * onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);  // by time in descending
+            if (comparison != 0) {
+                return comparison;
             }
 
             // #2
