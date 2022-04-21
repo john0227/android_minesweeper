@@ -1,10 +1,12 @@
 package com.android.myproj.minesweeper.game.history;
 
 import com.android.myproj.minesweeper.config.JSONKey;
+import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.game.history.comparator.AbstractHistoryComparator;
 import com.android.myproj.minesweeper.game.history.comparator.HistoryByDateComparator;
 import com.android.myproj.minesweeper.game.history.comparator.HistoryByTimeComparator;
 import com.android.myproj.minesweeper.game.logic.Level;
+import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,21 +28,26 @@ public class GameHistoryList {
     public static final int ORDER_ASCENDING  = 0b0010;
     public static final int ORDER_DESCENDING = 0b0001;
 
-    private static final Map<Integer, Comparator<GameHistoryVo>> COMPARATOR_MAP = new HashMap<>() {{
+    private static final Map<Integer, AbstractHistoryComparator> COMPARATOR_MAP = new HashMap<>() {{
         this.put(SORT_BY_TIME|ORDER_ASCENDING, new HistoryByTimeComparator());
         this.put(SORT_BY_TIME|ORDER_DESCENDING, new HistoryByTimeComparator().myReversed());
         this.put(SORT_BY_DATE|ORDER_ASCENDING, new HistoryByDateComparator());
         this.put(SORT_BY_DATE|ORDER_DESCENDING, new HistoryByDateComparator().myReversed());
     }};
+    private static final AbstractHistoryComparator DEFAULT_CUSTOM_COMPARATOR =
+            AbstractHistoryComparator.getDefaultCustomHistoryComparator();
 
     private static GameHistoryList gameHistoryListInstance;
-    private static Comparator<GameHistoryVo> comparator;
 
+    // GameHistoryVo Lists for each Level
     private final List<GameHistoryVo> easyHistoryList;
     private final List<GameHistoryVo> intermediateHistoryList;
     private final List<GameHistoryVo> expertHistoryList;
     private final List<GameHistoryVo> jumboHistoryList;
     private final List<GameHistoryVo> customHistoryList;
+    // Comparators initialized to default values
+    private AbstractHistoryComparator overallComparator = COMPARATOR_MAP.get(SORT_BY_TIME|ORDER_ASCENDING);
+    private AbstractHistoryComparator defaultCustomComparator = DEFAULT_CUSTOM_COMPARATOR;
 
     private GameHistoryList() {
         this.easyHistoryList = new ArrayList<>();
@@ -51,25 +58,17 @@ public class GameHistoryList {
     }
 
     public GameHistoryVo getGameHistory(int index, Level level) {
-        if (level == Level.CUSTOM) {
-            return this.customHistoryList.get(index);
-        }
         return this.getLevelHistoryList(level).get(index);
     }
 
     public int size(Level level) {
-        if (level == Level.CUSTOM) {
-            return this.customHistoryList.size();
-        }
         return this.getLevelHistoryList(level).size();
     }
 
     public void addGameHistory(GameHistoryVo gameHistory, Level level) {
-        // If Custom level, do not sort history
-//        if (level == Level.CUSTOM) {
-//            this.customHistoryList.add((CustomHistoryVo) gameHistory);
-//            return;
-//        }
+        AbstractHistoryComparator comparator = level != Level.CUSTOM
+                ? this.overallComparator
+                : this.defaultCustomComparator;
 
         List<GameHistoryVo> gameHistoryList = this.getLevelHistoryList(level);
         // Add in front of the first instance where list item is less than given gameHistory
@@ -128,6 +127,7 @@ public class GameHistoryList {
                 }
             }
         }
+        sortAllLists(singleton);
     }
 
     public static GameHistoryList getInstance() {
@@ -137,22 +137,58 @@ public class GameHistoryList {
         return gameHistoryListInstance;
     }
 
-    public static void setComparator(int codeSort, int codeOrder) {
+    public static void setOverallComparator(int codeSort, int codeOrder) {
         assert codeSort == SORT_BY_TIME || codeSort == SORT_BY_DATE;
         assert codeOrder == ORDER_ASCENDING || codeOrder == ORDER_DESCENDING;
 
-        comparator = COMPARATOR_MAP.get(codeSort | codeOrder);
-        sortAllLists();
+        GameHistoryList singleton = GameHistoryList.getInstance();
+        singleton.overallComparator = COMPARATOR_MAP.get(codeSort | codeOrder);
+        if (singleton.defaultCustomComparator != DEFAULT_CUSTOM_COMPARATOR) {
+            singleton.defaultCustomComparator = singleton.overallComparator;
+        }
+        sortAllLists(singleton);
     }
 
-    private static void sortAllLists() {
-        GameHistoryList singleton = getInstance();
+    public static void setCustomLevelComparator(boolean sortCustom) {
+        GameHistoryList singleton = GameHistoryList.getInstance();
 
-        List<GameHistoryVo> toSort;
-        for (Level level : Level.values()) {
-            toSort = singleton.getLevelHistoryList(level);
-            Collections.sort(toSort, comparator);
+        AbstractHistoryComparator prev = singleton.defaultCustomComparator;
+        singleton.defaultCustomComparator = sortCustom
+                ? singleton.overallComparator
+                : DEFAULT_CUSTOM_COMPARATOR;
+
+        if (!prev.equals(singleton.defaultCustomComparator)) {
+            sortLevelList(singleton, Level.CUSTOM);
         }
+    }
+
+    private static void sortAllLists(GameHistoryList singleton) {
+        for (Level level : Level.values()) {
+            sortLevelList(singleton, level);
+        }
+    }
+
+    private static void sortLevelList(GameHistoryList singleton, Level level) {
+        List<GameHistoryVo> toSort = singleton.getLevelHistoryList(level);
+        Collections.sort(
+                toSort,
+                level != Level.CUSTOM ? singleton.overallComparator : singleton.defaultCustomComparator
+        );
+    }
+
+    public static void notifyPreferenceChange(String key, boolean value) {
+        if (key.equals(Key.PREFERENCES_SORT_CUSTOM)) {
+            setCustomLevelComparator(value);
+        } else if (key.equals(Key.PREFERENCES_SHOW_LOST_GAMES_BOTTOM)) {
+            updateComparators(value);
+        }
+    }
+
+    public static void updateComparators(boolean value) {
+        for (Integer key : COMPARATOR_MAP.keySet()) {
+            COMPARATOR_MAP.get(key).setCompareIfWon(value);
+        }
+        sortAllLists(GameHistoryList.getInstance());
     }
 
 }

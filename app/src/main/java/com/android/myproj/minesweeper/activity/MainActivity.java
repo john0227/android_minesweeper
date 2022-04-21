@@ -105,10 +105,14 @@ public class MainActivity extends FragmentActivity {
     private void restoreHistory() throws ParseException, JSONException {
         JSONObject savedData = JSONUtil.readJSONFile(this);
         GameHistoryList.restoreSavedHistory(savedData);
-        GameHistoryList.setComparator(
+        GameHistoryList.setOverallComparator(
                 MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_SORT_BY, GameHistoryList.SORT_BY_TIME),
                 MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_ORDER, GameHistoryList.ORDER_ASCENDING)
         );
+        GameHistoryList.setCustomLevelComparator(
+                MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_SORT_CUSTOM, false));
+        GameHistoryList.updateComparators(
+                MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_SHOW_LOST_GAMES_BOTTOM, true));
     }
 
     private final NavigationBarView.OnItemSelectedListener onItemSelectedListener =

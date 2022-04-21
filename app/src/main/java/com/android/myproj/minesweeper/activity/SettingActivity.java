@@ -175,7 +175,7 @@ public class SettingActivity extends AppCompatActivity {
         ((CheckedTextView) view).toggle();
 
         // Update SharedPreferences
-        MySharedPreferencesUtil.putBoolean(this, key, ((CheckedTextView) view).isChecked() && !invert);
+        MySharedPreferencesUtil.putBoolean(this, key, ((CheckedTextView) view).isChecked() ^ invert);
     }
 
     private final View.OnClickListener onSoundClick = view -> {
@@ -234,7 +234,7 @@ public class SettingActivity extends AppCompatActivity {
             MySharedPreferencesUtil.putInt(this, Key.PREFERENCES_SORT_BY, sortBy);
             MySharedPreferencesUtil.putInt(this, Key.PREFERENCES_ORDER, sortOrder);
             // Update Comparator for GameHistoryList
-            GameHistoryList.setComparator(sortBy, sortOrder);
+            GameHistoryList.setOverallComparator(sortBy, sortOrder);
             // Update text for TextView
             this.setSortByText(sortBy, sortOrder);
             removeView.run();
@@ -245,11 +245,17 @@ public class SettingActivity extends AppCompatActivity {
         this.rootLayout.addView(menuSort);
     };
 
-    private final View.OnClickListener onSortCustomHistoryClick = view ->
-            this.defaultCheckboxAction(view, Key.PREFERENCES_SORT_CUSTOM, true);
+    private final View.OnClickListener onSortCustomHistoryClick = view -> {
+        String key = Key.PREFERENCES_SORT_CUSTOM;
+        this.defaultCheckboxAction(view, key, true);
+        GameHistoryList.notifyPreferenceChange(key, !((CheckedTextView) view).isChecked());
+    };
 
-    private final View.OnClickListener onShowIncompleteGamesClick = view ->
-            this.defaultCheckboxAction(view, Key.PREFERENCES_SHOW_LOST_GAMES_BOTTOM, false);
+    private final View.OnClickListener onShowIncompleteGamesClick = view -> {
+        String key = Key.PREFERENCES_SHOW_LOST_GAMES_BOTTOM;
+        this.defaultCheckboxAction(view, key, false);
+        GameHistoryList.notifyPreferenceChange(key, ((CheckedTextView) view).isChecked());
+    };
 
     private final CompoundButton.OnCheckedChangeListener onFlagClick = (compoundButton, isChecked) -> {
         MySharedPreferencesUtil.putBoolean(SettingActivity.this, Key.PREFERENCES_FLAG_TOGGLE, isChecked);

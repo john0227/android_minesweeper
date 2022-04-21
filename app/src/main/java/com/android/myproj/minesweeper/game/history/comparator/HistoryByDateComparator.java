@@ -2,8 +2,6 @@ package com.android.myproj.minesweeper.game.history.comparator;
 
 import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 
-import java.util.Comparator;
-
 // Compares GameHistoryVo objects first by date, then by time of completion
 public class HistoryByDateComparator extends AbstractHistoryComparator {
 
@@ -13,19 +11,19 @@ public class HistoryByDateComparator extends AbstractHistoryComparator {
     // Then, sort by time in ascending order (which is the default order for sort by time) ... #2
     @Override
     public int compare(GameHistoryVo gameHistoryVo1, GameHistoryVo gameHistoryVo2) {
-        int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
-        if (nullComparison != 0) {
-            return nullComparison;
+        int comparison = this.defaultCompareTo(gameHistoryVo1, gameHistoryVo2);
+        if (comparison != 0) {
+            return comparison;
         }
 
         // #1
-        int dateComparison = compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);
-        if (dateComparison != 0) {
-            return dateComparison;
+        comparison = compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);
+        if (comparison != 0) {
+            return comparison;
         }
 
         // #2
-        return HistoryByTimeComparator.onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);
+        return HistoryByTimeComparator.compareOnlyByTime(gameHistoryVo1, gameHistoryVo2);
     }
 
     // Sort by : Date
@@ -33,21 +31,24 @@ public class HistoryByDateComparator extends AbstractHistoryComparator {
     // First, sort by date in descending order ... #1
     // Then, sort by time in ascending order (which is the default order for sort by time) ... #2
     @Override
-    public Comparator<GameHistoryVo> myReversed() {
-        return (gameHistoryVo1, gameHistoryVo2) -> {
-            int nullComparison = this.compareIfNull(gameHistoryVo1, gameHistoryVo2);
-            if (nullComparison != 0) {
-                return -1 * nullComparison;
-            }
+    public HistoryByDateComparator myReversed() {
+        return new HistoryByDateComparator() {
+            @Override
+            public int compare(GameHistoryVo gameHistoryVo1, GameHistoryVo gameHistoryVo2) {
+                int comparison = this.defaultCompareTo(gameHistoryVo1, gameHistoryVo2);
+                if (comparison != 0) {
+                    return comparison;
+                }
 
-            // #1
-            int dateComparison = -1 * compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);  // by date in descending
-            if (dateComparison != 0) {
-                return dateComparison;
-            }
+                // #1
+                comparison = -1 * compareOnlyByDate(gameHistoryVo1, gameHistoryVo2);  // by date in descending
+                if (comparison != 0) {
+                    return comparison;
+                }
 
-            // #2
-            return HistoryByTimeComparator.onlyByTimeComparator(gameHistoryVo1, gameHistoryVo2);
+                // #2
+                return HistoryByTimeComparator.compareOnlyByTime(gameHistoryVo1, gameHistoryVo2);
+            }
         };
     }
 
