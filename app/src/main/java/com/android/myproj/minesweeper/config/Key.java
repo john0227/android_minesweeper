@@ -12,6 +12,8 @@ public class Key {
     public static final String PREFERENCES_FLAG_TOGGLE = "flag by toggling";
     public static final String PREFERENCES_SORT_BY = "sort by";
     public static final String PREFERENCES_ORDER = "order";
+    public static final String PREFERENCES_SORT_CUSTOM = "sort custom history";
+    public static final String PREFERENCES_SHOW_LOST_GAMES_BOTTOM = "show lost games at bottom";
     public static final String PREFERENCES_WIDTH = "frame layout width";
     public static final String PREFERENCES_HEIGHT = "frame layout height";
 

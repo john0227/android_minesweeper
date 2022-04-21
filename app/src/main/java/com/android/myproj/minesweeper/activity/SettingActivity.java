@@ -39,6 +39,8 @@ public class SettingActivity extends AppCompatActivity {
     private CheckedTextView check_format_time;
     private Button btn_show_spinner;
     private TextView tv_sort_by;
+    private CheckedTextView check_sort_custom_history;
+    private CheckedTextView check_show_incomplete;
     private ImageView iv_toggle_flag;
     private ImageView iv_radio_flag;
     private RadioButton rbtn_toggle_flag;
@@ -63,10 +65,16 @@ public class SettingActivity extends AppCompatActivity {
     private void init() {
         this.rootLayout = findViewById(R.id.rootLayout_setting);
 
+        // Sound settings
         this.check_sound = findViewById(R.id.check_sound);
+        // Time settings
         this.check_format_time = findViewById(R.id.check_format_time);
+        // Sort History settings
         this.btn_show_spinner = findViewById(R.id.btn_show_spinner);
         this.tv_sort_by = findViewById(R.id.tv_sort_by);
+        this.check_sort_custom_history = findViewById(R.id.check_sort_custom_history);
+        this.check_show_incomplete = findViewById(R.id.check_show_incomplete);
+        // How to Flag settings
         this.iv_toggle_flag = findViewById(R.id.iv_toggle_flag);
         this.iv_radio_flag = findViewById(R.id.iv_radio_flag);
         this.rbtn_toggle_flag = findViewById(R.id.rbtn_toggle_flag);
@@ -86,6 +94,7 @@ public class SettingActivity extends AppCompatActivity {
         this.setFormatTimeText();
         this.check_format_time.setOnClickListener(onFormatTimeClick);
 
+        // =========== Sort History Settings ===========
         // Add listener to show_spinner Button
         this.btn_show_spinner.setOnClickListener(onShowSpinnerClick);
         // Set text for show_spinner Button
@@ -93,6 +102,13 @@ public class SettingActivity extends AppCompatActivity {
                 MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_SORT_BY, GameHistoryList.SORT_BY_TIME),
                 MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_ORDER, GameHistoryList.ORDER_ASCENDING)
         );
+        // Retrieve sort Custom Level History setting from SharedPreferences (false by default)
+        this.check_sort_custom_history.setChecked(!myPref.getBoolean(Key.PREFERENCES_SORT_CUSTOM, false));
+        this.check_sort_custom_history.setOnClickListener(onSortCustomHistoryClick);
+        // Retrieve sort incomplete games setting from SharedPreferences (true by default)
+        this.check_show_incomplete.setChecked(myPref.getBoolean(Key.PREFERENCES_SHOW_LOST_GAMES_BOTTOM, true));
+        this.check_show_incomplete.setOnClickListener(onShowIncompleteGamesClick);
+        // ======= End of Sort History Settings ========
 
         // Bind ImageViews to GIFs using Glide
         Glide.with(this)
@@ -152,32 +168,26 @@ public class SettingActivity extends AppCompatActivity {
         this.rbtn_radio_flag.setEnabled(enabled);
     }
 
-    private final View.OnClickListener onSoundClick = view -> {
+    private void defaultCheckboxAction(View view, String key, boolean invert) {
+        assert view instanceof CheckedTextView;
+
         // Toggle checkbox
         ((CheckedTextView) view).toggle();
 
         // Update SharedPreferences
-        MySharedPreferencesUtil.putBoolean(
-                SettingActivity.this,
-                Key.PREFERENCES_SOUND,
-                ((CheckedTextView) view).isChecked()
-        );
+        MySharedPreferencesUtil.putBoolean(this, key, ((CheckedTextView) view).isChecked() && !invert);
+    }
+
+    private final View.OnClickListener onSoundClick = view -> {
+        this.defaultCheckboxAction(view, Key.PREFERENCES_SOUND, false);
 
         // Set result code
         setResultCode(ResCode.SETTING_SOUND_CHANGED);
     };
 
     private final View.OnClickListener onFormatTimeClick = view -> {
-        // Toggle checkbox
-        ((CheckedTextView) view).toggle();
+        this.defaultCheckboxAction(view, Key.PREFERENCES_FORMAT_TIME, false);
         this.setFormatTimeText();
-
-        // Update SharedPreferences
-        MySharedPreferencesUtil.putBoolean(
-                SettingActivity.this,
-                Key.PREFERENCES_FORMAT_TIME,
-                ((CheckedTextView) view).isChecked()
-        );
 
         // Set result code
         setResultCode(ResCode.SETTING_SOUND_CHANGED);
@@ -234,6 +244,12 @@ public class SettingActivity extends AppCompatActivity {
 
         this.rootLayout.addView(menuSort);
     };
+
+    private final View.OnClickListener onSortCustomHistoryClick = view ->
+            this.defaultCheckboxAction(view, Key.PREFERENCES_SORT_CUSTOM, true);
+
+    private final View.OnClickListener onShowIncompleteGamesClick = view ->
+            this.defaultCheckboxAction(view, Key.PREFERENCES_SHOW_LOST_GAMES_BOTTOM, false);
 
     private final CompoundButton.OnCheckedChangeListener onFlagClick = (compoundButton, isChecked) -> {
         MySharedPreferencesUtil.putBoolean(SettingActivity.this, Key.PREFERENCES_FLAG_TOGGLE, isChecked);

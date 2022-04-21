@@ -248,7 +248,7 @@
                         app:srcCompat="@null" />
 
                     <CheckedTextView
-                        android:id="@+id/check_sort_incomplete"
+                        android:id="@+id/check_show_incomplete"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
@@ -261,7 +261,7 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center_vertical"
-                        android:text="Keep lost and incomplete games at the bottom"
+                        android:text="Show lost and incomplete games at the bottom"
                         android:textColor="@color/text_level_1"
                         android:textSize="16dp" />
 
