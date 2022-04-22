@@ -23,9 +23,9 @@ import java.util.Locale;
 
 public class GameHistoryAdapter extends RecyclerView.Adapter<GameHistoryAdapter.GameHistoryHolder> {
 
-    private final Activity activity;
-    private final Level level;
-    private final GameHistoryList gameHistoryList;
+    protected final Activity activity;
+    protected final Level level;
+    protected final GameHistoryList gameHistoryList;
 
     public GameHistoryAdapter(Activity activity, Level level) {
         this.activity = activity;
@@ -80,10 +80,10 @@ public class GameHistoryAdapter extends RecyclerView.Adapter<GameHistoryAdapter.
 
     public static class GameHistoryHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView image;
-        private final TextView textViewRank;
-        private final TextView textViewDate;
-        private final TextView textViewTime;
+        protected final ImageView image;
+        protected final TextView textViewRank;
+        protected final TextView textViewDate;
+        protected final TextView textViewTime;
 
         public GameHistoryHolder(@NonNull View itemView) {
             super(itemView);

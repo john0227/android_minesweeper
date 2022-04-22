@@ -15,21 +15,8 @@ import com.android.myproj.minesweeper.util.LogService;
 
 public class CustomHistoryFragment extends GameHistoryFragment {
 
-    private CustomHistoryAdapter gameHistoryAdapter;
-
     public CustomHistoryFragment(Activity activity, View.OnClickListener listener) {
         super(activity, listener, Level.CUSTOM);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances) {
-        this.rootLayout = inflater.inflate(R.layout.history_layout, container, false);
-        this.rootLayout.findViewById(R.id.btn_reset_history).setOnClickListener(this.listener);
-
-        this.setting();
-        this.setAdapter();
-
-        return this.rootLayout;
     }
 
     @Override

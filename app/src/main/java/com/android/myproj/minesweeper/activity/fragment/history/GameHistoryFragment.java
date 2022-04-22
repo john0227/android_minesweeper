@@ -27,7 +27,7 @@ public class GameHistoryFragment extends Fragment {
     protected View rootLayout;
     protected ScrollView scrollView;
     protected RecyclerView gameHistoryRecView;
-    private GameHistoryAdapter gameHistoryAdapter;
+    protected GameHistoryAdapter gameHistoryAdapter;
 
     public GameHistoryFragment(Activity activity, View.OnClickListener listener, Level level) {
         this.activity = activity;
