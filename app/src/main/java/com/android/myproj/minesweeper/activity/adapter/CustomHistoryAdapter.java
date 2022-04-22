@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.Key;
+import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
@@ -22,13 +24,8 @@ public class CustomHistoryAdapter extends GameHistoryAdapter {
 
     private final static String DIM_FORMAT = "%d by %d Board (%d Mines)";  // row, col, mines
 
-//    private final Activity activity;
-//    private final GameHistoryList gameHistoryList;
-
     public CustomHistoryAdapter(Activity activity) {
         super(activity, Level.CUSTOM);
-//        this.activity = activity;
-//        this.gameHistoryList = GameHistoryList.getInstance();
     }
 
     @NonNull

@@ -23,6 +23,7 @@ public class GameHistoryVo {
     private final int rows;
     private final int cols;
     private final int mines;
+    private boolean isBestTime;
 
     public GameHistoryVo(int resultCode, Level level) {
         this(new Date(), resultCode, resultCode, resultCode, level);
@@ -35,10 +36,11 @@ public class GameHistoryVo {
     }
 
     public GameHistoryVo(Date date, int minute, int second, int millis, Level level) {
-        this(date, minute, second, millis, level.getRow(), level.getCol(), level.getMines());
+        this(date, minute, second, millis, level.getRow(), level.getCol(), level.getMines(), false);
     }
 
-    private GameHistoryVo(Date date, int minute, int second, int millis, int rows, int cols, int mines) {
+    private GameHistoryVo(Date date, int minute, int second, int millis,
+                          int rows, int cols, int mines, boolean isBestTime) {
         this.date = date;
         this.minute = minute;
         this.second = second;
@@ -46,6 +48,7 @@ public class GameHistoryVo {
         this.rows = rows;
         this.cols = cols;
         this.mines = mines;
+        this.isBestTime = isBestTime;
     }
 
     public Date getDate() {
@@ -76,6 +79,14 @@ public class GameHistoryVo {
         return this.mines;
     }
 
+    public boolean isBestTime() {
+        return this.isBestTime;
+    }
+
+    public void setIsBestTime(boolean isBestTime) {
+        this.isBestTime = isBestTime;
+    }
+
     public boolean wasWon() {
         return this.minute != GAME_LOST && this.minute != GAME_NOT_RESUMED;
     }
@@ -89,6 +100,7 @@ public class GameHistoryVo {
         gameHistoryJSON.put(this.rows);
         gameHistoryJSON.put(this.cols);
         gameHistoryJSON.put(this.mines);
+        gameHistoryJSON.put(this.isBestTime);
         return gameHistoryJSON;
     }
 
@@ -101,7 +113,8 @@ public class GameHistoryVo {
                 gameHistoryJSON.getInt(3),
                 gameHistoryJSON.getInt(4),
                 gameHistoryJSON.getInt(5),
-                gameHistoryJSON.getInt(6)
+                gameHistoryJSON.getInt(6),
+                gameHistoryJSON.getBoolean(7)
         );
     }
 

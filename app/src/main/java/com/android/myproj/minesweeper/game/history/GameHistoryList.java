@@ -6,7 +6,6 @@ import com.android.myproj.minesweeper.game.history.comparator.AbstractHistoryCom
 import com.android.myproj.minesweeper.game.history.comparator.HistoryByDateComparator;
 import com.android.myproj.minesweeper.game.history.comparator.HistoryByTimeComparator;
 import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,7 +14,6 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +43,10 @@ public class GameHistoryList {
     private final List<GameHistoryVo> expertHistoryList;
     private final List<GameHistoryVo> jumboHistoryList;
     private final List<GameHistoryVo> customHistoryList;
+    // Game History with best time for each level
+    private GameHistoryVo[] bestTimeGames = new GameHistoryVo[] { null, null, null, null, null };
+
+    // SORT and ORDER of Comparators
     // Comparators initialized to default values
     private AbstractHistoryComparator overallComparator = COMPARATOR_MAP.get(SORT_BY_TIME|ORDER_ASCENDING);
     private AbstractHistoryComparator defaultCustomComparator = DEFAULT_CUSTOM_COMPARATOR;
@@ -66,6 +68,8 @@ public class GameHistoryList {
     }
 
     public void addGameHistory(GameHistoryVo gameHistory, Level level) {
+        this.saveIfBestTime(gameHistory, level);
+
         AbstractHistoryComparator comparator = level != Level.CUSTOM
                 ? this.overallComparator
                 : this.defaultCustomComparator;
@@ -96,6 +100,18 @@ public class GameHistoryList {
         };
     }
 
+    private void saveIfBestTime(GameHistoryVo gameHistoryVo, Level level) {
+        GameHistoryVo prevBestTime = this.bestTimeGames[level.getCode() - 1];
+        if (prevBestTime == null) {
+            this.bestTimeGames[level.getCode() - 1] = gameHistoryVo;
+            gameHistoryVo.setIsBestTime(true);
+        } else if (COMPARATOR_MAP.get(SORT_BY_TIME|ORDER_ASCENDING).compare(gameHistoryVo, prevBestTime) < 0) {
+            prevBestTime.setIsBestTime(false);
+            this.bestTimeGames[level.getCode() - 1] = gameHistoryVo;
+            gameHistoryVo.setIsBestTime(true);
+        }
+    }
+
     public void saveHistoryList(JSONObject savedHistory) throws JSONException {
         for (Level level : Level.values()) {
             JSONArray savedLevelHistory = new JSONArray();
@@ -121,7 +137,11 @@ public class GameHistoryList {
             JSONArray savedLevelHistory = savedHistory.getJSONArray(JSONKey.getHistoryKey(level));
             for (int index = 0; index < savedLevelHistory.length(); index++) {
                 try {
-                    historyList.add(GameHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index)));
+                    GameHistoryVo gameHistoryVo = GameHistoryVo.restoreGameHistory(savedLevelHistory.getJSONArray(index));
+                    historyList.add(gameHistoryVo);
+                    if (gameHistoryVo.isBestTime()) {
+                        singleton.saveIfBestTime(gameHistoryVo, level);
+                    }
                 } catch (ParseException | JSONException e) {
                     continue;
                 }
@@ -153,9 +173,11 @@ public class GameHistoryList {
         GameHistoryList singleton = GameHistoryList.getInstance();
 
         AbstractHistoryComparator prev = singleton.defaultCustomComparator;
-        singleton.defaultCustomComparator = sortCustom
-                ? singleton.overallComparator
-                : DEFAULT_CUSTOM_COMPARATOR;
+        if (sortCustom) {
+            singleton.defaultCustomComparator = singleton.overallComparator;
+        } else {
+            singleton.defaultCustomComparator = DEFAULT_CUSTOM_COMPARATOR;
+        }
 
         if (!prev.equals(singleton.defaultCustomComparator)) {
             sortLevelList(singleton, Level.CUSTOM);

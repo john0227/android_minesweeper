@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,9 +46,11 @@ public class GameHistoryAdapter extends RecyclerView.Adapter<GameHistoryAdapter.
     public void onBindViewHolder(@NonNull GameHistoryHolder holder, int position) {
         GameHistoryVo gameHistory = this.gameHistoryList.getGameHistory(position, this.level);
 
-        // Set image if first ranked GameHistory
-        if (position == 0 && gameHistory.wasWon()) {
+        // Set image if best time GameHistory
+        if (gameHistory.isBestTime()) {
             holder.image.setImageResource(R.drawable.games_won);
+        } else {
+            holder.image.setImageDrawable(null);
         }
 
         // Set rank TextView
