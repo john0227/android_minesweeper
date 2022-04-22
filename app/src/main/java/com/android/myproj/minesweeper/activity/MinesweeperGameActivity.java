@@ -238,7 +238,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         int padding = 0;  // in DP (start and end)
 
         ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
-        if (this.level.getRow() > 25 || this.level.getCol() > 15) {
+        if (this.level.getRow() >= 25 || this.level.getCol() >= 15) {
             zoomLayout.setZoomEnabled(true);
             padding = (int) ConvertUnitUtil.convertPxToDP(this, 50);
         }

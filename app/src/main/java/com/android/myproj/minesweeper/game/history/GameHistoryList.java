@@ -44,7 +44,7 @@ public class GameHistoryList {
     private final List<GameHistoryVo> jumboHistoryList;
     private final List<GameHistoryVo> customHistoryList;
     // Game History with best time for each level
-    private GameHistoryVo[] bestTimeGames = new GameHistoryVo[] { null, null, null, null, null };
+    private final GameHistoryVo[] bestTimeGames = new GameHistoryVo[] { null, null, null, null, null };
 
     // SORT and ORDER of Comparators
     // Comparators initialized to default values
