@@ -7,8 +7,6 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.myproj.minesweeper.activity.SettingActivity;
-
 public class AnimationUtil {
 
     public static void fadeIn(View viewToShow, int shortAnimationDuration) {

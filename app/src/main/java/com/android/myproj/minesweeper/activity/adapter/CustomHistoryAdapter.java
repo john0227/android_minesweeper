@@ -4,20 +4,14 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.config.Key;
-import com.android.myproj.minesweeper.game.history.GameHistoryList;
 import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 import com.android.myproj.minesweeper.game.logic.Level;
-import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
-import com.android.myproj.minesweeper.util.TimeFormatUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class CustomHistoryAdapter extends GameHistoryAdapter {

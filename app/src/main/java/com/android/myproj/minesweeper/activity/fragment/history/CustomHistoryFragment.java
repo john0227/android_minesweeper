@@ -1,14 +1,8 @@
 package com.android.myproj.minesweeper.activity.fragment.history;
 
 import android.app.Activity;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.adapter.CustomHistoryAdapter;
 import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.util.LogService;

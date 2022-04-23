@@ -28,13 +28,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.android.myproj.minesweeper.R;
-import com.android.myproj.minesweeper.activity.MainActivity;
 import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
 import com.android.myproj.minesweeper.activity.SettingActivity;
 import com.android.myproj.minesweeper.config.JSONKey;

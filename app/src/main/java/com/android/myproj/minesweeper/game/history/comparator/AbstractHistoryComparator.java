@@ -4,8 +4,6 @@ import com.android.myproj.minesweeper.game.history.GameHistoryVo;
 
 import java.util.Comparator;
 
-import io.reactivex.functions.BiFunction;
-
 abstract public class AbstractHistoryComparator implements Comparator<GameHistoryVo> {
 
     protected boolean compareIfWon;

@@ -1,8 +1,6 @@
 package com.android.myproj.minesweeper.game.logic;
 
-import com.android.myproj.minesweeper.activity.MainActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
-import com.android.myproj.minesweeper.util.LogService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
