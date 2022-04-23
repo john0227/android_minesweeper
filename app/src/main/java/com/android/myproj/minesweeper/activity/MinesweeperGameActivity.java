@@ -96,7 +96,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             LogService.info(this, JSONUtil.readJSONFile(this).toString());
             init();
             setting();
-            generateGameScreen();
+            generateGame();
             LogService.info(this, JSONUtil.readJSONFile(this).toString());
         } catch (Exception e) {
             LogService.error(this, e.getMessage(), e);
@@ -241,6 +241,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         if (this.level.getRow() >= 25 || this.level.getCol() >= 15) {
             zoomLayout.setZoomEnabled(true);
             padding = (int) ConvertUnitUtil.convertPxToDP(this, 50);
+            if (this.level.getRow() >= 25) {
+                ImageView mineCountImage = findViewById(R.id.iv_mine_count);
+                ConstraintLayout.MarginLayoutParams params = (ConstraintLayout.MarginLayoutParams) mineCountImage.getLayoutParams();
+                LogService.info(this, "" + params.topMargin);
+                params.topMargin -= (int) ConvertUnitUtil.convertDpToPx(this, 80f);
+            }
         }
 
         LinearLayout container = findViewById(R.id.linearL_mine_container);
@@ -287,7 +293,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
-    private void generateGameScreen() throws JSONException, IOException {
+    private void generateGame() throws JSONException, IOException {
         // Retrieve and restore saved data if any
         if (this.savedState == null) {
             this.savedState = JSONUtil.readJSONFile(this);
