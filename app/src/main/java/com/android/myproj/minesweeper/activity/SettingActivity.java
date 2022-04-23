@@ -2,8 +2,11 @@ package com.android.myproj.minesweeper.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
@@ -20,6 +23,7 @@ import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.config.Key;
 import com.android.myproj.minesweeper.config.ResCode;
 import com.android.myproj.minesweeper.game.history.GameHistoryList;
+import com.android.myproj.minesweeper.util.AnimationUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.bumptech.glide.Glide;
@@ -46,6 +50,8 @@ public class SettingActivity extends AppCompatActivity {
     private RadioButton rbtn_toggle_flag;
     private RadioButton rbtn_radio_flag;
 
+    private Handler delayHandler;
+
     private int resCode;
 
     @Override
@@ -60,6 +66,16 @@ public class SettingActivity extends AppCompatActivity {
         } catch (Exception e) {
             LogService.error(this, e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        ViewGroup menuRootLayout = findViewById(R.id.rootLayout_sort_menu);
+        if (menuRootLayout == null) {
+            super.onBackPressed();
+            return;
+        }
+        this.fadeOutSortMenu(menuRootLayout, findViewById(R.id.cardView_sort_menu));
     }
 
     private void init() {
@@ -79,6 +95,8 @@ public class SettingActivity extends AppCompatActivity {
         this.iv_radio_flag = findViewById(R.id.iv_radio_flag);
         this.rbtn_toggle_flag = findViewById(R.id.rbtn_toggle_flag);
         this.rbtn_radio_flag = findViewById(R.id.rbtn_radio_flag);
+
+        this.delayHandler = new Handler(Looper.getMainLooper());
 
         this.resCode = ResCode.SETTING_NO_CHANGE;
     }
@@ -178,6 +196,20 @@ public class SettingActivity extends AppCompatActivity {
         MySharedPreferencesUtil.putBoolean(this, key, ((CheckedTextView) view).isChecked() ^ invert);
     }
 
+    private void fadeInSortMenu(ViewGroup menuRootLayout, View menu) {
+        // Disable touches
+        this.setEnabledForAllViews(false);
+        AnimationUtil.fadeIn(menuRootLayout, 180);
+        AnimationUtil.slideUpFadeIn(menu, 0.2f, 180);
+    }
+
+    private void fadeOutSortMenu(ViewGroup menuRootLayout, View menu) {
+        AnimationUtil.fadeOut(menuRootLayout, 130);
+        AnimationUtil.slideDownFadeOut(menu, menuRootLayout, 0.2f, 130,
+                () -> this.rootLayout.removeView(menuRootLayout));
+        this.setEnabledForAllViews(true);
+    }
+
     private final View.OnClickListener onSoundClick = view -> {
         this.defaultCheckboxAction(view, Key.PREFERENCES_SOUND, false);
 
@@ -194,40 +226,38 @@ public class SettingActivity extends AppCompatActivity {
     };
 
     private final View.OnClickListener onShowSpinnerClick = view -> {
-        // Disable touches
-        this.setEnabledForAllViews(false);
-
         LayoutInflater inflater = LayoutInflater.from(this);
-        View menuSort = inflater.inflate(R.layout.menu_sort_history, this.rootLayout, false);
+        ViewGroup menuRootLayout = (ViewGroup) inflater.inflate(R.layout.menu_sort_history, this.rootLayout, false);
+        View menu = menuRootLayout.findViewById(R.id.cardView_sort_menu);
+
+        // Show menu with Animation
+        delayHandler.postDelayed(() -> this.fadeInSortMenu(menuRootLayout, menu), 3);
 
         // Create a Runnable for removing menu from screen
-        Runnable removeView = () -> {
-            this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_sort_menu));
-            this.setEnabledForAllViews(true);
-        };
+        Runnable removeView = () -> this.fadeOutSortMenu(menuRootLayout, menu);
 
         int sortBySaved = MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_SORT_BY, GameHistoryList.SORT_BY_TIME);
         int orderSaved = MySharedPreferencesUtil.getInt(this, Key.PREFERENCES_ORDER, GameHistoryList.ORDER_ASCENDING);
-        ((RadioGroup) menuSort.findViewById(R.id.radioGroup_sort_by)).check(
+        ((RadioGroup) menuRootLayout.findViewById(R.id.radioGroup_sort_by)).check(
                 sortBySaved == GameHistoryList.SORT_BY_TIME
                         ? R.id.rbtn_sort_time
                         : R.id.rbtn_sort_date
         );
-        ((RadioGroup) menuSort.findViewById(R.id.radioGroup_order)).check(
+        ((RadioGroup) menuRootLayout.findViewById(R.id.radioGroup_order)).check(
                 orderSaved == GameHistoryList.ORDER_ASCENDING
                         ? R.id.rbtn_order_ascending
                         : R.id.rbtn_order_descending
         );
 
         // Remove menu if CANCEL button is pressed
-        menuSort.findViewById(R.id.btn_sort_cancel).setOnClickListener(view1 -> removeView.run());
+        menuRootLayout.findViewById(R.id.btn_sort_cancel).setOnClickListener(view1 -> removeView.run());
         // Update SharedPreferences if DONE button is pressed
-        menuSort.findViewById(R.id.btn_sort_done).setOnClickListener(view1 -> {
+        menuRootLayout.findViewById(R.id.btn_sort_done).setOnClickListener(view1 -> {
             int sortBy = GameHistoryList.SORT_BY_TIME, sortOrder = GameHistoryList.ORDER_ASCENDING;
-            if (((RadioButton) menuSort.findViewById(R.id.rbtn_sort_date)).isChecked()) {
+            if (((RadioButton) menuRootLayout.findViewById(R.id.rbtn_sort_date)).isChecked()) {
                 sortBy = GameHistoryList.SORT_BY_DATE;
             }
-            if (((RadioButton) menuSort.findViewById(R.id.rbtn_order_descending)).isChecked()) {
+            if (((RadioButton) menuRootLayout.findViewById(R.id.rbtn_order_descending)).isChecked()) {
                 sortOrder = GameHistoryList.ORDER_DESCENDING;
             }
             // Update SharedPreferences
@@ -240,9 +270,9 @@ public class SettingActivity extends AppCompatActivity {
             removeView.run();
         });
         // Remove menu if anywhere other than CardView is pressed
-        menuSort.findViewById(R.id.btn_remove_sort_menu).setOnClickListener(view1 -> removeView.run());
+        menuRootLayout.findViewById(R.id.btn_remove_sort_menu).setOnClickListener(view1 -> removeView.run());
 
-        this.rootLayout.addView(menuSort);
+        this.rootLayout.addView(menuRootLayout);
     };
 
     private final View.OnClickListener onSortCustomHistoryClick = view -> {
