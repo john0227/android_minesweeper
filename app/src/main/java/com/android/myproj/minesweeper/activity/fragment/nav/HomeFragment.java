@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -62,6 +65,7 @@ public class HomeFragment extends Fragment {
     private ActivityResultLauncher<Intent> resultLauncherSetting;
     private Button btn_setting;
 
+    private int rootLayoutHeight;
     private boolean isAttached;
     private boolean playSound;
     private boolean existsSavedData;
@@ -92,6 +96,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void init() {
+        // Set height of rootLayout
+        new Handler(Looper.getMainLooper()).postDelayed(() -> this.rootLayoutHeight = this.rootLayout.getHeight(), 5);
+
         this.btn_setting = this.rootLayout.findViewById(R.id.btn_setting);
 
         // Set Callback Function
@@ -109,8 +116,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void setting() throws JSONException {
-        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
-
         // Add listener to level buttons
         this.rootLayout.findViewById(R.id.btn_easy).setOnClickListener(onLevelButtonClick);
         this.rootLayout.findViewById(R.id.btn_intermediate).setOnClickListener(onLevelButtonClick);
@@ -237,60 +242,47 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public View.OnClickListener onLevelButtonClick = view -> {
-        if (!MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_ENABLE, true)) {
-            return;
-        }
-
-        // Save width and height to SharedPreferences
-        if (MySharedPreferencesUtil.contains(this.activity, Key.PREFERENCES_WIDTH)) {
-            MySharedPreferencesUtil.putFloat(this.activity, Key.PREFERENCES_WIDTH,
-                    this.rootLayout.findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredWidth());
-        }
-        if (MySharedPreferencesUtil.contains(this.activity, Key.PREFERENCES_HEIGHT)) {
-            MySharedPreferencesUtil.putFloat(this.activity, Key.PREFERENCES_HEIGHT,
-                    this.rootLayout.findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredHeight());
-        }
-
-        Intent intent = new Intent(this.activity, MinesweeperGameActivity.class);
-
-        int code;
-        switch ((String) view.getTag()) {
-            case "RESUME" -> code = Key.RETRIEVE_LEVEL_CODE;
-            case "EASY" -> code = Level.EASY.getCode();
-            case "INTERMEDIATE" ->  code = Level.INTERMEDIATE.getCode();
-            case "EXPERT" -> code = Level.EXPERT.getCode();
-            case "JUMBO" -> code = Level.JUMBO.getCode();
-            case "CUSTOM" -> {
-                this.showCustomLevelDialog(true);
-                return;
-            }
-            default -> throw new RuntimeException();
-        }
-
-        Runnable launchGame = () -> {
-            // Pass Level code
-            intent.putExtra(Key.LEVEL_KEY, code);
-            resultLauncherGame.launch(intent);
-        };
-
-        // If there is saved data, but player did not choose resume, alert the player
-        if (this.existsSavedData && code != Key.RETRIEVE_LEVEL_CODE) {
-            this.showResumeAlertDialog(launchGame);
-        } else {
-            launchGame.run();
-        }
-    };
+    private void setEnableUI(boolean enableUI) {
+        // Set enableUI for Level buttons
+        this.rootLayout.findViewById(R.id.btn_resume).setEnabled(enableUI);
+        this.rootLayout.findViewById(R.id.btn_resume).setClickable(enableUI);
+        this.rootLayout.findViewById(R.id.btn_easy).setEnabled(enableUI);
+        this.rootLayout.findViewById(R.id.btn_easy).setClickable(enableUI);
+        this.rootLayout.findViewById(R.id.btn_intermediate).setEnabled(enableUI);
+        this.rootLayout.findViewById(R.id.btn_intermediate).setClickable(enableUI);
+        this.rootLayout.findViewById(R.id.btn_expert).setEnabled(enableUI);
+        this.rootLayout.findViewById(R.id.btn_expert).setClickable(enableUI);
+        this.rootLayout.findViewById(R.id.btn_jumbo).setEnabled(enableUI);
+        this.rootLayout.findViewById(R.id.btn_jumbo).setClickable(enableUI);
+        this.rootLayout.findViewById(R.id.btn_custom).setEnabled(enableUI);
+        this.rootLayout.findViewById(R.id.btn_custom).setClickable(enableUI);
+        // Set enableUI for Settings ImageButton
+        btn_setting.setEnabled(enableUI);
+        btn_setting.setClickable(enableUI);
+    }
 
     private void showCustomLevelDialog(boolean animate) {
+        // Prevent player from pressing any buttons or navigating to a different page
+        this.setEnableUI(false);
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, false);
+
         LayoutInflater inflater = LayoutInflater.from(this.activity);
         View view = inflater.inflate(R.layout.custom_level_dialog, this.rootLayout, true);
         if (animate) {
             AnimationUtil.fadeIn(view.findViewById(R.id.rootLayout_custom_dialog), 180);
         }
 
-        // Prevent player from pressing any buttons
-        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, false);
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view1, MotionEvent motionEvent) {
+                if (isKeyboardActive()) {
+                    hideKeyboard();
+                } else {
+                    onNegativeCustomLevelDialogClick.onClick(view.findViewById(R.id.btn_custom_neg));
+                }
+                return false;
+            }
+        });
 
         // Set listeners for OK and CANCEL buttons
         view.findViewById(R.id.btn_custom_pos).setOnClickListener(onPositiveCustomLevelDialogClick);
@@ -345,6 +337,11 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private boolean isKeyboardActive() {
+        int currRootLayoutHeight = this.rootLayout.getHeight();
+        return currRootLayoutHeight != this.rootLayoutHeight;
+    }
+
     private final PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         menuItem.setActionView(new View(this.activity.getApplicationContext()));
@@ -374,11 +371,48 @@ public class HomeFragment extends Fragment {
         return true;
     };
 
-    private final View.OnClickListener onSettingClick = view -> {
-        if (!MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_ENABLE, true)) {
-            return;
+    public View.OnClickListener onLevelButtonClick = view -> {
+        // Save width and height to SharedPreferences
+        if (MySharedPreferencesUtil.contains(this.activity, Key.PREFERENCES_WIDTH)) {
+            MySharedPreferencesUtil.putFloat(this.activity, Key.PREFERENCES_WIDTH,
+                    this.rootLayout.findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredWidth());
+        }
+        if (MySharedPreferencesUtil.contains(this.activity, Key.PREFERENCES_HEIGHT)) {
+            MySharedPreferencesUtil.putFloat(this.activity, Key.PREFERENCES_HEIGHT,
+                    this.rootLayout.findViewById(R.id.frameLayout_progress_outside_circle).getMeasuredHeight());
         }
 
+        Intent intent = new Intent(this.activity, MinesweeperGameActivity.class);
+
+        int code;
+        switch ((String) view.getTag()) {
+            case "RESUME" -> code = Key.RETRIEVE_LEVEL_CODE;
+            case "EASY" -> code = Level.EASY.getCode();
+            case "INTERMEDIATE" ->  code = Level.INTERMEDIATE.getCode();
+            case "EXPERT" -> code = Level.EXPERT.getCode();
+            case "JUMBO" -> code = Level.JUMBO.getCode();
+            case "CUSTOM" -> {
+                this.showCustomLevelDialog(true);
+                return;
+            }
+            default -> throw new RuntimeException();
+        }
+
+        Runnable launchGame = () -> {
+            // Pass Level code
+            intent.putExtra(Key.LEVEL_KEY, code);
+            resultLauncherGame.launch(intent);
+        };
+
+        // If there is saved data, but player did not choose resume, alert the player
+        if (this.existsSavedData && code != Key.RETRIEVE_LEVEL_CODE) {
+            this.showResumeAlertDialog(launchGame);
+        } else {
+            launchGame.run();
+        }
+    };
+
+    private final View.OnClickListener onSettingClick = view -> {
         // Initializing the popup menu and giving the reference as current context
         PopupMenu popupMenu = new PopupMenu(this.activity, btn_setting);
 
@@ -424,7 +458,8 @@ public class HomeFragment extends Fragment {
             // Remove Custom Level dialog
             this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
 
-            // Allow player to press buttons
+            // Allow player to press buttons and navigate to different pages
+            this.setEnableUI(true);
             MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
 
             // Hide keyboard
@@ -491,7 +526,8 @@ public class HomeFragment extends Fragment {
     private final View.OnClickListener onNegativeCustomLevelDialogClick = view -> {
         AnimationUtil.fadeOut(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog), this.rootLayout, 130);
 
-        // Allow player to press buttons
+        // Allow player to press buttons and navigate to different pages
+        this.setEnableUI(true);
         MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
 
         // Hide keyboard
