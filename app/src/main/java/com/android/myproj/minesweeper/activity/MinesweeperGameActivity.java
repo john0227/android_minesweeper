@@ -244,7 +244,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             if (this.level.getRow() >= 25) {
                 ImageView mineCountImage = findViewById(R.id.iv_mine_count);
                 ConstraintLayout.MarginLayoutParams params = (ConstraintLayout.MarginLayoutParams) mineCountImage.getLayoutParams();
-                LogService.info(this, "" + params.topMargin);
                 params.topMargin -= (int) ConvertUnitUtil.convertDpToPx(this, 80f);
             }
         }
