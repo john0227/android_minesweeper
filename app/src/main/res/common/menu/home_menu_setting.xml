@@ -6,6 +6,10 @@
        android:title="Setting" />
 
    <item
+       android:id="@+id/menu_level_info"
+       android:title="Level Info" />
+
+   <item
         android:id="@+id/menu_setting_sound"
         android:checkable="true"
         android:title="Sound" />

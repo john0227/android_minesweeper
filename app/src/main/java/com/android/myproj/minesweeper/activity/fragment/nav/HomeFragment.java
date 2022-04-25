@@ -416,7 +416,7 @@ public class HomeFragment extends Fragment {
 
         // Inflating popup menu from popup_menu.xml file
         popupMenu.getMenuInflater().inflate(R.menu.home_menu_setting, popupMenu.getMenu());
-        popupMenu.getMenu().getItem(1).setChecked(playSound);
+        popupMenu.getMenu().getItem(2).setChecked(playSound);
         popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
 
         // Showing the popup menu
