@@ -33,6 +33,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.android.myproj.minesweeper.R;
+import com.android.myproj.minesweeper.activity.LevelInfoActivity;
 import com.android.myproj.minesweeper.activity.MinesweeperGameActivity;
 import com.android.myproj.minesweeper.activity.SettingActivity;
 import com.android.myproj.minesweeper.config.JSONKey;
@@ -347,6 +348,7 @@ public class HomeFragment extends Fragment {
         String selMenu = menuItem.getTitle().toString();
         switch (selMenu) {
             case "Setting" -> resultLauncherSetting.launch(new Intent(this.activity, SettingActivity.class));
+            case "Level Info" -> startActivity(new Intent(this.activity, LevelInfoActivity.class));
             case "Sound" -> {
                 menuItem.setChecked(!playSound);
                 playSound = !playSound;
