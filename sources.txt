@@ -20,6 +20,14 @@ Icons used in Settings and Statistics Page (Under res/common/drawable)
         Flag icons created by vectorsmarket15 - Flaticon (https://www.flaticon.com/free-icons/flag)
         Turned off icons created by Rakib Hassan Rahim - Flaticon (https://www.flaticon.com/free-icons/turned-off)
 
+Icons used in Level Info Page (Under res/common/drawable)
+    board.png :
+        Pixel icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/pixel)
+    mine_bomb.png :
+        Mine icons created by bqlqn - Flaticon (https://www.flaticon.com/free-icons/mine)
+    percentage.png :
+        Load icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/load)
+
 Minesweeper Cells (Under res/common/drawable)
     mine.png, mine_0.png ~ mine_8.png, covered.png, flagged.png :
         https://github.com/pardahlman/minesweeper/tree/master/Images

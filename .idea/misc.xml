@@ -20,6 +20,7 @@
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/layout_overall_statistics.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/layout_statistics.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/layout_statistics_common.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/level_info_rv_item.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/menu_sort_history.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/radiogroup_sel_flag.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/common/layout/radiogroup_touch_flag.xml" value="0.38697916666666665" />
@@ -57,6 +58,7 @@
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_game.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_home.xml" value="0.33" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_intermediate_level.xml" value="0.38697916666666665" />
+        <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_level_info.xml" value="0.38697916666666665" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_main_home.xml" value="0.384375" />
         <entry key="..\:/App/Ws/Minesweeper/app/src/main/res/layouts/layout/activity_setting.xml" value="0.38697916666666665" />
