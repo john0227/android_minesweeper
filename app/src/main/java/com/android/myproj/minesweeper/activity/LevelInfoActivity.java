@@ -1,10 +1,10 @@
 package com.android.myproj.minesweeper.activity;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
 
 import com.android.myproj.minesweeper.R;
 import com.android.myproj.minesweeper.activity.adapter.LevelInfoAdapter;
