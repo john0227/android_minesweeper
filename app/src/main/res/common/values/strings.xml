@@ -8,4 +8,7 @@
     <string name="time24_format_setting"><font size="16">Use 24-hour format in History</font><font size="5">\n\t\n\</font><font size="12">13:00</font></string>
     <string name="time_format_setting"><font size="16">Use 24-hour format in History</font><font size="5">\n\t\n\</font><font size="12">1:00 PM</font></string>
     <string name="sort_custom_history"><font size="16">Do not sort Custom Level History</font><font size="5">\n\t\n\</font><font size="12">(Show recent games at the top)</font></string>
+    <string name="custom_row_info"><b>Rows : </b>Any integer between 0 and 50 inclusive</string>
+    <string name="custom_col_info"><b>Columns : </b>Any integer between 0 and 50 inclusive</string>
+    <string name="custom_mine_info"><b>Mines : </b>Up to 70% of total number of tiles</string>
 </resources>
