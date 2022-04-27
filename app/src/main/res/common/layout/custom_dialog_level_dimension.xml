@@ -4,7 +4,7 @@
     android:id="@+id/rootLayout_custom_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#55000000">
+    android:background="@color/custom_dialog_shade">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

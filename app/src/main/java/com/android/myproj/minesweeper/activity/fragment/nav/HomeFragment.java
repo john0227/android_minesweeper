@@ -266,7 +266,7 @@ public class HomeFragment extends Fragment {
         MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, false);
 
         LayoutInflater inflater = LayoutInflater.from(this.activity);
-        View view = inflater.inflate(R.layout.custom_level_dialog, this.rootLayout, true);
+        View view = inflater.inflate(R.layout.custom_dialog_level_dimension, this.rootLayout, true);
         if (animate) {
             AnimationUtil.fadeIn(view.findViewById(R.id.rootLayout_custom_dialog), 180);
         }

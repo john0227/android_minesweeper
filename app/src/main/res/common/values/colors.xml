@@ -26,4 +26,5 @@
     <color name="bottomNavView_iconActive">#FF453566</color>
     <color name="bottomNavView_iconInactive">#FFC9BCE6</color>
     <color name="cardView_divider_background">#33441F4A</color>
+    <color name="custom_dialog_shade">#55000000</color>
 </resources>

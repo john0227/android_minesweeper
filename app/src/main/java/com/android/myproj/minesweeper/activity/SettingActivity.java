@@ -227,7 +227,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private final View.OnClickListener onShowSpinnerClick = view -> {
         LayoutInflater inflater = LayoutInflater.from(this);
-        ViewGroup menuRootLayout = (ViewGroup) inflater.inflate(R.layout.menu_sort_history, this.rootLayout, false);
+        ViewGroup menuRootLayout = (ViewGroup) inflater.inflate(R.layout.custom_dialog_sort_history, this.rootLayout, false);
         View menu = menuRootLayout.findViewById(R.id.cardView_sort_menu);
 
         // Show menu with Animation
