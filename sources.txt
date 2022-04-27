@@ -1,8 +1,8 @@
 Icons used in New Game Custom Dialog (Under res/common/drawable)
     ic_easy.png, ic_intermediate.png, ic_expert.png, ic_custom.gif, ic_custom_error.png :
-        Pixel icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/pixel)
+        Grid icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/grid)
     ic_jumbo.png :
-        Grid icons created by Vector Stall - Flaticon (https://www.flaticon.com/free-icons/grid)
+        Menu icons created by Kiranshastry - Flaticon (https://www.flaticon.com/free-icons/menu)
 
 Icons used in Settings and Statistics Page (Under res/common/drawable)
     setting_sound.png :
