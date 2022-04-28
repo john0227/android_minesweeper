@@ -9,7 +9,7 @@ public enum Level {
 
     EASY(10, 10, 10, 75, 1),
     INTERMEDIATE(13, 15, 40, 30, 2),
-    EXPERT(16, 30, 99, 10, 3),
+    EXPERT(20, 24, 99, 10, 3),
     JUMBO(25, 35, 185, 10, 4),
     CUSTOM(10, 10, 10, 50, 5);
 
