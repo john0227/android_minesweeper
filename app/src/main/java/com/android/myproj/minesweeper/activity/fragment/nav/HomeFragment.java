@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -49,6 +50,7 @@ import com.android.myproj.minesweeper.util.JSONUtil;
 import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.StatUtil;
+import com.bumptech.glide.Glide;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -116,11 +118,7 @@ public class HomeFragment extends Fragment {
 
     private void setting() throws JSONException {
         // Add listener to level buttons
-        this.rootLayout.findViewById(R.id.btn_easy).setOnClickListener(onLevelButtonClick);
-        this.rootLayout.findViewById(R.id.btn_intermediate).setOnClickListener(onLevelButtonClick);
-        this.rootLayout.findViewById(R.id.btn_expert).setOnClickListener(onLevelButtonClick);
-        this.rootLayout.findViewById(R.id.btn_jumbo).setOnClickListener(onLevelButtonClick);
-        this.rootLayout.findViewById(R.id.btn_custom).setOnClickListener(onLevelButtonClick);
+        this.rootLayout.findViewById(R.id.btn_new_game).setOnClickListener(onNewGameButtonClick);
         this.rootLayout.findViewById(R.id.btn_resume).setOnClickListener(onLevelButtonClick);
 
         // Bind PopupMenu to ImageButton
@@ -133,9 +131,12 @@ public class HomeFragment extends Fragment {
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
-                View view = rootLayout.findViewById(R.id.rootLayout_custom_dialog);
-                if (view != null) {
-                    onNegativeCustomLevelDialogClick.onClick(rootLayout.findViewById(R.id.btn_custom_neg));
+                View levelDimDialog = rootLayout.findViewById(R.id.customDialog_level_dimension);
+                View newGameDialog = rootLayout.findViewById(R.id.customDialog_new_game);
+                if (levelDimDialog != null) {
+                    onNegativeCustomLevelDialogClick.onClick(levelDimDialog.findViewById(R.id.btn_custom_neg));
+                } else if (newGameDialog != null) {
+                    removeNewGameDialog();
                 } else {
                     activity.finish();
                 }
@@ -146,8 +147,8 @@ public class HomeFragment extends Fragment {
 
     private void repositionButtons() throws JSONException {
         Button resumeButton = this.rootLayout.findViewById(R.id.btn_resume);
-        Button intermediateButton = this.rootLayout.findViewById(R.id.btn_intermediate);
-        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) intermediateButton.getLayoutParams();
+        Button newGameButton = this.rootLayout.findViewById(R.id.btn_new_game);
+        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) newGameButton.getLayoutParams();
 
         // Retrieve saved JSONObject and check if there is data to restore
         JSONObject savedState = JSONUtil.readJSONFile(this.activity);
@@ -164,9 +165,9 @@ public class HomeFragment extends Fragment {
             resumeButton.setText("");
             resumeButton.setEnabled(false);
 
-            // Set vertical bias to 0.40 for INTERMEDIATE button
-            lp.verticalBias = 0.37f;
-            intermediateButton.setLayoutParams(lp);
+            // Set vertical bias to 0.47 for NEW GAME button
+            lp.verticalBias = 0.47f;
+            newGameButton.setLayoutParams(lp);
 
             // Remove progress bar
             this.removeAllViews(
@@ -202,9 +203,9 @@ public class HomeFragment extends Fragment {
         int totalNonMineTiles = level.getRow() * level.getCol() - level.getMines();
         this.drawProgressBar((int) (100.0 * uncoveredTiles / totalNonMineTiles));
 
-        // Set vertical bias for INTERMEDIATE button
-        lp.verticalBias = 0.43f;
-        intermediateButton.setLayoutParams(lp);
+        // Set vertical bias for NEW GAME button
+        lp.verticalBias = 0.53f;
+        newGameButton.setLayoutParams(lp);
     }
 
     private void drawProgressBar(int progress) {
@@ -245,19 +246,84 @@ public class HomeFragment extends Fragment {
         // Set enableUI for Level buttons
         this.rootLayout.findViewById(R.id.btn_resume).setEnabled(enableUI);
         this.rootLayout.findViewById(R.id.btn_resume).setClickable(enableUI);
-        this.rootLayout.findViewById(R.id.btn_easy).setEnabled(enableUI);
-        this.rootLayout.findViewById(R.id.btn_easy).setClickable(enableUI);
-        this.rootLayout.findViewById(R.id.btn_intermediate).setEnabled(enableUI);
-        this.rootLayout.findViewById(R.id.btn_intermediate).setClickable(enableUI);
-        this.rootLayout.findViewById(R.id.btn_expert).setEnabled(enableUI);
-        this.rootLayout.findViewById(R.id.btn_expert).setClickable(enableUI);
-        this.rootLayout.findViewById(R.id.btn_jumbo).setEnabled(enableUI);
-        this.rootLayout.findViewById(R.id.btn_jumbo).setClickable(enableUI);
-        this.rootLayout.findViewById(R.id.btn_custom).setEnabled(enableUI);
-        this.rootLayout.findViewById(R.id.btn_custom).setClickable(enableUI);
+        this.rootLayout.findViewById(R.id.btn_new_game).setEnabled(enableUI);
+        this.rootLayout.findViewById(R.id.btn_new_game).setClickable(enableUI);
         // Set enableUI for Settings ImageButton
         btn_setting.setEnabled(enableUI);
         btn_setting.setClickable(enableUI);
+        // Set enableUI for New Game dialog (if active)
+        if (this.rootLayout.findViewById(R.id.customDialog_new_game) != null) {
+            View[] buttons = {
+                    this.rootLayout.findViewById(R.id.ibtn_level_easy),
+                    this.rootLayout.findViewById(R.id.ibtn_level_intermediate),
+                    this.rootLayout.findViewById(R.id.ibtn_level_expert),
+                    this.rootLayout.findViewById(R.id.ibtn_level_jumbo),
+                    this.rootLayout.findViewById(R.id.ibtn_level_custom),
+                    this.rootLayout.findViewById(R.id.btn_level_easy),
+                    this.rootLayout.findViewById(R.id.btn_level_intermediate),
+                    this.rootLayout.findViewById(R.id.btn_level_expert),
+                    this.rootLayout.findViewById(R.id.btn_level_jumbo),
+                    this.rootLayout.findViewById(R.id.btn_level_custom),
+                    this.rootLayout.findViewById(R.id.btn_remove_custom_dialog)
+            };
+            for (View button : buttons) {
+                button.setEnabled(enableUI);
+                button.setClickable(enableUI);
+            }
+        }
+    }
+
+    private void showNewGameDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this.activity);
+        View menuRootLayout = inflater.inflate(R.layout.custom_dialog_level_difficulty, this.rootLayout, false);
+        View levelMenu = menuRootLayout.findViewById(R.id.cardView_level_dialog);
+        // Retrieve all Buttons
+        ImageButton[] levelIcons = new ImageButton[] {
+                levelMenu.findViewById(R.id.ibtn_level_easy),
+                levelMenu.findViewById(R.id.ibtn_level_intermediate),
+                levelMenu.findViewById(R.id.ibtn_level_expert),
+                levelMenu.findViewById(R.id.ibtn_level_jumbo),
+                levelMenu.findViewById(R.id.ibtn_level_custom)
+        };
+        Button[] levelButtons = new Button[] {
+                levelMenu.findViewById(R.id.btn_level_easy),
+                levelMenu.findViewById(R.id.btn_level_intermediate),
+                levelMenu.findViewById(R.id.btn_level_expert),
+                levelMenu.findViewById(R.id.btn_level_jumbo),
+                levelMenu.findViewById(R.id.btn_level_custom)
+        };
+        // Animate the entrance of dialog
+        this.setEnableUI(false);
+        Handler delayHandler = new Handler(Looper.getMainLooper());
+        delayHandler.postDelayed(() -> AnimationUtil.fadeIn(menuRootLayout, 180), 5);
+        delayHandler.postDelayed(() -> AnimationUtil.slideUpFadeIn(levelMenu, 0.5f, 180), 5);
+        // Setup Custom Level ImageButton to show GIF
+        Glide.with(this)
+                .load(R.drawable.ic_custom)
+                .placeholder(R.drawable.ic_custom_error)
+                .error(R.drawable.ic_custom_error)
+                .into(levelIcons[4]);
+        // Add listeners to ImageButtons and Buttons
+        for (int i = 0; i < levelIcons.length; i++) {
+            levelIcons[i].setOnClickListener(onLevelButtonClick);
+            levelButtons[i].setOnClickListener(onLevelButtonClick);
+        }
+        menuRootLayout.findViewById(R.id.btn_remove_custom_dialog).setOnClickListener(view -> removeNewGameDialog());
+        // Add Custom Dialog to root layout
+        this.rootLayout.addView(menuRootLayout);
+    }
+
+    private void removeNewGameDialog() {
+        ViewGroup menuRootLayout = this.rootLayout.findViewById(R.id.customDialog_new_game);
+        if (menuRootLayout == null) {
+            return;
+        }
+        // Animate exit of new game dialog
+        View levelMenu = menuRootLayout.findViewById(R.id.cardView_level_dialog);
+        AnimationUtil.slideDownFadeOut(levelMenu, menuRootLayout, 0.5f, 130);
+        AnimationUtil.fadeOut(menuRootLayout, this.rootLayout, 130);
+        // Enable UI interactions
+        this.setEnableUI(true);
     }
 
     private void showCustomLevelDialog(boolean animate) {
@@ -268,7 +334,7 @@ public class HomeFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(this.activity);
         View view = inflater.inflate(R.layout.custom_dialog_level_dimension, this.rootLayout, true);
         if (animate) {
-            AnimationUtil.fadeIn(view.findViewById(R.id.rootLayout_custom_dialog), 180);
+            AnimationUtil.fadeIn(view.findViewById(R.id.customDialog_level_dimension), 180);
         }
 
         view.setOnTouchListener(new View.OnTouchListener() {
@@ -371,6 +437,8 @@ public class HomeFragment extends Fragment {
         return true;
     };
 
+    public View.OnClickListener onNewGameButtonClick = view -> showNewGameDialog();
+
     public View.OnClickListener onLevelButtonClick = view -> {
         // Save width and height to SharedPreferences
         if (MySharedPreferencesUtil.contains(this.activity, Key.PREFERENCES_WIDTH)) {
@@ -399,6 +467,8 @@ public class HomeFragment extends Fragment {
         }
 
         Runnable launchGame = () -> {
+            // Remove New Game dialog if active
+            removeNewGameDialog();
             // Pass Level code
             intent.putExtra(Key.LEVEL_KEY, code);
             resultLauncherGame.launch(intent);
@@ -427,7 +497,7 @@ public class HomeFragment extends Fragment {
 
     private final View.OnClickListener onPositiveCustomLevelDialogClick = view -> {
         DialogInterface.OnClickListener reshowCustomDialog = (dialogInterface, i) -> {
-            this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+            this.rootLayout.removeView(this.rootLayout.findViewById(R.id.customDialog_level_dimension));
             this.showCustomLevelDialog(false);
         };
 
@@ -456,7 +526,7 @@ public class HomeFragment extends Fragment {
 
         if (areAllPositive && isValidRow && isValidCol && isValidMine) {
             // Remove Custom Level dialog
-            this.rootLayout.removeView(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog));
+            this.rootLayout.removeView(this.rootLayout.findViewById(R.id.customDialog_level_dimension));
 
             // Allow player to press buttons and navigate to different pages
             this.setEnableUI(true);
@@ -468,6 +538,8 @@ public class HomeFragment extends Fragment {
             // Launch game activity
             Intent intent = new Intent(this.activity, MinesweeperGameActivity.class);
             Runnable launchGame = () -> {
+                // Remove New Game dialog if active
+                removeNewGameDialog();
                 // Set Custom Level dimensions and launch game activity
                 long animationDelay = mines <= 30 ? 50 : mines <= 100 ? 20 : 10;
                 Level.CUSTOM.setValues(cols, rows, mines, animationDelay);
@@ -524,7 +596,7 @@ public class HomeFragment extends Fragment {
     };
 
     private final View.OnClickListener onNegativeCustomLevelDialogClick = view -> {
-        AnimationUtil.fadeOut(this.rootLayout.findViewById(R.id.rootLayout_custom_dialog), this.rootLayout, 130);
+        AnimationUtil.fadeOut(this.rootLayout.findViewById(R.id.customDialog_level_dimension), this.rootLayout, 130);
 
         // Allow player to press buttons and navigate to different pages
         this.setEnableUI(true);

@@ -2,13 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rootLayout_custom_dialog"
+    android:id="@+id/customDialog_new_game"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:alpha="0"
     android:background="@color/custom_dialog_shade"
-    tools:context=".activity.fragment.nav.HomeFragment" >
+    tools:context=".activity.fragment.nav.HomeFragment">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_level_dialog"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/alert_dialog_background"
@@ -40,7 +42,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <ImageButton
                     android:id="@+id/ibtn_level_easy"
@@ -51,8 +55,8 @@
                     android:background="@null"
                     android:padding="10dp"
                     android:scaleType="fitCenter"
-                    android:tag="EASY"
-                    app:srcCompat="@drawable/ic_easy" />
+                    android:src="@drawable/ic_easy"
+                    android:tag="EASY" />
 
                 <Button
                     android:id="@+id/btn_level_easy"
@@ -71,10 +75,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <ImageButton
-                    android:id="@+id/ibtn_level_easy4"
+                    android:id="@+id/ibtn_level_intermediate"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -83,10 +89,10 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tag="INTERMEDIATE"
-                    app:srcCompat="@drawable/ic_intermediate" />
+                    android:src="@drawable/ic_intermediate" />
 
                 <Button
-                    android:id="@+id/btn_level_easy4"
+                    android:id="@+id/btn_level_intermediate"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="8.5"
@@ -101,10 +107,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <ImageButton
-                    android:id="@+id/ibtn_level_easy5"
+                    android:id="@+id/ibtn_level_expert"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -113,10 +121,10 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tag="EXPERT"
-                    app:srcCompat="@drawable/ic_expert" />
+                    android:src="@drawable/ic_expert" />
 
                 <Button
-                    android:id="@+id/btn_level_easy5"
+                    android:id="@+id/btn_level_expert"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="8.5"
@@ -131,10 +139,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <ImageButton
-                    android:id="@+id/ibtn_level_easy7"
+                    android:id="@+id/ibtn_level_jumbo"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -143,10 +153,10 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tag="JUMBO"
-                    app:srcCompat="@drawable/ic_jumbo" />
+                    android:src="@drawable/ic_jumbo" />
 
                 <Button
-                    android:id="@+id/btn_level_easy7"
+                    android:id="@+id/btn_level_jumbo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="8.5"
@@ -161,10 +171,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <ImageButton
-                    android:id="@+id/ibtn_level_easy6"
+                    android:id="@+id/ibtn_level_custom"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -173,10 +185,10 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tag="CUSTOM"
-                    app:srcCompat="@drawable/ic_custom" />
+                    android:src="@drawable/ic_custom" />
 
                 <Button
-                    android:id="@+id/btn_level_easy6"
+                    android:id="@+id/btn_level_custom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="8.5"
@@ -189,5 +201,15 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/btn_remove_custom_dialog"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@null"
+        app:layout_constraintBottom_toTopOf="@+id/cardView_level_dialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

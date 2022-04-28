@@ -23,13 +23,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btn_intermediate"
-            android:layout_width="wrap_content"
+            android:id="@+id/btn_new_game"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:background="@color/button_background"
             android:padding="25dp"
-            android:tag="INTERMEDIATE"
-            android:text="Intermediate"
+            android:text="New Game"
             android:textColor="#DDDDDD"
             android:textSize="25dp"
             app:layout_constraintBottom_toBottomOf="@+id/root_constraint_layout"
@@ -38,75 +37,15 @@
             app:layout_constraintTop_toTopOf="@+id/root_constraint_layout"
             tools:layout_constraintVertical_bias="0.45" />
 
-        <Button
-            android:id="@+id/btn_easy"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:background="@color/button_background"
-            android:padding="25dp"
-            android:tag="EASY"
-            android:text="Easy"
-            android:textColor="#DDDDDD"
-            android:textSize="25dp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_intermediate"
-            app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-            app:layout_constraintStart_toStartOf="@+id/btn_intermediate" />
-
-        <Button
-            android:id="@+id/btn_expert"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@color/button_background"
-            android:padding="25dp"
-            android:tag="EXPERT"
-            android:text="Expert"
-            android:textColor="#DDDDDD"
-            android:textSize="25dp"
-            app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-            app:layout_constraintStart_toStartOf="@+id/btn_intermediate"
-            app:layout_constraintTop_toBottomOf="@+id/btn_intermediate" />
-
-        <Button
-            android:id="@+id/btn_jumbo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@color/button_background"
-            android:padding="25dp"
-            android:tag="JUMBO"
-            android:text="Jumbo"
-            android:textColor="#DDDDDD"
-            android:textSize="25dp"
-            app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-            app:layout_constraintStart_toStartOf="@+id/btn_intermediate"
-            app:layout_constraintTop_toBottomOf="@+id/btn_expert" />
-
-        <Button
-            android:id="@+id/btn_custom"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@color/button_background"
-            android:padding="25dp"
-            android:tag="CUSTOM"
-            android:text="Custom"
-            android:textColor="#DDDDDD"
-            android:textSize="25dp"
-            app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-            app:layout_constraintStart_toStartOf="@+id/btn_intermediate"
-            app:layout_constraintTop_toBottomOf="@+id/btn_jumbo" />
-
         <FrameLayout
             android:id="@+id/frame_button"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_marginBottom="20dp"
             android:padding="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_easy"
-            app:layout_constraintEnd_toEndOf="@+id/btn_intermediate"
-            app:layout_constraintStart_toStartOf="@+id/btn_intermediate">
+            app:layout_constraintBottom_toTopOf="@+id/btn_new_game"
+            app:layout_constraintEnd_toEndOf="@+id/btn_new_game"
+            app:layout_constraintStart_toStartOf="@+id/btn_new_game">
 
             <Button
                 android:id="@+id/btn_resume"

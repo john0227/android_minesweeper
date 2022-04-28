@@ -80,9 +80,13 @@ public class GameHistoryFragment extends Fragment {
     }
 
     public void scrollToTop() {
-        this.gameHistoryRecView.setFocusable(false);
-        this.scrollView.fullScroll(View.FOCUS_UP);
-        this.scrollView.scrollTo(0, 0);
+        try {
+            this.gameHistoryRecView.setFocusable(false);
+            this.scrollView.fullScroll(View.FOCUS_UP);
+            this.scrollView.scrollTo(0, 0);
+        } catch (NullPointerException npe) {
+            LogService.warn(this.activity, "Cannot scroll to top");
+        }
     }
 
     protected void setButtonText() {
