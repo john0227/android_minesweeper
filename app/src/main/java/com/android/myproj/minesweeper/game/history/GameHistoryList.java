@@ -88,6 +88,7 @@ public class GameHistoryList {
 
     public void resetGameHistory(Level level) {
         this.getLevelHistoryList(level).clear();
+        this.bestTimeGames[level.getCode() - 1] = null;
     }
 
     private List<GameHistoryVo> getLevelHistoryList(Level level) {
