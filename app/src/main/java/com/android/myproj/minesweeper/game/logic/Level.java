@@ -8,9 +8,9 @@ import org.json.JSONObject;
 public enum Level {
 
     EASY(10, 10, 10, 75, 1),
-    INTERMEDIATE(12, 14, 25, 50, 2),
-    EXPERT(14, 22, 55, 20, 3),
-    JUMBO(16, 30, 99, 10, 4),
+    INTERMEDIATE(13, 15, 40, 30, 2),
+    EXPERT(16, 30, 99, 10, 3),
+    JUMBO(25, 35, 185, 10, 4),
     CUSTOM(10, 10, 10, 50, 5);
 
     private int col;
@@ -61,6 +61,11 @@ public enum Level {
         savedData.put(JSONKey.KEY_LEVEL, this.code);
 
         if (this != CUSTOM) {
+            // Remove JSON keys associated with CUSTOM level, if present
+            savedData.remove(JSONKey.KEY_LEVEL_COL);
+            savedData.remove(JSONKey.KEY_LEVEL_ROW);
+            savedData.remove(JSONKey.KEY_LEVEL_MINES);
+            savedData.remove(JSONKey.KEY_LEVEL_DELAY);
             return;
         }
 
