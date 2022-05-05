@@ -29,12 +29,7 @@ public class LevelInfoActivity extends AppCompatActivity {
         LevelInfoAdapter adapter = new LevelInfoAdapter(this);
         RecyclerView recyclerView = findViewById(R.id.rv_level_info);
         // Set LayoutManager
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         // Set Adapter
