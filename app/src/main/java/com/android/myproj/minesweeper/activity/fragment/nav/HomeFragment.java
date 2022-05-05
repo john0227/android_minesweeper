@@ -51,6 +51,7 @@ import com.android.myproj.minesweeper.util.LogService;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.StatUtil;
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -166,7 +167,7 @@ public class HomeFragment extends Fragment {
             resumeButton.setEnabled(false);
 
             // Set vertical bias to 0.47 for NEW GAME button
-            lp.verticalBias = 0.47f;
+            lp.verticalBias = 0.43f;
             newGameButton.setLayoutParams(lp);
 
             // Remove progress bar
@@ -204,7 +205,7 @@ public class HomeFragment extends Fragment {
         this.drawProgressBar((int) (100.0 * uncoveredTiles / totalNonMineTiles));
 
         // Set vertical bias for NEW GAME button
-        lp.verticalBias = 0.53f;
+        lp.verticalBias = 0.50f;
         newGameButton.setLayoutParams(lp);
     }
 
@@ -244,7 +245,7 @@ public class HomeFragment extends Fragment {
 
     private void setEnableUI(boolean enableUI) {
         // Set enableUI for navigation
-        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, enableUI);
+//        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, enableUI);
         // Set enableUI for Level buttons
         this.rootLayout.findViewById(R.id.btn_resume).setEnabled(enableUI);
         this.rootLayout.findViewById(R.id.btn_resume).setClickable(enableUI);
@@ -275,6 +276,24 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void hideBottomNavigationView() {
+        // Disable navigation
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, false);
+        // Hide BottomNavigationView
+        BottomNavigationView navigationView = activity.findViewById(R.id.nav_main);
+        navigationView.clearAnimation();
+        navigationView.animate().translationY(navigationView.getHeight()).setDuration(130);
+    }
+
+    private void showBottomNavigationView() {
+        // Enable navigation
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
+        // Show BottomNavigationView
+        BottomNavigationView navigationView = activity.findViewById(R.id.nav_main);
+        navigationView.clearAnimation();
+        navigationView.animate().translationY(0).setDuration(200);
+    }
+
     private void showNewGameDialog() {
         LayoutInflater inflater = LayoutInflater.from(this.activity);
         View menuRootLayout = inflater.inflate(R.layout.custom_dialog_level_difficulty, this.rootLayout, false);
@@ -296,6 +315,8 @@ public class HomeFragment extends Fragment {
         };
         // Animate the entrance of dialog
         this.setEnableUI(false);
+        // Hide BottomNavigationView
+        this.hideBottomNavigationView();
         Handler delayHandler = new Handler(Looper.getMainLooper());
         delayHandler.postDelayed(() -> AnimationUtil.fadeIn(menuRootLayout, 180), 5);
         delayHandler.postDelayed(() -> AnimationUtil.slideUpFadeIn(levelMenu, 0.5f, 180), 5);
@@ -323,13 +344,15 @@ public class HomeFragment extends Fragment {
         // Animate exit of new game dialog
         View levelMenu = menuRootLayout.findViewById(R.id.cardView_level_dialog);
         AnimationUtil.slideDownFadeOut(levelMenu, menuRootLayout, 0.5f, 130);
-        AnimationUtil.fadeOut(menuRootLayout, this.rootLayout, 130);
+        AnimationUtil.fadeOut(menuRootLayout, this.rootLayout, 180);
         // Enable UI interactions
         this.setEnableUI(true);
+        // Show BottomNavigationView
+        this.showBottomNavigationView();
     }
 
     private void showCustomLevelDialog(boolean animate) {
-        // Prevent player from pressing any buttons or navigating to a different page
+        // Prevent player from pressing any buttons
         this.setEnableUI(false);
 
         LayoutInflater inflater = LayoutInflater.from(this.activity);
@@ -468,6 +491,8 @@ public class HomeFragment extends Fragment {
         }
 
         Runnable launchGame = () -> {
+            // Show BottomNavigationView
+            this.showBottomNavigationView();
             // Remove New Game dialog if active
             removeNewGameDialog();
             // Pass Level code
@@ -531,6 +556,8 @@ public class HomeFragment extends Fragment {
 
             // Allow player to press buttons and navigate to different pages
             this.setEnableUI(true);
+            // Show BottomNavigationView
+            this.showBottomNavigationView();
 
             // Hide keyboard
             this.hideKeyboard();
@@ -598,7 +625,7 @@ public class HomeFragment extends Fragment {
     private final View.OnClickListener onNegativeCustomLevelDialogClick = view -> {
         AnimationUtil.fadeOut(this.rootLayout.findViewById(R.id.customDialog_level_dimension), this.rootLayout, 130);
 
-        // Allow player to press buttons and navigate to different pages
+        // Allow player to press buttons
         this.setEnableUI(true);
 
         // Hide keyboard
