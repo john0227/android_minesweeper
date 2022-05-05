@@ -243,6 +243,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void setEnableUI(boolean enableUI) {
+        // Set enableUI for navigation
+        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, enableUI);
         // Set enableUI for Level buttons
         this.rootLayout.findViewById(R.id.btn_resume).setEnabled(enableUI);
         this.rootLayout.findViewById(R.id.btn_resume).setClickable(enableUI);
@@ -329,7 +331,6 @@ public class HomeFragment extends Fragment {
     private void showCustomLevelDialog(boolean animate) {
         // Prevent player from pressing any buttons or navigating to a different page
         this.setEnableUI(false);
-        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, false);
 
         LayoutInflater inflater = LayoutInflater.from(this.activity);
         View view = inflater.inflate(R.layout.custom_dialog_level_dimension, this.rootLayout, true);
@@ -530,7 +531,6 @@ public class HomeFragment extends Fragment {
 
             // Allow player to press buttons and navigate to different pages
             this.setEnableUI(true);
-            MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
 
             // Hide keyboard
             this.hideKeyboard();
@@ -600,7 +600,6 @@ public class HomeFragment extends Fragment {
 
         // Allow player to press buttons and navigate to different pages
         this.setEnableUI(true);
-        MySharedPreferencesUtil.putBoolean(this.activity, Key.PREFERENCES_ENABLE, true);
 
         // Hide keyboard
         this.hideKeyboard();
