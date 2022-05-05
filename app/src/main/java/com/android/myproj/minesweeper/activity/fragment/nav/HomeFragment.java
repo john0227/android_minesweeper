@@ -296,7 +296,7 @@ public class HomeFragment extends Fragment {
 
     private void showNewGameDialog() {
         LayoutInflater inflater = LayoutInflater.from(this.activity);
-        View menuRootLayout = inflater.inflate(R.layout.custom_dialog_level_difficulty, this.rootLayout, false);
+        View menuRootLayout = inflater.inflate(R.layout.custom_dialog_new_game, this.rootLayout, false);
         View levelMenu = menuRootLayout.findViewById(R.id.cardView_level_dialog);
         // Retrieve all Buttons
         ImageButton[] levelIcons = new ImageButton[] {
