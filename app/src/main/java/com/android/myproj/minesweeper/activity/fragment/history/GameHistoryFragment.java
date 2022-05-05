@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ScrollView;
 
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +25,7 @@ public class GameHistoryFragment extends Fragment {
     protected final Level level;
 
     protected View rootLayout;
-    protected ScrollView scrollView;
+    protected NestedScrollView scrollView;
     protected RecyclerView gameHistoryRecView;
     protected GameHistoryAdapter gameHistoryAdapter;
 
@@ -52,12 +52,7 @@ public class GameHistoryFragment extends Fragment {
         // Set up RecyclerView
         this.gameHistoryRecView = this.rootLayout.findViewById(R.id.rv_history);
         // Set LayoutManager
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.activity) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.activity);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         this.gameHistoryRecView.setLayoutManager(linearLayoutManager);
         // Change text of RESET button based on size of GameHistoryList

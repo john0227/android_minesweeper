@@ -58,7 +58,6 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
         try {
             this.rootLayout = inflater.inflate(R.layout.fragment_history, container, false);
             this.setting();
-
         } catch (Exception e) {
             LogService.error(this.activity, e.getMessage(), e);
         }
