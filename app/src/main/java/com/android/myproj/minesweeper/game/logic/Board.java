@@ -130,13 +130,19 @@ public class Board {
     }
 
     private void uncoverAdj(int index, List<Tile> selectedTiles) {
-        // count if TileValue == FLAGGED and if TileValue == MINE
+        // count adjacent flagged tiles
         int adjFlags = countAdjIf(
+                index,
+                i -> this.board[i].isFlagged()
+        );
+        // count adjacent correctly flagged tiles (if TileValue == FLAGGED and if TileValue == MINE)
+        int adjValidFlags = countAdjIf(
                 index,
                 i -> this.board[i].isFlagged() && this.board[i].getTileValue() == TileValue.MINE
         );
 
-        if (adjFlags != this.board[index].getTileValue().getCode()) {
+        // if (!(adjValidFlags == adjFlags == this.board[index].getTileValue().getCode()))
+        if (adjValidFlags != this.board[index].getTileValue().getCode() || adjFlags != adjValidFlags) {
             return;
         }
 
