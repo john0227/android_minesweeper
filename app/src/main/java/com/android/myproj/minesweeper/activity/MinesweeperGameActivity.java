@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -61,6 +62,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private ImageButton[] imageButtons;
     private ImageButton ibtn_setting;
     private ImageButton ibtn_hint;
+    private RadioGroup rg_sel_flag;
     private RadioButton rbtn_flag;
     private TextView tv_mine_count;
     private ToggleButton tbtn_sel_flag;
@@ -166,6 +168,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.imageButtons = new ImageButton[level.getRow() * level.getCol()];
         this.ibtn_setting = findViewById(R.id.ibtn_setting);
         this.ibtn_hint = findViewById(R.id.ibtn_hint);
+        this.rg_sel_flag = findViewById(R.id.rg_sel_flag);
         this.rbtn_flag = findViewById(R.id.rbtn_flag);
         this.tv_mine_count = findViewById(R.id.tv_mine_count);
         this.tbtn_sel_flag = findViewById(R.id.tbtn_sel_flag);
@@ -204,23 +207,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         // Change TextView to show appropriate level
         ((TextView) findViewById(R.id.tv_level)).setText(this.level.toString());
 
-        ConstraintLayout parent = findViewById(R.id.layout_parent);
         // Retrieve flag setting (toggle by default)
-        if(MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_FLAG_TOGGLE, true)) {
-            // Add Listener to SelFlag ToggleButton
-            this.tbtn_sel_flag.setOnCheckedChangeListener(onToggleFlagChange);
-            // Remove RadioGroup from View
-            parent.removeView(findViewById(R.id.rg_sel_flag));
-            this.rbtn_flag = null;
-            LogService.info(this, "Removed radiobutton");
-        } else {
-            // Add Listener to Flag RadioButton
-             this.rbtn_flag.setOnCheckedChangeListener(onRadioFlagChange);
-            // Remove tbtn_sel_flag from View
-            parent.removeView(this.tbtn_sel_flag);
-            this.tbtn_sel_flag = null;
-            LogService.info(this, "Removed togglebutton");
-        }
+        this.toggleFlagButton();
 
         // Initialize MusicPlayers
         for (int i = 0; i < this.musicPlayers.length; i++) {
@@ -327,7 +315,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private AlertDialog.Builder buildGameoverAlert(boolean hasWon) {
         DialogInterface.OnClickListener posAction = (dialogInterface, i) -> {
             cleanup();
-            createNewGame(true);
+            createNewGame();
         };
         DialogInterface.OnClickListener negAction = (dialogInterface, i) -> {
             cleanup();
@@ -481,20 +469,18 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
-    private void createNewGame(boolean restart) {
-        if (restart) {
-            LogService.info(MinesweeperGameActivity.this, "Clearing saved data...");
-            // Set isGameOver to true
-            isGameOver = true;
-            // Garbage collection
-            cleanup();
-            try {
+    private void createNewGame() {
+        LogService.info(MinesweeperGameActivity.this, "Clearing saved data...");
+        // Set isGameOver to true
+        isGameOver = true;
+        // Garbage collection
+        cleanup();
+        try {
                 // Delete any saved data
                 JSONUtil.clearSavedGame(MinesweeperGameActivity.this);
             } catch (JSONException | IOException e) {
                 LogService.error(MinesweeperGameActivity.this, e.getMessage(), e);
             }
-        }
         LogService.info(MinesweeperGameActivity.this, "Creating new game...");
         // Recreate Activity
         MinesweeperGameActivity.this.recreate();
@@ -545,6 +531,28 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
+    private void toggleFlagButton() {
+        if(MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_FLAG_TOGGLE, true)) {
+            // Set visibility of TOGGLE_FLAG and RADIO_FLAG buttons
+            this.tbtn_sel_flag.setVisibility(View.VISIBLE);
+            this.rg_sel_flag.setVisibility(View.GONE);
+            // Add Listener to SelFlag ToggleButton
+            this.tbtn_sel_flag.setOnCheckedChangeListener(onToggleFlagChange);
+            // Remove Listener from Flag RadioButton
+            this.rbtn_flag.setOnCheckedChangeListener(null);
+            LogService.info(this, "Removed FLAG RadioButton");
+        } else {
+            // Set visibility of TOGGLE_FLAG and RADIO_FLAG buttons
+            this.tbtn_sel_flag.setVisibility(View.GONE);
+            this.rg_sel_flag.setVisibility(View.VISIBLE);
+            // Add Listener to Flag RadioButton
+            this.rbtn_flag.setOnCheckedChangeListener(onRadioFlagChange);
+            // Remove Listener from Flag ToggleButton
+            this.tbtn_sel_flag.setOnCheckedChangeListener(null);
+            LogService.info(this, "Removed FLAG ToggleButton");
+        }
+    }
+
     private final CompoundButton.OnCheckedChangeListener onRadioFlagChange = (button, isChecked) -> isFlag = isChecked;
     private final CompoundButton.OnCheckedChangeListener onToggleFlagChange = (button, isChecked) -> {
         isFlag = isChecked;
@@ -562,7 +570,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         String selMenu = menuItem.getTitle().toString();
         switch (selMenu) {
             case "Setting" -> resultLauncher.launch(new Intent(this, SettingActivity.class));
-            case "New Game" -> createNewGame(true);
+            case "New Game" -> createNewGame();
             case "Main Menu" -> {
                 LogService.info(this, "===== Returning to Main Screen =====");
                 finish();
@@ -687,12 +695,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private final ActivityResultCallback<ActivityResult> activityResultCallback = result -> {
         LogService.info(MinesweeperGameActivity.this, "Returned from setting to game");
         switch (result.getResultCode()) {
-            case ResCode.SETTING_ALL_CHANGED, ResCode.SETTING_FLAG_CHANGED -> createNewGame(false);
+            case ResCode.SETTING_ALL_CHANGED, ResCode.SETTING_FLAG_CHANGED -> this.toggleFlagButton();
             case ResCode.SETTING_SOUND_CHANGED -> playSound = MySharedPreferencesUtil.getBoolean(
-                        MinesweeperGameActivity.this,
-                        Key.PREFERENCES_SOUND,
-                        true
-                );
+                    MinesweeperGameActivity.this,
+                    Key.PREFERENCES_SOUND,
+                    true
+            );
             default -> {}
         }
     };
