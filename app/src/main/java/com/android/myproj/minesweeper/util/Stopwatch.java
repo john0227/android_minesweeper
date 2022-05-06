@@ -80,13 +80,18 @@ public class Stopwatch {
         this.stopwatchHandler.post(run_timer);
     }
 
-    public void resumeTimer() {
+    public void resumeTimer(JSONObject savedData) {
         if (this.isRunning || !this.isPaused) {
             return;
         }
         this.isRunning = true;
         this.isPaused = false;
         this.startTime = System.currentTimeMillis();
+        try {
+            this.storedTime = savedData.getLong(JSONKey.KEY_TIME_STORED_MILLIS);
+        } catch (JSONException jse) {
+            this.storedTime = 0;
+        }
         this.stopwatchHandler.post(run_timer);
     }
 

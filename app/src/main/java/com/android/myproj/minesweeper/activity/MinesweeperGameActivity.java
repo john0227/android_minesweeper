@@ -93,11 +93,9 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_game);
 
-            LogService.info(this, JSONUtil.readJSONFile(this).toString());
             init();
             setting();
             generateGame();
-            LogService.info(this, JSONUtil.readJSONFile(this).toString());
         } catch (Exception e) {
             LogService.error(this, e.getMessage(), e);
         }
@@ -135,7 +133,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         super.onResume();
 
         // Resume timer
-        this.stopwatch.resumeTimer();
+        this.stopwatch.resumeTimer(JSONUtil.readJSONFile(this));
     }
 
     @Override
@@ -509,6 +507,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
         zoomLayout.zoomBy(1 / zoomLayout.getZoom(), true);
         zoomLayout.setZoomEnabled(false);
+        // Clear saved data
+        try {
+            JSONUtil.clearSavedGame(this);
+        } catch (JSONException | IOException e) {
+            LogService.error(this, "Was unable to clear saved game data", e);
+        }
 
         if (hasWon) {
             musicPlayers[0].playMusic(MinesweeperGameActivity.this, R.raw.game_won, playSound);
@@ -551,7 +555,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     };
 
-    private PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
+    private final PopupMenu.OnMenuItemClickListener onMenuItemClickListener = menuItem -> {
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         menuItem.setActionView(new View(getApplicationContext()));
 
