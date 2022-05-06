@@ -112,12 +112,12 @@ public class HomeFragment extends Fragment {
                 new ActivityResultContracts.StartActivityForResult(),
                 settingResultCallback
         );
-
-        // Retrieve sound setting from previously saved SharedPreferences (true by default)
-        this.playSound = MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_SOUND, true);
     }
 
     private void setting() throws JSONException {
+        // Retrieve sound setting from previously saved SharedPreferences (true by default)
+        this.playSound = MySharedPreferencesUtil.getBoolean(this.activity, Key.PREFERENCES_SOUND, true);
+
         // Add listener to level buttons
         this.rootLayout.findViewById(R.id.btn_new_game).setOnClickListener(onNewGameButtonClick);
         this.rootLayout.findViewById(R.id.btn_resume).setOnClickListener(onLevelButtonClick);
