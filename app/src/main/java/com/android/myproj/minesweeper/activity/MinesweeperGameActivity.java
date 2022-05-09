@@ -2,11 +2,9 @@ package com.android.myproj.minesweeper.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
