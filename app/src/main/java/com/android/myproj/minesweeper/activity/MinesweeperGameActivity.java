@@ -603,16 +603,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 menuItem.setChecked(!playSound);
                 playSound = !playSound;
                 updateSoundSetting();
-                menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-                    @Override
-                    public boolean onMenuItemActionExpand(MenuItem item) {
-                        return false;
-                    }
-                    @Override
-                    public boolean onMenuItemActionCollapse(MenuItem item) {
-                        return false;
-                    }
-                });
                 return false;
             }
             default -> LogService.error(this, "Selected menu from SETTING popup menu is invalid: " + selMenu);
