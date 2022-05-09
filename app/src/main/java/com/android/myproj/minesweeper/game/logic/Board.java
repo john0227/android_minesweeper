@@ -258,7 +258,7 @@ public class Board {
         // Check if it is possible to reveal a cell
         int count = 0;
         for (Tile tile : this.board) {
-            if (tile.isUncoverable() && tile.getTileValue().getCode() > 0) {
+            if (tile.isUncoverable()) {
                 count++;
             }
         }
@@ -271,9 +271,7 @@ public class Board {
         while (true) {
             Random random = new Random();
             randIndex = random.nextInt(this.board.length);
-            if (this.board[randIndex].isUncoverable() && this.board[randIndex].getTileValue().getCode() > 0) {
-                this.coveredTiles--;
-                this.board[randIndex].select();
+            if (this.board[randIndex].isUncoverable()) {
                 return this.board[randIndex];
             }
         }

@@ -75,6 +75,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private TextView tv_mine_count;
     private ToggleButton tbtn_sel_flag;
     private ImageView hintIndicator;
+    private FrameLayout hintContainer;
 
     // Dependent Objects
     private ActivityResultLauncher<Intent> resultLauncher;
@@ -89,6 +90,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
 
     // Java-Provided Objects/Variables
     private boolean isFlag;
+    private boolean isFirstClick;
     private boolean hasStarted;
     private boolean isGameOver;
     private boolean isClickable;
@@ -181,6 +183,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.rbtn_flag = findViewById(R.id.rbtn_flag);
         this.tv_mine_count = findViewById(R.id.tv_mine_count);
         this.tbtn_sel_flag = findViewById(R.id.tbtn_sel_flag);
+        this.hintContainer = findViewById(R.id.hint_container);
 
         this.musicPlayers = new MusicPlayer[this.level.getMines()];
         this.gameHandler = new Handler(Looper.getMainLooper());
@@ -189,6 +192,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.stopwatch = new Stopwatch(findViewById(R.id.tv_time));
 
         this.isFlag = false;
+        this.isFirstClick = true;
         this.hasStarted = false;
         this.isGameOver = false;
         this.isClickable = true;
@@ -294,6 +298,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
         if (JSONUtil.existsSavedGame(this)) {
             LogService.info(this, "Starting game...There is saved data");
+            this.isFirstClick = false;
+            this.hasStarted = true;
             this.restoreGame();
             JSONUtil.clearSavedGame(this);
         } else {
@@ -303,12 +309,15 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
     }
 
-    private void startGame(int index) {
-        MinesweeperGameActivity.this.hasStarted = true;
-        stopwatch.startTimer();
-
+    private void generateTiles(int index) {
+        this.isFirstClick = false;
         // Generate mine cells
         this.game.start(index);
+    }
+
+    private void startGame() {
+        this.hasStarted = true;
+        stopwatch.startTimer();
 
         // Update Games Started statistics
         try {
@@ -368,7 +377,6 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             // Restore game and display tiles accordingly
             this.game = Game.restore(savedState);
             for (Tile t : this.game.getVisibleTiles()) {
-                this.hasStarted = true;
                 setImage(this.imageButtons[game.getTileIndex(t)], game.getTileValue(t));
             }
             for (Tile t : this.game.getFlaggedTiles()) {
@@ -636,10 +644,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         }
 
         // If game has not yet started, generate board without starting game
-        if (!MinesweeperGameActivity.this.hasStarted) {
-//            MinesweeperGameActivity.this.hasStarted = true;
-//            stopwatch.startTimer();
-            this.game.start(-1);
+        if (this.isFirstClick) {
+            this.generateTiles(-1);
         }
 
         Tile tileToReveal = this.game.showHint();
@@ -649,7 +655,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             return;
         }
 
-        noHint = false;
+        this.noHint = false;
+
         // Reset zoom
         this.resetZoom(true);
         // Create hint indicator as ImageView
@@ -671,13 +678,8 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 .into(this.hintIndicator);
 
         // Add hint indicator to container
-        FrameLayout hintContainer = findViewById(R.id.hint_container);
-        hintContainer.addView(this.hintIndicator);
+        this.hintContainer.addView(this.hintIndicator);
         this.hintIndicator.bringToFront();
-
-
-
-//        setImage(this.imageButtons[game.getTileIndex(tileToReveal)], game.getTileValue(tileToReveal));
     };
 
     private final View.OnClickListener onTileClick = view -> {
@@ -694,9 +696,10 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         ImageButton tile = (ImageButton) view;
         int index = (int) tile.getTag();
 
-        // If the player has clicked his/her first cell
-        if (!MinesweeperGameActivity.this.hasStarted) {
-            this.startGame(index);
+        // If hint indicator is present, remove it
+        if (this.hintIndicator != null) {
+            this.hintContainer.removeView(this.hintIndicator);
+            this.hintIndicator = null;
         }
 
         // If FLAG RadioButton is turned on, flag the selected cell (if possible) and exit
@@ -714,6 +717,14 @@ public class MinesweeperGameActivity extends AppCompatActivity {
                 }
             }
             return;
+        }
+
+        // If the player has clicked his/her first cell
+        if (this.isFirstClick) {
+            this.generateTiles(index);
+        }
+        if (!this.hasStarted) {
+            this.startGame();
         }
 
         List<Tile> tiles = this.game.selectTile(index);
