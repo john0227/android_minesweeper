@@ -2,14 +2,20 @@ package com.android.myproj.minesweeper.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,6 +23,7 @@ import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.activity.result.ActivityResult;
@@ -48,6 +55,7 @@ import com.android.myproj.minesweeper.util.MusicPlayer;
 import com.android.myproj.minesweeper.util.MySharedPreferencesUtil;
 import com.android.myproj.minesweeper.util.StatUtil;
 import com.android.myproj.minesweeper.util.Stopwatch;
+import com.bumptech.glide.Glide;
 import com.otaliastudios.zoom.ZoomLayout;
 
 import org.json.JSONException;
@@ -66,6 +74,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     private RadioButton rbtn_flag;
     private TextView tv_mine_count;
     private ToggleButton tbtn_sel_flag;
+    private ImageView hintIndicator;
 
     // Dependent Objects
     private ActivityResultLauncher<Intent> resultLauncher;
@@ -490,9 +499,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         this.isGameOver = true;
 
         // Reset zoom
-        ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
-        zoomLayout.zoomBy(1 / zoomLayout.getZoom(), true);
-        zoomLayout.setZoomEnabled(false);
+        this.resetZoom(false);
         // Clear saved data
         try {
             JSONUtil.clearSavedGame(this);
@@ -530,6 +537,12 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             animateExplosion(indexLastSelected);
         }
     }
+    
+    private void resetZoom(boolean enableZoom) {
+        ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
+        zoomLayout.zoomBy(1 / zoomLayout.getZoom(), true);
+        zoomLayout.setZoomEnabled(enableZoom);
+    }
 
     private void toggleFlagButton() {
         if(MySharedPreferencesUtil.getBoolean(this, Key.PREFERENCES_FLAG_TOGGLE, true)) {
@@ -551,6 +564,17 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             this.tbtn_sel_flag.setOnCheckedChangeListener(null);
             LogService.info(this, "Removed FLAG ToggleButton");
         }
+    }
+
+    // Returns relative coordinate of childView in relation to parentView
+    private Point getRelativeCoord(View childView, ViewGroup parentView) {
+        Rect offsetViewBounds = new Rect();
+        //returns the visible bounds
+        childView.getDrawingRect(offsetViewBounds);
+        // calculates the relative coordinates to the parent
+        parentView.offsetDescendantRectToMyCoords(childView, offsetViewBounds);
+
+        return new Point(offsetViewBounds.left, offsetViewBounds.top);
     }
 
     private final CompoundButton.OnCheckedChangeListener onRadioFlagChange = (button, isChecked) -> isFlag = isChecked;
@@ -615,21 +639,55 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     };
 
     private final View.OnClickListener onHintClick = view -> {
-        // If game has not yet started, start game
+        // If there is active hint, alert the user
+        if (this.hintIndicator != null) {
+            Toast.makeText(this, "There is an active hint", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // If game has not yet started, generate board without starting game
         if (!MinesweeperGameActivity.this.hasStarted) {
-            MinesweeperGameActivity.this.hasStarted = true;
-            stopwatch.startTimer();
+//            MinesweeperGameActivity.this.hasStarted = true;
+//            stopwatch.startTimer();
             this.game.start(-1);
         }
 
         Tile tileToReveal = this.game.showHint();
         if (tileToReveal == null) {
             // there is no uncover-able Tile
+            Toast.makeText(this, "No tile to show", Toast.LENGTH_SHORT).show();
             return;
         }
 
         noHint = false;
-        setImage(this.imageButtons[game.getTileIndex(tileToReveal)], game.getTileValue(tileToReveal));
+        // Reset zoom
+        this.resetZoom(true);
+        // Create hint indicator as ImageView
+        ImageButton tileButton = this.imageButtons[game.getTileIndex(tileToReveal)];
+        Point coord = this.getRelativeCoord(tileButton, findViewById(R.id.hint_container));
+        int hintWidth = tileButton.getWidth() + (int) ConvertUnitUtil.convertDpToPx(this, 16);
+        int hintHeight = tileButton.getHeight() + (int) ConvertUnitUtil.convertDpToPx(this, 16);
+        this.hintIndicator = new ImageView(this);
+        this.hintIndicator.setX(coord.x - (int) ConvertUnitUtil.convertDpToPx(this, 8));
+        this.hintIndicator.setY(coord.y - (int) ConvertUnitUtil.convertDpToPx(this, 8));
+        this.hintIndicator.setLayoutParams(new FrameLayout.LayoutParams(hintWidth, hintHeight));
+        this.hintIndicator.setAdjustViewBounds(true);
+
+        // Bind ImageButton to GIF
+        Glide.with(this)
+                .load(AppCompatResources.getDrawable(this, R.drawable.hint_indicator))
+                .placeholder(R.drawable.hint_indicator_placeholder)
+                .error(R.drawable.hint_indicator_placeholder)
+                .into(this.hintIndicator);
+
+        // Add hint indicator to container
+        FrameLayout hintContainer = findViewById(R.id.hint_container);
+        hintContainer.addView(this.hintIndicator);
+        this.hintIndicator.bringToFront();
+
+
+
+//        setImage(this.imageButtons[game.getTileIndex(tileToReveal)], game.getTileValue(tileToReveal));
     };
 
     private final View.OnClickListener onTileClick = view -> {

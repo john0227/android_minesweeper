@@ -41,20 +41,22 @@ Minesweeper Cells (Under res/common/drawable)
         https://www.pngwing.com/en/free-png-vxhwi
 
 Navigation Bar Icons (Under res/common/drawable)
-    nav_home.png
+    nav_home.png :
         Home button icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/home-button)
-    nav_history
+    nav_history.png :
         Pending icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/pending)
-    nav_statistics.png
+    nav_statistics.png :
         Bar graph icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/bar-graph)
 
 Other image
-    mouse_pointer.png
+    mouse_pointer.png :
         https://images.wondershare.com/recoverit/article/2021/06/mouse-cursor-1.jpg
-    setting.png
+    setting.png :
         https://commons.wikimedia.org/wiki/File:GNOME_Settings_icon.svg
-    hint.png
+    hint.png :
         https://www.iconsdb.com/orange-icons/light-bulb-6-icon.html
+    hint_indicator.gif, hint_indicator_placeholder.png :
+        https://loading.io/spinner/ripple/-ripple-circle-scale-round-radar-radio
 
 Sound Effect (Under res/common/raw)
     click.mp3 :
