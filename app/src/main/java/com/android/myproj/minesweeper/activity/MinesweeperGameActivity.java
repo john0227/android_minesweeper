@@ -5,10 +5,14 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.Animatable2;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +69,7 @@ import java.util.List;
 public class MinesweeperGameActivity extends AppCompatActivity {
 
     // Views
+    private ConstraintLayout rootLayout;
     private ImageButton[] imageButtons;
     private ImageButton ibtn_setting;
     private ImageButton ibtn_hint;
@@ -174,6 +179,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
     }
 
     private void init() {
+        this.rootLayout = findViewById(R.id.rootLayout_game);
         this.imageButtons = new ImageButton[level.getRow() * level.getCol()];
         this.ibtn_setting = findViewById(R.id.ibtn_setting);
         this.ibtn_hint = findViewById(R.id.ibtn_hint);
@@ -237,6 +243,7 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
         if (this.level.getRow() >= 25 || this.level.getCol() >= 15) {
             zoomLayout.setZoomEnabled(true);
+            this.showZoomHint();
             padding = (int) ConvertUnitUtil.convertPxToDP(this, 50);
             if (this.level.getRow() >= 25) {
                 ImageView mineCountImage = findViewById(R.id.iv_mine_count);
@@ -543,7 +550,32 @@ public class MinesweeperGameActivity extends AppCompatActivity {
             animateExplosion(indexLastSelected);
         }
     }
-    
+
+    private void showZoomHint() {
+        LayoutInflater.from(this).inflate(R.layout.zoom_hint, this.rootLayout, true);
+        ConstraintLayout rootLayoutZoom = findViewById(R.id.rootLayout_zoom_hint);
+
+        ImageView zoomIv = findViewById(R.id.iv_zoom_in_out);
+        zoomIv.setImageResource(R.drawable.avd_zoom_in_out);
+        AnimatedVectorDrawable avd = (AnimatedVectorDrawable) zoomIv.getDrawable();
+        avd.registerAnimationCallback(new Animatable2.AnimationCallback() {
+            @Override
+            public void onAnimationEnd(Drawable drawable) {
+                zoomIv.post(avd::start);
+            }
+        });
+        avd.start();
+
+        // Remove zoom hint if player touches screen
+        rootLayoutZoom.setOnClickListener(view -> this.rootLayout.removeView(rootLayoutZoom));
+        // Or if 10 seconds pass
+        this.gameHandler.postDelayed(() -> {
+            if (findViewById(R.id.rootLayout_zoom_hint) != null) {
+                this.rootLayout.removeView(rootLayoutZoom);
+            }
+        }, 10000);
+    }
+
     private void resetZoom(boolean enableZoom) {
         ZoomLayout zoomLayout = findViewById(R.id.zoomLayout_game);
         zoomLayout.zoomBy(1 / zoomLayout.getZoom(), true);
