@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -48,6 +49,7 @@ import com.android.myproj.minesweeper.game.logic.Level;
 import com.android.myproj.minesweeper.game.logic.Tile;
 import com.android.myproj.minesweeper.game.logic.TileValue;
 import com.android.myproj.minesweeper.util.AlertDialogBuilderUtil;
+import com.android.myproj.minesweeper.util.AnimationUtil;
 import com.android.myproj.minesweeper.util.ConvertUnitUtil;
 import com.android.myproj.minesweeper.util.DelayUtil;
 import com.android.myproj.minesweeper.util.HistoryUtil;
@@ -555,25 +557,36 @@ public class MinesweeperGameActivity extends AppCompatActivity {
         LayoutInflater.from(this).inflate(R.layout.zoom_hint, this.rootLayout, true);
         ConstraintLayout rootLayoutZoom = findViewById(R.id.rootLayout_zoom_hint);
 
-        ImageView zoomIv = findViewById(R.id.iv_zoom_in_out);
-        zoomIv.setImageResource(R.drawable.avd_zoom_in_out);
-        AnimatedVectorDrawable avd = (AnimatedVectorDrawable) zoomIv.getDrawable();
+        // Animate ImageView
+        ImageView ivZoom = findViewById(R.id.iv_zoom_in_out);
+        ivZoom.setImageResource(R.drawable.avd_zoom_in_out);
+        AnimatedVectorDrawable avd = (AnimatedVectorDrawable) ivZoom.getDrawable();
         avd.registerAnimationCallback(new Animatable2.AnimationCallback() {
             @Override
             public void onAnimationEnd(Drawable drawable) {
-                zoomIv.post(avd::start);
+                ivZoom.post(avd::start);
             }
         });
         avd.start();
 
-        // Remove zoom hint if player touches screen
-        rootLayoutZoom.setOnClickListener(view -> this.rootLayout.removeView(rootLayoutZoom));
-        // Or if 10 seconds pass
-        this.gameHandler.postDelayed(() -> {
+        // Animate TextView
+        TextView tvZoom = findViewById(R.id.tv_zoom_in_out);
+        tvZoom.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_zoom_in_out));
+
+        Runnable removeZoomHint = () -> {
+            // If ZoomHint layout is present on screen
             if (findViewById(R.id.rootLayout_zoom_hint) != null) {
-                this.rootLayout.removeView(rootLayoutZoom);
+                this.gameHandler.postDelayed(() -> {
+                    avd.clearAnimationCallbacks();
+                    tvZoom.clearAnimation();
+                }, 340);
+                AnimationUtil.fadeOut(rootLayoutZoom, this.rootLayout, 350);
             }
-        }, 10000);
+        };
+        // Remove zoom hint if player touches screen
+        rootLayoutZoom.setOnClickListener(view -> removeZoomHint.run());
+        // Or if 10 seconds pass
+        this.gameHandler.postDelayed(removeZoomHint, 10000);
     }
 
     private void resetZoom(boolean enableZoom) {

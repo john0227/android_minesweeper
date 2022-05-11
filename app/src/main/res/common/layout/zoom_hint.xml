@@ -23,13 +23,14 @@
         app:srcCompat="@drawable/avd_zoom_in_out" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_zoom_in_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:gravity="center"
         android:text="ZOOM IN AND OUT"
-        android:textSize="20dp"
+        android:textSize="25dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/iv_zoom_in_out"
         app:layout_constraintStart_toStartOf="@+id/iv_zoom_in_out"
         app:layout_constraintTop_toBottomOf="@+id/iv_zoom_in_out" />
